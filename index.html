@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Web Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .centered-text {
+            text-align: center;
+            margin-top: 20px; /* Adjust the top margin as needed */
+            margin-bottom: 20px; /* Adjust the bottom margin as needed */
+        }
+        .active-button {
+            background-color: #4CAF50; /* Green background */
+            color: white; /* White text */
+            border: solid black;
+        }
+        .scrollable-table {
+            overflow-y: auto; /* Enables horizontal scrolling */
+        }
+        table {
+            border: solid rgb(2, 14, 2);
+            margin-left: auto;
+            margin-right: auto;
+            width: 90%;
+            border-collapse: collapse; /* Optional: for better border styling */
+        }
+        th, td {
+            text-align: center; /* Center-align text in table headers and cells */
+            padding: 8px; /* Optional: Adjust padding to ensure content is spaced nicely */
+        }
+        
+        .total-column {
+            background-color: #839f5f; /* Darker grey for total rows */
+            font-weight: bold;
+        }
+        thead{
+            background-color: #ebebec;
+        }
+        .term-even {
+            background-color: #f0d6d6; /* Light gray for even terms */
+        }
+        .high-percentage { background-color: #98fb98; } /* Green for high percentages */
+        .medium-percentage { background-color: #ffff99; } /* Yellow for medium percentages */
+        .low-percentage { background-color: #ff6961; } /* Red for low percentages */
+        
+        @media print {
+           
+
+            #hed {
+                width: max-content;
+                text-align: center;
+            }
+
+            button {
+                display: none; /* Hide buttons when printing */
+            }
+
+            html, body {
+                width: 297mm; /* width of A4 paper */
+                height: 210mm; /* height of A4 paper */
+                overflow: hidden; /* Hide overflow */
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="centered-text" id="hed">KATTILANGADI YETHEEMKHANA HIGHER SECONDAY SCHOOL</h1>
+    <h2 class="centered-text">CONSOLIDATED MARK LIST</h2>
+    <h3 class="centered-text" id="toggle-status">TE ONLY</h3>
+    <div>
+        <button onclick="toggleScores('te')">TE Only</button>
+        <button onclick="toggleScores('ce')">CE Only</button>
+        <button onclick="toggleScores('both')">TE and CE</button>
+        <button onclick="printTable()">Print Table</button> <!-- Print button -->
+    </div>
+    <div id="data-table"></div>
+    <script>
+        var dataModel = {
+            admissionNumber: "123456",
+            name: "Iqbal",
+            class: "10",
+            division: "A",
+            age: 23,
+            sex: "male",
+            subjects: {
+                malayalam: {
+                    term1: {
+                        te: 30,
+                        ce: 20,
+                        maxTe: 40,
+                        maxCe: 20
+                    },
+                    term2: {
+                        te: 32,
+                        ce: 18,
+                        maxTe: 40,
+                        maxCe: 20
+                    },
+                    term3: {
+                        te: 34,
+                        ce: 16,
+                        maxTe: 40,
+                        maxCe: 20
+                    }
+                },
+                english: {
+                    term1: {
+                        te: 35,
+                        ce: 25,
+                        maxTe: 50,
+                        maxCe: 25
+                    },
+                    term2: {
+                        te: 37,
+                        ce: 23,
+                        maxTe: 50,
+                        maxCe: 25
+                    },
+                    term3: {
+                        te: 39,
+                        ce: 21,
+                        maxTe: 50,
+                        maxCe: 25
+                    }
+                },
+                hindi: {
+                    term1: {
+                        te: 28,
+                        ce: 22,
+                        maxTe: 45,
+                        maxCe: 22
+                    },
+                    term2: {
+                        te: 30,
+                        ce: 20,
+                        maxTe: 45,
+                        maxCe: 22
+                    },
+                    term3: {
+                        te: 32,
+                        ce: 18,
+                        maxTe: 45,
+                        maxCe: 22
+                    }
+                },
+                maths: {
+                    term1: {
+                        te: 40,
+                        ce: 30,
+                        maxTe: 60,
+                        maxCe: 30
+                    },
+                    term2: {
+                        te: 42,
+                        ce: 28,
+                        maxTe: 60,
+                        maxCe: 30
+                    },
+                    term3: {
+                        te: 44,
+                        ce: 26,
+                        maxTe: 60,
+                        maxCe: 30
+                    }
+                },
+                biology: {
+                    term1: {
+                        te: 30,
+                        ce: 20,
+                        maxTe: 40,
+                        maxCe: 20
+                    },
+                    term2: {
+                        te: 32,
+                        ce: 18,
+                        maxTe: 40,
+                        maxCe: 20
+                    },
+                    term3: {
+                        te: 34,
+                        ce: 16,
+                        maxTe: 40,
+                        maxCe: 20
+                    }
+                },
+                bs: {
+                    term1: {
+                        te: 35,
+                        ce: 25,
+                        maxTe: 50,
+                        maxCe: 25
+                    },
+                    term2: {
+                        te: 37,
+                        ce: 23,
+                        maxTe: 50,
+                        maxCe: 25
+                    },
+                    term3: {
+                        te: 39,
+                        ce: 21,
+                        maxTe: 50,
+                        maxCe: 25
+                    }
+                },
+                ss: {
+                    term1: {
+                        te: 28,
+                        ce: 22,
+                        maxTe: 45,
+                        maxCe: 22
+                    },
+                    term2: {
+                        te: 30,
+                        ce: 20,
+                        maxTe: 45,
+                        maxCe: 22
+                    },
+                    term3: {
+                        te: 32,
+                        ce: 18,
+                        maxTe: 45,
+                        maxCe: 22
+                    }
+                },
+                arabic: {
+                    term1: {
+                        te: 40,
+                        ce: 30,
+                        maxTe: 60,
+                        maxCe: 30
+                    },
+                    term2: {
+                        te: 42,
+                        ce: 28,
+                        maxTe: 60,
+                        maxCe: 30
+                    },
+                    term3: {
+                        te: 44,
+                        ce: 26,
+                        maxTe: 60,
+                        maxCe: 30
+                    }
+                },
+                arabic2: {
+                    term1: {
+                        te: 40,
+                        ce: 30,
+                        maxTe: 60,
+                        maxCe: 30
+                    },
+                    term2: {
+                        te: 42,
+                        ce: 28,
+                        maxTe: 60,
+                        maxCe: 30
+                    },
+                    term3: {
+                        te: 44,
+                        ce: 26,
+                        maxTe: 60,
+                        maxCe: 30
+                    }
+                },
+                arabic: {
+                    term1: {
+                        te: 40,
+                        ce: 30,
+                        maxTe: 60,
+                        maxCe: 30
+                    },
+                    term2: {
+                        te: 42,
+                        ce: 28,
+                        maxTe: 60,
+                        maxCe: 30
+                    },
+                    term3: {
+                        te: 44,
+                        ce: 26,
+                        maxTe: 60,
+                        maxCe: 30
+                    }
+                }
+            }
+        };
+
+        function createTable(scoreType) {
+            const { admissionNumber, name, class: className, division, subjects } = dataModel;
+
+            let infoHTML = `<div>
+                <p>Admission Number: ${admissionNumber}</p>
+                <p>Name: ${name}</p>
+                <span style="display:flex;gap:15px;">
+                    <p>Class: ${className}</p>
+                    <p>Division: ${division}</p>
+                </span>
+            </div>`;
+
+            let tableHTML = `<div class="scrollable-table"><table border="1">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        ${Object.keys(subjects[Object.keys(subjects)[0]]).map((term, index) => 
+                            `<th colspan="4" class="${index % 2 === 0 ? 'term-even' : 'term-odd'}">${term.charAt(0).toUpperCase() + term.slice(1)}</th>`).join('')}
+                        <th colspan="4">Total</th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        ${Object.keys(subjects[Object.keys(subjects)[0]]).flatMap((term, index) => 
+                            ['Max', 'TE', 'Percentage', 'Grade'].map(sub => `<th class="${index % 2 === 0 ? 'term-even' : 'term-odd'}">${sub}</th>`)).join('')}
+                        <th>Max</th><th>TE</th><th>Percentage</th><th>Grade</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            Object.entries(subjects).forEach(([subject, terms], subjectIndex) => {
+                let totalMax = 0;
+                let totalTE = 0;
+                let totalPercentage = 0;
+
+                Object.values(terms).forEach((term, termIndex) => {
+                    let score = scoreType === 'both' ? term.te + term.ce : term[scoreType];
+                    let max = scoreType === 'both' ? term.maxTe + term.maxCe : term['max' + scoreType.charAt(0).toUpperCase() + scoreType.slice(1)];
+                    let percentage = (score / max * 100).toFixed(2);
+
+                    totalMax += max;
+                    totalTE += score;
+                    totalPercentage += parseFloat(percentage);
+                });
+
+                let averagePercentage = (totalPercentage / Object.keys(terms).length).toFixed(2);
+                let percentageClass = getPercentageClass(averagePercentage);
+
+                tableHTML += `<tr class="${percentageClass}"><td>${subject.charAt(0).toUpperCase() + subject.slice(1)}</td>`;
+
+                Object.values(terms).forEach((term, termIndex) => {
+                    let score = scoreType === 'both' ? term.te + term.ce : term[scoreType];
+                    let max = scoreType === 'both' ? term.maxTe + term.maxCe : term['max' + scoreType.charAt(0).toUpperCase() + scoreType.slice(1)];
+                    let percentage = (score / max * 100).toFixed(2);
+                    let grade = getGrade(percentage, className);
+
+                    tableHTML += `<td>${max}</td><td>${score}</td><td>${percentage}%</td><td>${grade}</td>`;
+                });
+
+                tableHTML += `<td>${totalMax}</td><td>${totalTE}</td><td>${averagePercentage}%</td><td>${getGrade(averagePercentage, className)}</td></tr>`;
+            });
+
+            tableHTML += `</tbody></table></div>`;
+            document.getElementById('data-table').innerHTML = infoHTML + tableHTML;
+        }
+
+        function getPercentageClass(percentage) {
+            if (percentage >= 75) {
+                return 'high-percentage';
+            } else if (percentage >= 50) {
+                return 'medium-percentage';
+            } else {
+                return 'low-percentage';
+            }
+        }
+
+        function getGrade(percentage, className) {
+            if (isNaN(percentage) || percentage == null) {
+                return 'Invalid Percentage'; // Handling invalid percentage input
+            }
+
+            const classNum = parseInt(className);
+            if (isNaN(classNum)) {
+                return 'Invalid Class'; // Handling invalid class input
+            }
+
+            let grade;
+            const gradeThresholds = classNum < 8 ? 
+                { A: 90, B: 80, C: 70, D: 60, F: 0 } : 
+                { 'A+': 90, A: 80, 'B+': 70, B: 60, E: 0 };
+
+            for (const [key, value] of Object.entries(gradeThresholds)) {
+                if (percentage >= value) {
+                    grade = key;
+                    break;
+                }
+            }
+
+            return grade || 'N/A'; // Default to 'N/A' if no grade is determined
+        }
+
+        function toggleScores(scoreType) {
+            // Remove active class from all buttons
+            document.querySelectorAll('button').forEach(button => {
+                button.classList.remove('active-button');
+            });
+
+            // Add active class to the clicked button
+            document.querySelector(`button[onclick="toggleScores('${scoreType}')"]`).classList.add('active-button');
+
+            // Create the table based on the selected score type
+            createTable(scoreType);
+
+            // Update the toggle status display
+            const statusDisplay = document.getElementById('toggle-status');
+            if (scoreType === 'te') {
+                statusDisplay.textContent = 'TE Only';
+            } else if (scoreType === 'ce') {
+                statusDisplay.textContent = 'CE Only';
+            } else {
+                statusDisplay.textContent = 'TE and CE';
+            }
+        }
+
+        function printTable() {
+            window.print(); // Triggers the print dialog
+        }
+
+        window.onload = function() {
+            createTable('te'); // Default view
+            document.querySelector('button[onclick="toggleScores(\'te\')"]').classList.add('active-button'); // Set default active button
+            document.getElementById('toggle-status').textContent = 'TE Only'; // Default status
+        };
+        
+    </script>
+</body>
+</html>
