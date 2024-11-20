@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Profile</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Responsive styles for mobile screens */
+
+
+.expandable-section {
+    margin-bottom: 1em;
+    padding: 2px;
+    margin: auto;
+}
+
+.toggle-button {
+    background: #d24646;
+    border: 1px solid #ccc;
+    padding: 1px;
+    cursor: pointer;
+    text-align: left;
+    width: 100% !important;
+}
+
+.graph-content {
+    display: block;
+    padding: 1px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    margin:auto ;
+    max-width: 99%;
+
+}
+
+#examwise-arrow, #subjectwise-arrow, #consolidated-arrow {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+}
+
+.opened #examwise-arrow, .opened #subjectwise-arrow, .opened #consolidated-arrow {
+    transform: rotate(180deg); /* Rotate the arrow when open */
+}
+
+        .center {
+            width: 60%;
+            background-color: rgb(245, 244, 243);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: auto;
+            padding: .8em;
+            box-sizing: border-box;
+        }
+
+        .content-div {
+            display: none;
+            padding: 2em;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        .content-div.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .sideHead {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1em;
+        }
+
+        .sideHead img {
+            border-radius: 50%;
+        }
+
+        .sideRow {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            gap: 10px;
+        }
+
+        .sideRow a {
+            font-weight: bold;
+            padding: 10px;
+            text-align: center;
+            color: black;
+            cursor: pointer;
+            background-color: white;
+            border: 1px solid blueviolet;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .sideRow a:hover {
+            background-color: orange;
+            color: white;
+        }
+        canvas{
+        
+        margin: 2px;
+        min-width: 60px;
+        max-width: fit-content;
+        }
+        footer {
+            height: 10%;
+            text-align: center;
+            padding: 1em;
+            background-color: rgb(67, 92, 96);
+            color: white;
+            font-size: 1.2em;
+        }
+        .activea{
+            background-color: #d24646;
+        }
+        .chart-container{
+            min-height: 200px;
+            overflow: auto;
+        }
+    </style>
+   </head>
+<body>
+    <div id="appbar">
+        <h1>KYHSS ATHAVANAD</h1>
+    </div>
+    <aside class="container">
+        <div class="left-corner">
+            <div class="sideHead">
+                <img src="KYHSS LOGO.jpg" alt="KYHSS Logo" width="50" height="50">
+                <h3 id="studentName">MUHAMMED IQBAL C</h3>
+            </div>
+            <div class="sideRow">
+                <a onclick="showContent('academic');"href="student.html"  style="background-color: #d24646;" class="activea">Academic Details</a>
+                <a onclick="showContent('profile')" href="studentprofile.html">Profile</a>
+                <a onclick="showContent('fee')"href="studentFee.html">Fee Structure</a>
+                <a onclick="showContent('attendance');" href="studentAttendance.html">Attendance Details</a>
+                <a onclick="showContent('progress')">Progress Card</a>
+                <a onclick="showContent('hallTicket')">Hall Ticket</a>
+            </div>
+        </div>
+        <div class="center">
+            <div id="profile" class="content-div ">
+                <h2>Profile Information</h2>
+                <p>Details about the student's profile go here.</p>
+            </div>
+            <div id="academic" class="content-div active">
+                <!-- <iframe src="acadamicDetails1.html"></iframe> -->
+            
+                <h1>Consolidated Marks Tables</h1>
+                <div class="table-container">
+                    <h2>Madrassa Subjects</h2>
+                    <div id="madrassaTable"></div>
+                </div>
+                <div class="table-container">
+                    <h2>School Subjects</h2>
+                    <div id="schoolTable"></div>
+                </div>
+            
+                <script>
+                    const adnumber= localStorage.getItem("stuAdnumber");
+                    const studentname =localStorage.getItem("stuName");
+                    const studentclass =  localStorage.getItem("stuClass");
+                   document.getElementById("studentName").textContent=studentname;
+                    let scoredata = {
+                        name: "muhammediqbalc",
+                        className: "4 A",
+                        exams: [
+                            { exam: "midterm1", subject: "fiqh", te: 30, ce: 10 },
+                            { exam: "midterm1", subject: "lisan", te: "Ab", ce: 10 },
+                            { exam: "midterm1", subject: "urdu", te: 30, ce: 10 },
+                            { exam: "term1", subject: "malayalam", te: 35, ce: 10 },
+                            { exam: "term1", subject: "quran", te: 30, ce: 10 }
+                        ]
+                    };
+                
+                    //const madrassasubjects = ["fiqh", "quran", "lisan"];
+                let maxscores = [];
+                    let maxscores2 = [
+                        { exam: "midterm1", subject: "fiqh", maxTe: 40, maxCe: 10 },
+                        { exam: "midterm1", subject: "lisan", maxTe: 40, maxCe: 10 },
+                        { exam: "midterm1", subject: "urdu", maxTe: 40, maxCe: 10 },
+                        { exam: "term1", subject: "malayalam", maxTe: 50, maxCe: 10 },
+                        { exam: "term1", subject: "quran", maxTe: 50, maxCe: 10 }
+                    ];
+                getstudentmarks();
+                    function getstudentmarks() { 
+    const adnumber =3836;// localStorage.getItem("stuAdnumber");
+    const studentclass ="8 A";// localStorage.getItem("stuClass");
+
+    fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentMarks&adnumber=${adnumber}&studentclass=${studentclass}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                scoredata =data.scoreData;
+                maxscores = data.scoreData.maxMarks;
+                console.log(maxscores);
+                const madrassaExams = scoredata.exams.filter(entry => madrassasubjects.includes(entry.subject));
+                    const schoolExams = scoredata.exams.filter(entry => !madrassasubjects.includes(entry.subject));
+                
+                localStorage.setItem("studentMarks", JSON.stringify(data.marks));
+                console.log("Student marks saved to localStorage.");
+                generateConsolidatedTable('madrassaTable', madrassaExams);
+                generateConsolidatedTable('schoolTable', schoolExams);
+            
+            } else {
+                console.error("Failed to fetch student marks:", data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching student marks:", error);
+        });
+}
+
+                    // Filter data into Madrassa and School subjects
+                    const madrassasubjects = ['AQEEDA', 'AQLAQ', 'DUROOS', 'FIQH', 'HIFL', 'LISAN', 'QURAN', 'THAFHEEM', 'THAJVEED', 'THAREEQ'];;
+                
+                    const madrassaExams = scoredata.exams.filter(entry => madrassasubjects.includes(entry.subject));
+                    const schoolExams = scoredata.exams.filter(entry => !madrassasubjects.includes(entry.subject));
+                
+                    // Function to get max scores for a subject and exam
+                    function getMaxScores(exam, subject) {
+                    console.log(exam+subject);
+                        const maxScoreEntry = maxscores.find(entry => entry.exam === exam && entry.subject === subject);
+                        console.log(maxScoreEntry.maxTe);
+                        return maxScoreEntry ? { maxTe: maxScoreEntry.maxTE, maxCe: maxScoreEntry.maxCE } : { maxTe: 0, maxCe: 0 };
+                    }
+                
+                    function generateConsolidatedTable(containerId, data) {
+    const tableContainer = document.getElementById(containerId);
+    tableContainer.innerHTML = "";
+
+    // Consolidate marks by subject
+    const consolidatedData = {};
+    data.forEach(entry => {
+        if (!consolidatedData[entry.subject]) {
+            consolidatedData[entry.subject] = { 
+                teTotal: 0, ceTotal: 0, grandTotal: 0, 
+                maxTeTotal: 0, maxCeTotal: 0, maxGrandTotal: 0, exams: {} 
+            };
+        }
+
+        // Handle display and calculation values
+        const teDisplay = entry.te === "Ab" || entry.te === "" || isNaN(entry.te) ? entry.te : entry.te;
+        const ceDisplay = entry.ce === "" || isNaN(entry.ce) ? entry.ce : entry.ce;
+
+        const teValue = teDisplay === "Ab" || teDisplay === "" || isNaN(teDisplay) ? 0 : parseFloat(teDisplay);
+        const ceValue = ceDisplay === "" || isNaN(ceDisplay) ? 0 : parseFloat(ceDisplay);
+
+        // Get max scores
+        const { maxTe, maxCe } = getMaxScores(entry.exam, entry.subject);
+
+        // Store data per exam
+        consolidatedData[entry.subject].exams[entry.exam] = {
+            te: teDisplay,
+            ce: ceDisplay,
+            total: teValue + ceValue,
+            maxTe,
+            maxCe,
+            maxTotal: maxTe + maxCe
+        };
+
+        // Accumulate totals
+        consolidatedData[entry.subject].teTotal += teValue;
+        consolidatedData[entry.subject].ceTotal += ceValue;
+        consolidatedData[entry.subject].grandTotal += teValue + ceValue;
+        consolidatedData[entry.subject].maxTeTotal += maxTe;
+        consolidatedData[entry.subject].maxCeTotal += maxCe;
+        consolidatedData[entry.subject].maxGrandTotal += maxTe + maxCe;
+    });
+
+    // Create table
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    const tbody = document.createElement('tbody');
+    const tfoot = document.createElement('tfoot');
+
+    // Add headers
+    const exams = [...new Set(data.map(entry => entry.exam))];
+    const headerRow = `
+        <tr>
+            <th>Subject</th>
+            ${exams.map(exam => `<th colspan="3">${exam}</th>`).join('')}
+            <th colspan="3">Total</th>
+        </tr>
+        <tr>
+            <th></th>
+            ${exams.map(() => `<th>TE</th><th>CE</th><th>Total</th>`).join('')}
+            <th>TE</th><th>CE</th><th>Grand Total</th>
+        </tr>`;
+    thead.innerHTML = headerRow;
+
+    // Add rows for each subject
+    const totalRow = {
+        teTotals: Array(exams.length).fill(0),
+        ceTotals: Array(exams.length).fill(0),
+        totalTotals: Array(exams.length).fill(0),
+        maxTeTotals: Array(exams.length).fill(0),
+        maxCeTotals: Array(exams.length).fill(0),
+        maxTotalTotals: Array(exams.length).fill(0),
+        teGrandTotal: 0,
+        ceGrandTotal: 0,
+        grandTotal: 0,
+        maxTeGrandTotal: 0,
+        maxCeGrandTotal: 0,
+        maxGrandTotal: 0
+    };
+
+    for (const [subject, marks] of Object.entries(consolidatedData)) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${subject}</td>
+            ${exams.map((exam, index) => {
+                const examData = marks.exams[exam] || {};
+                const te = examData.te || "-";
+                const ce = examData.ce || "-";
+                const total = examData.total || 0;
+                const maxTe = examData.maxTe || 0;
+                const maxCe = examData.maxCe || 0;
+                const maxTotal = maxTe + maxCe;
+
+                // Update totalRow values
+                const teValue = isNaN(te) || te === "Ab" || te === "" ? 0 : parseFloat(te);
+                const ceValue = isNaN(ce) || ce === "" ? 0 : parseFloat(ce);
+                totalRow.teTotals[index] += teValue;
+                totalRow.ceTotals[index] += ceValue;
+                totalRow.totalTotals[index] += teValue + ceValue;
+                totalRow.maxTeTotals[index] += maxTe;
+                totalRow.maxCeTotals[index] += maxCe;
+                totalRow.maxTotalTotals[index] += maxTotal;
+
+                return `
+                    <td class="${te === "Ab" ? "absent" : ""}">${te === "Ab" || te === "" ? te : `${te}/${maxTe} `}</td>
+                    <td>${ce === "" ? ce : `${ce}/${maxCe}`}</td>
+                    <td>${total}/${maxTotal}</td>`;
+            }).join('')}
+            <td>${marks.teTotal}/${marks.maxTeTotal}</td>
+            <td>${marks.ceTotal}/${marks.maxCeTotal}</td>
+            <td>${marks.grandTotal}/${marks.maxGrandTotal}</td>
+        `;
+
+        totalRow.teGrandTotal += marks.teTotal;
+        totalRow.ceGrandTotal += marks.ceTotal;
+        totalRow.grandTotal += marks.grandTotal;
+        totalRow.maxTeGrandTotal += marks.maxTeTotal;
+        totalRow.maxCeGrandTotal += marks.maxCeTotal;
+        totalRow.maxGrandTotal += marks.maxGrandTotal;
+
+        tbody.appendChild(row);
+    }
+
+    // Add totals row
+    const totalsRow = `
+        <tr>
+            <td>Total</td>
+            ${exams.map((_, index) => `
+                <td>${totalRow.teTotals[index]}/${totalRow.maxTeTotals[index]}</td>
+                <td>${totalRow.ceTotals[index]}/${totalRow.maxCeTotals[index]}</td>
+                <td>${totalRow.totalTotals[index]}/${totalRow.maxTotalTotals[index]}</td>
+            `).join('')}
+            <td>${totalRow.teGrandTotal}/${totalRow.maxTeGrandTotal}</td>
+            <td>${totalRow.ceGrandTotal}/${totalRow.maxCeGrandTotal}</td>
+            <td>${totalRow.grandTotal}/${totalRow.maxGrandTotal}</td>
+        </tr>`;
+    tfoot.innerHTML = totalsRow;
+
+    table.appendChild(thead);
+    table.appendChild(tbody);
+    table.appendChild(tfoot);
+    tableContainer.appendChild(table);
+
+        const filteredExams = getFilteredExams("school"); // Filter exams
+        generateGraphs(filteredExams); // Generate graphs
+        renderSubjectWiseGraphconsol(filteredExams);
+        renderConsolidatedGraphsubjects(filteredExams) ;
+        renderGraphsForEachSubject(filteredExams);
+}
+
+                    // Populate Madrassa and School tables
+                    generateConsolidatedTable('madrassaTable', madrassaExams);
+                    generateConsolidatedTable('schoolTable', schoolExams);
+                </script>
+                
+            </div>
+            <div id="fee" class="content-div">
+                <h2>Fee Structure</h2>
+                <p>Fee structure and payment history details.</p>
+            </div>
+            <div id="progress" class="content-div">
+                <h2>Progress Card</h2>
+                <p>Details of the student's progress card.</p>
+            </div>
+            <div id="hallTicket" class="content-div">
+                <h2>Hall Ticket</h2>
+                <p>Hall ticket information and download option.</p>
+            </div>
+        </div>
+        <div class="right-corner">
+            <div class="radio-container" style="position: sticky; top: 2px;background-color: #d24646; width: 100%; margin-bottom: 3px;">
+                <label>School</label>
+                <input type="radio" id="school" name="sector" value="school" checked />
+                <label>Madrassa</label>
+                <input type="radio" id="madrassa" name="sector" value="madrassa" />
+            </div>
+            <div class="expandable-section" >
+                <button class="toggle-button" onclick="toggleGraph('examwise-graph')">
+                    Exam-wise Graph <span id="examwise-arrow">&#x25BC;</span> <!-- Down Arrow -->
+                </button>
+                <div id="examwise-graph" class="graph-content">
+                    
+                    <div id="examschartsContainer">
+                    
+                    <!-- Content for Exam-wise Graph goes here -->
+                </div>
+                
+            </div>
+        
+            <div class="expandable-section">
+                <button class="toggle-button" onclick="toggleGraph('subjectwise-graph')">
+                    Subject-wise Graph <span id="subjectwise-arrow">&#x25BC;</span> <!-- Down Arrow -->
+                </button>
+                <div id="subjectwise-graph" class="graph-content">
+                    <div id="subjectschartsContainer"></div>
+
+                    </div>
+                    <!-- Content for Subject-wise Graph goes here -->
+                </div>
+            </div>
+        
+            <div class="expandable-section" >
+                <button class="toggle-button" onclick="toggleGraph('consolidated-graph')">
+                    Consolidated Graph <span id="consolidated-arrow">&#x25BC;</span> <!-- Down Arrow -->
+                </button>
+                <div id="consolidated-graph" class="graph-content">
+                    <!-- Content for Consolidated Graph goes here -->
+                     <canvas id="consolidatedgraph"></canvas>
+                     <canvas id="subjectWiseGraph" class="chart-container"></canvas>
+                </div>
+                <script>
+                    
+//const madrassasubjects = ["fiqh", "quran", "lisan"];
+
+// Filter exams by sector
+function getFilteredExams(sector) {
+    if (sector === "madrassa") {
+        return scoredata.exams.filter(entry => madrassasubjects.includes(entry.subject));
+    } else if (sector === "school") {
+        return scoredata.exams.filter(entry => !madrassasubjects.includes(entry.subject));
+    }
+    return [];
+}
+
+                    // Helper function: Process TE scores (convert "Ab" to 0)
+function processScore(score) {
+    return score === "Ab" ? 0 : score;
+}
+                    // Event listener for radio buttons
+                    
+
+document.querySelectorAll('input[name="sector"]').forEach(radio => {
+    radio.addEventListener('change', event => {
+        const sector = event.target.value; // Get selected sector
+        const filteredExams = getFilteredExams(sector); // Filter exams
+        generateGraphs(filteredExams); // Generate graphs
+        renderSubjectWiseGraphconsol(filteredExams);
+        renderConsolidatedGraphsubjects(filteredExams) ;
+        renderGraphsForEachSubject(filteredExams);
+    });
+});
+let consolidatedChart = null; // Store the chart instance globally
+
+function renderConsolidatedGraphsubjects(exams) {
+    const ctx = document.getElementById('consolidatedgraph').getContext('2d');
+    
+    // Destroy the existing chart instance if it exists
+    if (consolidatedChart) {
+        consolidatedChart.destroy();
+    }
+
+    // Extract unique subjects from the exams data
+    const subjects = [...new Set(exams.map(entry => entry.subject))];
+
+    // Calculate total scores (TE + CE) for each subject
+    const totalScores = subjects.map(subject => {
+        return exams
+            .filter(entry => entry.subject === subject) // Filter entries for each subject
+            .reduce((sum, entry) => sum + processScore(entry.te) + processScore(entry.ce), 0); // Sum TE and CE scores
+    });
+
+    // Create the pie chart
+    consolidatedChart = new Chart(ctx, {
+        type: 'pie', // Pie chart type
+        data: {
+            labels: subjects, // Subjects as labels
+            datasets: [{
+                data: totalScores, // Total scores for each subject
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)',
+                    'rgba(54, 162, 235, 0.7)', 'rgba(255, 99, 132, 0.7)', 'rgba(201, 203, 207, 0.7)',
+                    'rgba(255, 205, 86, 0.7)'
+                ] // Colors for subjects
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Consolidated Subject Scores' // Title for the chart
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+                </script>
+            </div>
+           
+
+            <script>
+                 function toggleGraph(graphId) {
+    const graphContent = document.getElementById(graphId);
+    const button = graphContent.previousElementSibling; // Select the button
+    const arrow = button.querySelector("span"); // Select the span inside the button
+
+    if (graphContent.style.display === 'none' || graphContent.style.display === '') {
+        graphContent.style.display = 'block';
+        arrow.innerHTML = '&#x25B2;'; // Up Arrow
+    } else {
+        graphContent.style.display = 'none';
+        arrow.innerHTML = '&#x25BC;'; // Down Arrow
+    }
+    const checkedSector = document.querySelector('input[name="sector"]:checked');
+    
+    getFilteredExams(checkedSector);
+}
+
+
+            </script>
+        </div>
+        
+    </aside>
+    <footer>Footer Information</footer>
+
+    <script>
+        //showContent('academic');
+        function showContent(id) {
+                // Hide all content divs
+                document.querySelectorAll('.content-div').forEach(div => {
+                    div.classList.remove('active');
+                });
+                // Show the selected content div
+                document.getElementById(id).classList.add('active');
+            
+            if (id === 'academic') {
+            window.location("")
+                // Load the content from academicDetails.html into the center div
+                // fetch('acadamicDetails1.html')
+                //     .then(response => response.text())
+                //     .then(data => {
+                //         document.getElementById('academic').innerHTML = data;
+                //     })
+                //     .catch(error => {
+                //         console.error('Error loading academic details:', error);
+                //     });
+            } 
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    
+    <script>
+          
+
+
+
+
+let consolidatedbar =null;
+// Subject-wise Graph
+function renderSubjectWiseGraphconsol(exams) {
+const ctx = document.getElementById('subjectWiseGraph').getContext('2d');
+const labels = exams.map(entry => entry.subject);
+const teScores = exams.map(entry => processScore(entry.te));
+const ceScores = exams.map(entry => entry.ce);
+// Destroy the existing chart instance if it exists
+if (consolidatedbar) {
+    consolidatedbar.destroy();
+    }
+    consolidatedbar= new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels,
+        datasets: [
+            { label: 'TE Scores', data: teScores, backgroundColor: 'rgba(54, 162, 235, 0.7)' },
+            { label: 'CE Scores', data: ceScores, backgroundColor: 'rgba(255, 99, 132, 0.7)' }
+        ]
+    },
+    options: { responsive: true, plugins: { title: { display: true, text: 'Subject-wise Scores' } } }
+});
+}
+
+// Generate graphs based on filtered data
+function generateGraphs(exams) {
+    const chartsContainer = document.getElementById('examschartsContainer');
+    chartsContainer.innerHTML = ''; // Clear existing charts
+
+    const uniqueExams = [...new Set(exams.map(entry => entry.exam))];
+
+    uniqueExams.forEach(exam => {
+        const examData = exams.filter(entry => entry.exam === exam);
+        const labels = examData.map(entry => entry.subject); // Subjects
+        const teScores = examData.map(entry => (entry.te === "Ab" ? 0 : entry.te)); // TE scores
+        const ceScores = examData.map(entry => entry.ce); // CE scores
+
+        // Create a canvas for each exam
+        const canvas = document.createElement('canvas');
+        canvas.className = "chart-container";
+        chartsContainer.appendChild(canvas);
+
+        const ctx = canvas.getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: 'TE Scores',
+                        data: teScores,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                    },
+                    {
+                        label: 'CE Scores',
+                        data: ceScores,
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Subject-wise Scores for ${exam}`
+                    }
+                },
+                scales: {
+                    x: { title: { display: true, text: 'Subjects' } },
+                    y: { title: { display: true, text: 'Scores' }, beginAtZero: true }
+                }
+            }
+        });
+    });
+}
+
+function renderGraphsForEachSubject(exams) {
+    const chartsContainer = document.getElementById('subjectschartsContainer');
+    chartsContainer.innerHTML = ''; // Clear existing charts
+
+    // Extract unique subjects from the filtered exams
+    const subjects = [...new Set(exams.map(entry => entry.subject))];
+
+    // Loop through each subject and generate a graph
+    subjects.forEach(subject => {
+        // Filter data for the current subject
+        const subjectData = exams.filter(entry => entry.subject === subject);
+
+        // Extract exam names and scores
+        const examNames = subjectData.map(entry => entry.exam);
+        const teScores = subjectData.map(entry => (entry.te === "Ab" ? 0 : entry.te)); // Handle 'Ab' as 0
+        const ceScores = subjectData.map(entry => entry.ce);
+
+        // Create a canvas for each subject
+        const canvas = document.createElement('canvas');
+        canvas.className = "chart-container";
+        chartsContainer.appendChild(canvas);
+
+        // Render the chart
+        const ctx = canvas.getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: examNames, // Exam names
+                datasets: [
+                    {
+                        label: 'TE Scores',
+                        data: teScores,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                    },
+                    {
+                        label: 'CE Scores',
+                        data: ceScores,
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Scores for Subject: ${subject}`
+                    }
+                },
+                scales: {
+                    x: { title: { display: true, text: 'Exams' } },
+                    y: { title: { display: true, text: 'Scores' }, beginAtZero: true }
+                }
+            }
+        });
+    });
+}
+localStorage.setItem("marksdata",scoredata);
+
+
+    </script>
+</body>
+</html>
