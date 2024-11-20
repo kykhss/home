@@ -3,145 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data from Google Sheets</title>
+    <title>Consolidated Marks Table</title>
     <style>
-        .container {
-            max-width: 800px;
-            margin: auto;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
             text-align: center;
         }
-        .dropdown, .sort-dropdown {
-            margin: 20px;
-            padding: 10px;
-            font-size: 16px;
+        th {
+            background-color: #f4f4f4;
         }
-        .student-data {
-            margin-top: 20px;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: left;
+        .absent {
+            color: red;
         }
-        .sort-container {
-            margin: 20px 0;
+        .table-container {
+            margin-bottom: 40px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Data from Google Sheets</h1>
-        <select id="class-dropdown" class="dropdown">
-            <option value="">Select a Class</option>
-            <!-- Options will be populated dynamically -->
-        </select>
-
-        <div class="sort-container">
-            <label for="sort-dropdown">Sort By:</label>
-            <select id="sort-dropdown" class="sort-dropdown" disabled>
-                <option value="name">Name</option>
-                <option value="adnumber">Ad Number</option>
-                <option value="score">Score</option>
-            </select>
-        </div>
-
-        <div id="data-container"></div>
+    <h1>Consolidated Marks Tables</h1>
+    <div class="table-container">
+        <h2>Madrassa Subjects</h2>
+        <div id="madrassaTable"></div>
     </div>
-    <script src="script.js"></script>
+    <div class="table-container">
+        <h2>School Subjects</h2>
+        <div id="schoolTable"></div>
+    </div>
+
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const classDropdown = document.getElementById("class-dropdown");
-            const sortDropdown = document.getElementById("sort-dropdown");
-            const container = document.getElementById("data-container");
-
-            let studentData = []; // Store all student data here for sorting
-
-            // Fetch data and populate class dropdown
-            fetch("https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec")
-                .then(response => response.json())
-                .then(data => {
-                    // Extract unique class names
-                    const classNames = new Set();
-                    for (const sheet in data) {
-                        for (const student of Object.values(data[sheet])) {
-                            classNames.add(student.class);
-                            studentData.push(student); // Store all student data
-                        }
-                    }
-
-                    // Populate the dropdown with unique class names
-                    classNames.forEach(className => {
-                        const option = document.createElement("option");
-                        option.value = className;
-                        option.textContent = className;
-                        classDropdown.appendChild(option);
-                    });
-
-                    // Event listener for dropdown change
-                    classDropdown.addEventListener("change", function() {
-                        const selectedClass = this.value;
-                        container.innerHTML = ""; // Clear previous data
-
-                        // If a class is selected, display the relevant data
-                        if (selectedClass) {
-                            displayStudentData(selectedClass);
-                            sortDropdown.disabled = false; // Enable sorting dropdown
-                        } else {
-                            sortDropdown.disabled = true; // Disable sorting dropdown
-                        }
-                    });
-
-                    // Event listener for sorting
-                    sortDropdown.addEventListener("change", function() {
-                        const selectedClass = classDropdown.value;
-                        displayStudentData(selectedClass); // Refresh data based on sort
-                    });
-                })
-                .catch(error => {
-                    console.error("Error fetching data: ", error);
-                });
-
-            // Function to display student data based on class and sorting
-            function displayStudentData(selectedClass) {
-                const selectedStudents = studentData.filter(student => student.class === selectedClass);
-
-                // Sort students based on selected sort option
-                const sortBy = sortDropdown.value;
-                const sortedStudents = selectedStudents.sort((a, b) => {
-                    if (sortBy === "name") {
-                        return a.name.localeCompare(b.name);
-                    } else if (sortBy === "adnumber") {
-                        return a.adnumber - b.adnumber; // Assuming adnumber is a number
-                    } else if (sortBy === "score") {
-                        // If you want to sort by a specific score, adjust this part
-                        return (a.score || 0) - (b.score || 0);
-                    }
-                    return 0;
-                });
-
-                // Display sorted students
-                sortedStudents.forEach(student => {
-                    const studentDiv = document.createElement("div");
-                    studentDiv.classList.add("student-data");
-                    studentDiv.innerHTML = `
-                        <strong>Name:</strong> ${student.name} <br>
-                        <strong>Ad Number:</strong> ${student.adnumber} <br>
-                        <strong>Marks:</strong>
-                        <ul>
-                            ${Object.entries(student.exams).map(([exam, subjects]) => `
-                                <li><strong>${exam}:</strong>
-                                    <ul>
-                                        ${Object.entries(subjects).map(([subject, marks]) => `
-                                            <li>${subject} - TE: ${marks.te}, CE: ${marks.ce}, Max TE: ${marks.maxTE}, Max CE: ${marks.maxCE}</li>
-                                        `).join('')}
-                                    </ul>
-                                </li>
-                            `).join('')}
-                        </ul>
-                    `;
-                    container.appendChild(studentDiv);
-                });
+        const scoredata = {
+            name: "muhammediqbalc",
+            className: "4 A",
+            exams: [
+                { exam: "midterm1", subject: "fiqh", te: 30, ce: 10 },
+                { exam: "midterm1", subject: "lisan", te: "Ab", ce: 10 },
+                { exam: "midterm1", subject: "urdu", te: 30, ce: 10 },
+                { exam: "term1", subject: "malayalam", te: 35, ce: 10 },
+                { exam: "term1", subject: "quran", te: 30, ce: 10 }
+            ]
+        };
+    
+        //const madrassasubjects = ["fiqh", "quran", "lisan"];
+    
+        const maxscores = [
+            { exam: "midterm1", subject: "fiqh", maxTe: 40, maxCe: 10 },
+            { exam: "midterm1", subject: "lisan", maxTe: 40, maxCe: 10 },
+            { exam: "midterm1", subject: "urdu", maxTe: 40, maxCe: 10 },
+            { exam: "term1", subject: "malayalam", maxTe: 50, maxCe: 10 },
+            { exam: "term1", subject: "quran", maxTe: 50, maxCe: 10 }
+        ];
+    
+        // Filter data into Madrassa and School subjects
+        const madrassasubjects = ["fiqh", "quran", "lisan"];
+    
+        const madrassaExams = scoredata.exams.filter(entry => madrassasubjects.includes(entry.subject));
+        const schoolExams = scoredata.exams.filter(entry => !madrassasubjects.includes(entry.subject));
+    
+        // Function to get max scores for a subject and exam
+        function getMaxScores(exam, subject) {
+            const maxScoreEntry = maxscores.find(entry => entry.exam === exam && entry.subject === subject);
+            return maxScoreEntry ? { maxTe: maxScoreEntry.maxTe, maxCe: maxScoreEntry.maxCe } : { maxTe: 0, maxCe: 0 };
+        }
+    
+        // Function to generate a table
+        function generateConsolidatedTable(containerId, data) {
+            const tableContainer = document.getElementById(containerId);
+    
+            // Consolidate marks by subject
+            const consolidatedData = {};
+            data.forEach(entry => {
+                if (!consolidatedData[entry.subject]) {
+                    consolidatedData[entry.subject] = { teTotal: 0, ceTotal: 0, grandTotal: 0, maxTeTotal: 0, maxCeTotal: 0, maxGrandTotal: 0, exams: {} };
+                }
+                const teValue = entry.te === "Ab" ? 0 : entry.te;
+                const ceValue = entry.ce || 0;
+    
+                // Get max scores
+                const { maxTe, maxCe } = getMaxScores(entry.exam, entry.subject);
+    
+                // Store data per exam
+                consolidatedData[entry.subject].exams[entry.exam] = {
+                    te: entry.te,
+                    ce: entry.ce,
+                    total: teValue + ceValue,
+                    maxTe,
+                    maxCe,
+                    maxTotal: maxTe + maxCe
+                };
+    
+                // Accumulate totals
+                consolidatedData[entry.subject].teTotal += teValue;
+                consolidatedData[entry.subject].ceTotal += ceValue;
+                consolidatedData[entry.subject].grandTotal += teValue + ceValue;
+                consolidatedData[entry.subject].maxTeTotal += maxTe;
+                consolidatedData[entry.subject].maxCeTotal += maxCe;
+                consolidatedData[entry.subject].maxGrandTotal += maxTe + maxCe;
+            });
+    
+            // Create table
+            const table = document.createElement('table');
+            const thead = document.createElement('thead');
+            const tbody = document.createElement('tbody');
+    
+            // Add headers
+            const exams = [...new Set(data.map(entry => entry.exam))];
+            const headerRow = `
+                <tr>
+                    <th>Subject</th>
+                    ${exams.map(exam => `<th colspan="3">${exam}</th>`).join('')}
+                    <th colspan="3">Total</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    ${exams.map(() => `<th>TE</th><th>CE</th><th>Total</th>`).join('')}
+                    <th>TE</th><th>CE</th><th>Grand Total</th>
+                </tr>`;
+            thead.innerHTML = headerRow;
+    
+            // Add rows for each subject
+            for (const [subject, marks] of Object.entries(consolidatedData)) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${subject}</td>
+                    ${exams.map(exam => {
+                        const examData = marks.exams[exam] || {};
+                        const te = examData.te ?? "-";
+                        const ce = examData.ce ?? "-";
+                        const total = examData.total ?? "-";
+                        const maxTe = examData.maxTe || 0;
+                        const maxCe = examData.maxCe || 0;
+                        const maxTotal = examData.maxTotal || 0;
+                        return `
+                            <td class="${te === "Ab" ? "absent" : ""}">${te === "Ab" ? te : `${te}/${maxTe}`}</td>
+                            <td>${ce}/${maxCe}</td>
+                            <td>${total}/${maxTotal}</td>`;
+                    }).join('')}
+                    <td>${marks.teTotal}/${marks.maxTeTotal}</td>
+                    <td>${marks.ceTotal}/${marks.maxCeTotal}</td>
+                    <td>${marks.grandTotal}/${marks.maxGrandTotal}</td>
+                `;
+                tbody.appendChild(row);
             }
-        });
+    
+            table.appendChild(thead);
+            table.appendChild(tbody);
+            tableContainer.appendChild(table);
+        }
+    
+        // Populate Madrassa and School tables
+        generateConsolidatedTable('madrassaTable', madrassaExams);
+        generateConsolidatedTable('schoolTable', schoolExams);
     </script>
+    
+    
 </body>
 </html>
