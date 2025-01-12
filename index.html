@@ -11,35 +11,40 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f4f4f4;
+            background: linear-gradient(135deg, #007bff, #00c6ff);
             margin: 0;
         }
         .login-container {
             background: white;
             padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
             text-align: center;
         }
         h2 {
             margin-bottom: 20px;
+            color: #333;
         }
-        input[type="text"], input[type="date"] {
+        input[type="text"], input[type="password"], input[type="date"] {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
         }
         button {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background: #007bff;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
+            transition: background 0.3s ease;
         }
         button:hover {
             background: #0056b3;
@@ -49,6 +54,7 @@
             margin-top: 10px;
             padding: 10px;
             border-radius: 5px;
+            font-size: 14px;
         }
         .alert.success {
             background-color: #d4edda;
@@ -58,128 +64,166 @@
             background-color: #f8d7da;
             color: #721c24;
         }
+        #spinner {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #007bff;
+        }
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 15px;
+            }
+            input[type="text"], input[type="password"], input[type="date"] {
+                font-size: 14px;
+            }
+            button {
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="login-container">
-    <h2>Student Login</h2>
+    <h2>Login</h2>
+    <form id="loginForm">
+        <!-- User Type Selection -->
+        <div>
+            <input type="radio" id="admin" name="userType" value="admin" onchange="togglelogger(this.value)">
+            <label for="admin">Admin</label>
+            <input type="radio" id="student" name="userType" value="student" checked onchange="togglelogger(this.value)">
+            <label for="student">Student</label>
+        </div>
+
+        <!-- Admin Fields -->
+        <div id="adminFields" style="display: none;">
+            <input type="text" id="adminUsername" placeholder="Enter Admin Username" required>
+            <input type="password" id="adminPassword" placeholder="Enter Admin Password" required>
+        </div>
+
+        <!-- Student Fields -->
+        <div id="studentFields">
+            <input type="text" id="adnumber" placeholder="Enter ADNUMBER" required>
+            <input type="date" id="dob" placeholder="Enter DOB" required>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" onclick="loging();">Login</button>
+    </form>
+
+    <!-- Alert and Spinner -->
     <div id="alert" class="alert"></div>
-   <form id="loginForm">
-  <div>
-    <input type="radio" id="admin" name="userType" value="admin"> 
-    <label for="admin">Admin</label>
-    <input type="radio" id="student" name="userType" value="student" checked> 
-    <label for="student">Student</label>
-  </div>
-
-  <div id="adminFields" style="display: none;"> 
-    <input type="text" id="adminUsername" placeholder="Enter Admin Username" required>
-    <input type="password" id="adminPassword" placeholder="Enter Admin Password" required>
-  </div>
-
-  <div id="studentFields"> 
-    <input type="text" id="adnumber" placeholder="Enter ADNUMBER" required>
-    <input type="date" id="dob" placeholder="Enter DOB" required>
-  </div>
-
-  <button type="submit">Login</button>
-</form>
-
-<script>
-  const userTypeRadio = document.querySelector('input[name="userType"]'); 
-  const adminFields = document.getElementById("adminFields");
-  const studentFields = document.getElementById("studentFields");
-
-  userTypeRadio.addEventListener("change", () => {
-    if (userTypeRadio.value === "admin") {
-      adminFields.style.display = "block";
-      studentFields.style.display = "none";
-    } else {
-      adminFields.style.display = "none";
-      studentFields.style.display = "block";
-    }
-  });
-</script>
-    <div id="spinner" style="display:none;">Loading...</div>
+    <div id="spinner" style="display: none;">Loading...</div>
 </div>
 
 <script>
-    document.getElementById('loginForm').addEventListener('submit', function(event) {
-    event.preventDefault();
+    let isAdmin=false;
+    function togglelogger(type){
+        const userTypeRadios =type;// document.querySelectorAll('input[name="userType"]');
+    const adminFields = document.getElementById("adminFields");
+    const studentFields = document.getElementById("studentFields");
+    isAdmin =  document.getElementById("admin").checked;
+            adminFields.style.display = isAdmin ? "block" : "none";
+            studentFields.style.display = isAdmin ? "none" : "block";
 
-    spinner.style.display = 'block'; // Show the spinner
 
-    const userType = document.querySelector('input[name="userType"]:checked').value;
+    }
+   
+    // Handle form submission
+    const loginForm = document.getElementById('loginForm');
+    const alertDiv = document.getElementById('alert');
+    const spinner = document.getElementById('spinner');
+
+   // loginForm.addEventListener('submit', function(event) {
+       // event.preventDefault();
+       function loging() {
+    // Show the spinner
+    spinner.style.display = 'block';
+
+    // Determine user type from radio buttons
+    const userType = Array.from(document.querySelectorAll('input[name="userType"]')).find(radio => radio.checked)?.value;
 
     if (userType === "admin") {
-      const adminUsername = document.getElementById('adminUsername').value.trim();
-      const adminPassword = document.getElementById('adminPassword').value.trim();
+        // Show admin fields and set focus
+        document.getElementById("adminFields").style.display = 'block';
+        document.getElementById("adminUsername").focus();
 
-      if (adminUsername === "Admin" && adminPassword === "q123") {
-        alertDiv.className = 'alert success';
-        alertDiv.textContent = 'Admin Login Successful! Redirecting...';
-        alertDiv.style.display = 'block';
+        // Handle admin login
+        const adminUsername = document.getElementById('adminUsername').value.trim();
+        const adminPassword = document.getElementById('adminPassword').value.trim();
 
-        setTimeout(() => {
-          window.location.href = 'addstudent.html'; // Redirect to admin page (addstudent.html)
-        }, 1500);
-      } else {
-        alertDiv.className = 'alert error';
-        alertDiv.textContent = 'Invalid Admin Username or Password.';
-        alertDiv.style.display = 'block';
-      }
+        if (adminUsername === "Admin" && adminPassword === "q123") {
+            showAlert('Admin Login Successful! Redirecting...', 'success');
+            setTimeout(() => window.location.href = 'addStudent.html', 1500);
+        } else {
+            showAlert('Invalid Admin Username or Password.', 'error');
+            spinner.style.display = 'none'; // Hide the spinner on error
+        }
     } else if (userType === "student") {
-      const adnumber = document.getElementById('adnumber').value.trim();
-      const dob = document.getElementById('dob').value;
+        // Show student fields and set focus
+        document.getElementById("studentFields").style.display = 'block';
+        document.getElementById("adnumber").focus();
 
-      // Format DOB to "dd/mm/yyyy" (assuming this format is required by your script)
-      const formattedDOB = formatDate(dob);
+        // Handle student login
+        const adnumber = document.getElementById('adnumber').value.trim();
+        const dob = document.getElementById('dob').value;
 
-      fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=studentlogin&adnumber=<span class="math-inline">\{adnumber\}&dob\=</span>{formattedDOB}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            alertDiv.className = 'alert success';
-            alertDiv.textContent = 'Login successful! Redirecting...';
-            alertDiv.style.display = 'block';
+        if (!adnumber || !dob) {
+            showAlert('Please fill in all fields.', 'error');
+            spinner.style.display = 'none'; // Hide the spinner on validation error
+            return;
+        }
 
-            setTimeout(() => {
-              window.location.href = 'student.html'; // Redirect to student dashboard
+        // Format DOB as "dd/mm/yyyy"
+        const formattedDOB = formatDate(dob);
 
-              localStorage.setItem("stuAdnumber", data.aDnumber);
-              localStorage.setItem("stuClass", data.class);
-              localStorage.setItem("stuName", data.name);
-            }, 1500);
-          } else {
-            alertDiv.className = 'alert error';
-            alertDiv.textContent = 'Invalid ADNUMBER or DOB.';
-            alertDiv.style.display = 'block';
-          }
-        })
-
+        // Fetch student login data
+        fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=studentlogin&adnumber=${adnumber}&dob=${formattedDOB}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('Login successful! Redirecting...', 'success');
+                    setTimeout(() => {
+                        localStorage.setItem("stuAdnumber", data.aDnumber);
+                        localStorage.setItem("stuClass", data.class);
+                        localStorage.setItem("stuName", data.name);
+                        window.location.href = 'student.html';
+                    }, 1500);
+                } else {
+                    showAlert('Invalid ADNUMBER or DOB.', 'error');
+                }
+            })
             .catch(error => {
                 console.error('Error:', error);
-                const alertDiv = document.getElementById('alert');
-                alertDiv.className = 'alert error';
-                alertDiv.textContent = 'An unexpected error occurred. Please try again later.';
-                alertDiv.style.display = 'block';
+                showAlert('An unexpected error occurred. Please try again later.', 'error');
             })
             .finally(() => {
-                spinner.style.display = 'none'; // Hide the spinner
+                spinner.style.display = 'none'; // Hide the spinner once the process completes
             });
-    });
-
-    // Function to format the date to "dd/mm/yyyy"
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+    } else {
+        showAlert('Invalid user type selected.', 'error');
+        spinner.style.display = 'none'; // Hide spinner for unknown user type
     }
-</script>
+}
 
+// Utility function to format date as "dd/mm/yyyy"
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+// Utility function to show alert messages
+function showAlert(message, type) {
+    const alertDiv = document.getElementById('alert');
+    alertDiv.className = `alert ${type}`;
+    alertDiv.textContent = message;
+    alertDiv.style.display = 'block';
+}
+
+</script>
 
 </body>
 </html>
