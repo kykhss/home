@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="common.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admission Form</title>
+    <style src="styles.css"></style>
+    <style>
+        /* A4 Page Setup */
+         /* Full-screen loading div */
+         #loading {
+            display: none; /* Initially hidden */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.3); /* Transparent background */
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Loading spinner */
+        #loading .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(200, 200, 200, 0.6); /* Slightly transparent border */
+            border-top-color: #3498db; /* Color of the spinner */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Keyframes for spinner animation */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Fade-in effect when the loader appears */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Fade-out effect when the loader disappears */
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        @page {
+            size: A4;
+            margin: 1mm;
+        }
+        body {
+            gap: 0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            size: A4;
+            margin: 5mm;
+        }
+        .container {
+            max-width: 210mm;
+            padding: 10px;
+            margin: auto;
+            border: 1px solid black;
+            box-sizing: border-box;
+        }
+        h3, h2,h6,h4 {
+            text-align: center;
+            margin: 0;
+        }
+        p{
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th{
+            font-size: 11px;;
+        }
+        td{
+            font-size: 13px;
+            font-weight: bolder;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            text-align: left;
+        
+        }
+        th, td {
+            max-width: 90px;
+            border: 1px solid #000;
+            padding: 2px 10px 3px ;
+            text-align: left;
+            vertical-align: top;
+            word-wrap: break-word;       /* Allows long words to wrap */
+        white-space: normal;         /* Allows text to wrap to the next line */
+        word-break: break-word;      /* Prevents overflow with very long words */
+    
+
+        }
+        .photo-cell {
+            text-align: center;
+            min-height: 200px;
+        }
+        .photo-cell img {
+            max-width: 150px;
+            width: 150px !important;
+            max-height: 200px !important;
+            height: 150px !important;
+        }
+        /* Responsive setup */
+        @media print {
+           body{
+            size: "A4";
+            margin:3mm 3mm 3mm 3mm;
+           }
+        }
+    </style>
+</head>
+<body>
+     <!-- Loading overlay -->
+     <div id="loading" style="display: none;">
+        <div class="loader"></div>
+    </div>
+    <script>
+        function showLoader() {
+            const loader = document.getElementById('loading');
+            loader.style.display = 'flex';
+            loader.style.animation = 'fadeIn 0.3s forwards'; // Smooth fade-in
+        }
+
+        function hideLoader() {
+            const loader = document.getElementById('loading');
+            loader.style.animation = 'fadeOut 0.3s forwards'; // Smooth fade-out
+            setTimeout(() => { loader.style.display = 'none'; }, 300); // Hide after fade-out
+        }
+    </script>
+
+    <div id="formContainer"></div>
+    
+    <script>
+        // // Function to get URL parameters
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+    
+        // // Retrieve the student ID from the URL
+        // const studentId = getQueryParam('stu_id');
+    
+        // // Use the student ID as needed
+        // if (studentId) {
+        //     console.log('Student ID:', studentId); // You can use this ID for further processing
+        //     generateAdmissionFormHTML(studentId);
+        //     // For example, you might want to display it or use it to fetch additional data
+        // } else {
+        //     console.log('No Student ID found in URL.');
+        // }
+        
+    </script>
+    
+    <script>
+        // localStorage.setItem('stu_Id', "KG2025_003 ");
+        function generateAdmissionFormHTML() {
+           // localStorage.setItem('stu_Id', "KG2025_002");
+            showLoader();
+           // const stu_id = localStorage.getItem("stu_idform");
+            const stu_id ="KG2025_001"; getQueryParam('stu_id');
+            console.log(stu_id);
+            const stuImg =loadStudentPhotoform(stu_id);
+           // const stu_id = localStorage.getItem("stu_Id");
+            fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentById&mobile=${stu_id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.student) {
+                        const student = data.student;
+                        const age = calculateAge(student.dob);
+                        const textDate = convertDateToText(student.dob);
+                        const formatDates = formatDate(student.dob);
+                        var child= "";
+                        if(student.gender=='Male'){
+                            child='Son';
+                        }else if(student.gender==="Female"){
+                            child='Daughter';
+
+                        }
+                        console.log(student);
+                        const formHTML = `
+                <div class="container">
+        <h6>FORM 3 <br>
+            (See rule VI-I (1))
+            </h6>
+        <h3>KATTILANGADI YATHEEMKHANA HIGHER SECONDARY SCHOOL</h3>
+        <h4>APPLICATION FOR ADMISSION</h4>
+        
+            <p style="margin-top: 0; margin-bottom: 0;">FORM NO: <span id="formNo" style="font-weight: bold;color: red;"> ${student.stu_Id} _  ${student.adNumber}</span></p>
+        <table style="margin-top:1px;">
+            
+            <tr>
+                <th colspan="1">Name of Pupil with Initials:</th>
+                <td colspan="4" style="text-align: center;" id="NameofStudent" >  ${student.name}</td>
+            </tr>
+            <tr>
+                <th colspan="1">Name of Parent or Guardian and Relationship to the Pupil:</th>
+                <td colspan="3"style="height: 30px;">${student.fatherName}/${student.motherName}<br></td>
+            <td rowspan="4" class="photo-cell">
+                <img id= "student-photo" src="" alt="Student Photo" width="100px" height="150px">
+            </td>
+            </tr>
+             <tr style="height: 25px;"> <!-- Fixed row height -->
+                <th colspan="1">guardian:</th> <!-- Adjust padding for spacing -->
+                <td id="IdentificationMark" colspan="3"> ${student.guardian}/${student.relation||""}</td>
+            </tr>
+            <tr style="height: 25px;"> <!-- Fixed row height -->
+                <th colspan="1">Mark of Identification:</th> <!-- Adjust padding for spacing -->
+                <td id="IdentificationMark" colspan="3"> ${student.identification||""}</td>
+            </tr>
+            
+            <tr>
+                <th colspan="1" style="height: 50px;">Occupation and Address of Parent or Guardian:</th>
+                <td colspan="3"  id="address"> ${student.houseName}(H)  ${student.postOffice} (PO)  ${student.place}  PIN:${student.pin}</td>
+            </tr>
+            <tr >
+                <th style="width: fit-content;">Aadhar Number: <br> <span id="AdharNo" style="font-size: larger;"> ${student.adharNumber}</span></td>
+                <td colspan="2">Mobile No 1 :  ${student.fatherMobile} </td>
+                <td colspan="2">Mobile No 2 :  ${student.motherMobile}</td>
+            </tr>
+           
+            <tr>
+                <th rowspan="2" colspan="1">Name, Address, and Occupation of Local Guardian:</th>
+                <td colspan="4"><span id=" GuardianAddress">.</span></td>
+            </tr>
+            <td colspan="2" style="text-align:left; ">MobileNo:- <span id="guardno">  ${student.guardianNumber||""}</span></td>
+            <td colspan="2">whatsappNo:- <span id="Whatsapp">  ${student.whatsappNo}</span></td>
+          
+            <tr>
+
+            </tr>
+            <tr style="text-align:center;">
+                <th rowspan="2" colspan="1">School Previously Attended:</th>
+                <th style="text-align:center;">Name of School</th>
+                <th style="text-align:center;">Standard:</th>
+                <th style="text-align:center;">AdNumber</td>
+                <th style="text-align:center;">Standard
+            </tr>
+            <tr style="height: 30px;">
+                <td id="previousSchool" > ${student.preSchool} </td>
+                <td id="previousStd" > ${student.preClass} </td>
+                <td id="previousAdno" > ${student.preAdnumber} </td>
+                <td id="tcDate" > ${student.tcDate} </td>
+            
+            
+            
+            </tr>
+            <tr>
+                <th rowspan="2" colspan="2">(a) Date of Birth (in figures and words )
+                    (b) Whether certified extract from Registered of birth declaration form  the declaration from the Parent or Guardian certificate from the Registered medical Practitioner has been produced ( Vide Rule VI-I) or aadhar
+            </th>
+            <td colspan="3" style="text-align: center;">${formatDates}</td>
+            </tr>
+            
+            <tr> 
+                <td colspan="3">${textDate}</td>
+            </tr>
+                <th colspan="2">Age  ( year and completed month given) :</th>
+                <td colspan="3"><span id="age">${age}</span> OLD</td>
+            </tr>
+            <tr>
+                <th>Religion / Caste:</th>
+                <td>ISLAM MAPPILA</td>
+                <th colspan="2">Nationality and State to which the pupil belongs</th>
+                <td>INDIAN</td>
+            </tr>
+            <tr>
+                <th>Does the candidate belong ' SC/ST/OBC':</th>
+                <td>OBC</td>
+                <th colspan="2">Standard to which admission is sought (in letter and words)</th>
+                <td> ${student.admittedClass}</td>
+            </tr>
+            <tr>
+                <th>The language in which the pupil desires to be instructed:</th>
+                <td>ENGLISH</td>
+                <th colspan="2">Mother Tongue of the pupil:</th>
+                <td>MALAYALAM</td>
+            </tr>
+            <tr>
+                <th colspan="2">No.and date of transfer certificate produced on admission.:</th>
+                <td colspan="3"> ${student.tcNumber}</td>
+            </tr>
+            <tr>
+                <th colspan="2">Whether immunized from Tetanus, Diphtheria, Measles polio and B.C.G</th>
+                <td colspan="3">NO</td>
+            </tr>
+            <tr>
+                <th colspan="2"> First language </th> 
+                <td colspan="3">ARABIC</td>
+
+            </tr>
+            <tr>
+                <th colspan="1" rowspan="2" style="text-align: center;" >School Vehicle Needed:</th>
+                <th colspan="1" style="text-align: center;">vehicle need </th>
+                <th colspan="2"style="text-align: center;"> Pickup Point:  </th> 
+                <th style="text-align: center;"> Stage:</th>
+            </tr>
+             <tr>
+                <td colspan="1" style="text-align: center;" id="VehicleNeed">${!student.vehiclePoint?"No":"Yes"} </td>
+                <td colspan="2" style="text-align: center;">  ${student.vehiclePoint} </td> 
+                <td style="text-align: center;">  ${student.vehicleStage} </td>
+            </tr>
+            <tr>
+                <th>If siblings or relatives in any class,:</th>
+                <td colspan="1" style="text-align: center;">${student.siblingDetails?"Yes":"No"}</td>
+                <td colspan="3" >${student.siblingDetails} </td>
+            </tr>
+        </table>
+
+        <p style="margin-top: 20px;margin-bottom: 0;">I have read the school rules and undertake that my ward will abide by them. I declare the above details are correct to the best of my knowledge.</p>
+        <h5 style="text-align: center; margin-bottom: 0;">Age Declaration</h5>
+        <p> I <u> <b><span id="guardian" > ${student.guardian} </span></b> </u>  do here declare the date of birth of my <u> <b><span id="son" > ${child}</span></b> </u>   ${student.name}  is <u> <b><span id="dob" > ${formatDates}</span></b> </u>  in words  <u> <b><span id="dateinwords2" >${textDate}</span></b> </u>
+        </span> and that I shall not ask in future for any change in the same .</p>
+        <div style="text-align: left; margin-top: 10px;">
+            <p style="display: flex;justify-content: space-between;">Place: KATTILANGADI  <span style="text-align: right;"> <span">Signature of Parent or Guardian:</span>
+            </span></span>
+        </p>
+            <span>Date:  ${formatDate(student.admissionDate)}</span><br>
+        </div>
+            
+
+        <div style=" margin-top: 3px; margin-bottom:30px;">
+            <h4>To be filled in by the Vice Principal:</h4>
+            <p style="text-align: center; display: flex; justify-content: space-around;gap:30px;"><span>Date of Admission: ___________</span><span>Standard to which admitted: ___________</span>
+            
+                <span style="text-align: center; font-size:18px;"><b>Admission No: <u> <b> ${student.adNumber}</b></span></u></p>
+            
+                <p style=" margin-right:40px; display: flex; justify-content: space-between;">
+                <br>
+            <span>Signature of Vice Principal:</span>
+            </div>
+    </div>
+            `;
+
+            document.getElementById("formContainer").innerHTML = formHTML;
+            loadStudentPhotoform(student.stu_Id);
+            
+        hideLoader();
+                        // document.getElementById('adNumber').value = student.adNumber;
+                        // document.getElementById('studentName').value = student.name;
+                        // document.getElementById('dob').value = student.dob;
+                        // document.getElementById('houseName').value = student.houseName;
+                        // document.getElementById('place').value = student.place;
+                        // document.getElementById('postOffice').value = student.postOffice;
+                        // document.getElementById('fatherName').value = student.fatherName;
+                        // document.getElementById('fatherMobile').value = student.fatherMobile;
+                        // document.getElementById('motherName').value = student.motherName;
+                        // document.getElementById('motherMobile').value = student.motherMobile;
+                        // document.getElementById('whatsappNo').value = student.whatsappNo;
+                        // document.getElementById('guardian').value = student.guardian;
+                        // document.getElementById('relation').value = student.relation;
+                        // document.getElementById('admissionDate').value = student.admissionDate;
+                        // document.getElementById('admittedClass').value = student.admittedClass;
+                        // document.getElementById('currentClass').value = student.currentClass;
+                        // document.getElementById('status').value = student.status;
+                        // document.getElementById('studentMobile').value = student.mobile;
+                        // document.getElementById('studentId').value = student.studentId;
+                    } else {
+                        alert('Student not found');
+                        hideLoader();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+                hideLoader();
+        }
+            
+            let stuphoto =null;
+        async function loadStudentPhotoform(studentId) {
+        try {
+            const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentPhoto&studentId=${studentId}`);
+            const data = await response.json();
+
+            if (data.photo){
+                // Set the src attribute of the img tag to the Base64 encoded string
+               document.getElementById('student-photo').src = `data:image/jpeg;base64,${data.photo}`;
+               // document.getElementById('error-message').textContent = ''; // Clear any previous error messages
+            } else if (data.error) {
+                document.getElementById('error-message').textContent = data.error; // Show error message
+            }
+        } catch (error) {
+            console.error('Error fetching photo:', error);
+            document.getElementById('error-message').textContent = 'Failed to fetch photo.';
+        }
+    }
+
+        // Generate the form when the page loads
+        window.onload = generateAdmissionFormHTML;
+    </script>
+</body>
+</html>
