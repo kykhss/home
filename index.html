@@ -65,51 +65,99 @@
 <div class="login-container">
     <h2>Student Login</h2>
     <div id="alert" class="alert"></div>
-    <form id="loginForm">
-        <input type="text" id="adnumber" placeholder="Enter ADNUMBER" required>
-        <input type="date" id="dob" placeholder="Enter DOB" required>
-        <button type="submit">Login</button>
-    </form>
+   <form id="loginForm">
+  <div>
+    <input type="radio" id="admin" name="userType" value="admin"> 
+    <label for="admin">Admin</label>
+    <input type="radio" id="student" name="userType" value="student" checked> 
+    <label for="student">Student</label>
+  </div>
+
+  <div id="adminFields" style="display: none;"> 
+    <input type="text" id="adminUsername" placeholder="Enter Admin Username" required>
+    <input type="password" id="adminPassword" placeholder="Enter Admin Password" required>
+  </div>
+
+  <div id="studentFields"> 
+    <input type="text" id="adnumber" placeholder="Enter ADNUMBER" required>
+    <input type="date" id="dob" placeholder="Enter DOB" required>
+  </div>
+
+  <button type="submit">Login</button>
+</form>
+
+<script>
+  const userTypeRadio = document.querySelector('input[name="userType"]'); 
+  const adminFields = document.getElementById("adminFields");
+  const studentFields = document.getElementById("studentFields");
+
+  userTypeRadio.addEventListener("change", () => {
+    if (userTypeRadio.value === "admin") {
+      adminFields.style.display = "block";
+      studentFields.style.display = "none";
+    } else {
+      adminFields.style.display = "none";
+      studentFields.style.display = "block";
+    }
+  });
+</script>
     <div id="spinner" style="display:none;">Loading...</div>
 </div>
 
 <script>
-    // Handle login form submission
     document.getElementById('loginForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const spinner = document.getElementById('spinner');
-        spinner.style.display = 'block'; // Show the spinner
+    event.preventDefault();
 
-        const adnumber = document.getElementById('adnumber').value.trim();
-        const dob = document.getElementById('dob').value;
+    spinner.style.display = 'block'; // Show the spinner
 
-        // Format DOB to "dd/mm/yyyy"
-        const formattedDOB = formatDate(dob);
-        confirm(formattedDOB);
-        // Fetch request to send data
-        console.log(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=studentlogin&adnumber=${adnumber}&dob=${formattedDOB}`);
-        fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=studentlogin&adnumber=${adnumber}&dob=${formattedDOB}`)
-            .then(response => response.json())
-            .then(data => {
-                const alertDiv = document.getElementById('alert');
-                if (data.success) {
-                    alertDiv.className = 'alert success';
-                    alertDiv.textContent = 'Login successful! Redirecting...';
-                    alertDiv.style.display = 'block';
+    const userType = document.querySelector('input[name="userType"]:checked').value;
 
-                    // Redirect to student dashboard or another page
-                    setTimeout(() => {
-                        window.location.href = 'student.html'; // Change to your redirect page
-                        localStorage.setItem("stuAdnumber",data.aDnumber);
-                        localStorage.setItem("stuClass",data.class);
-                        localStorage.setItem("stuName",data.name);
-                    }, 1500);
-                } else {
-                    alertDiv.className = 'alert error';
-                    alertDiv.textContent = 'Invalid ADNUMBER or DOB.';
-                    alertDiv.style.display = 'block';
-                }
-            })
+    if (userType === "admin") {
+      const adminUsername = document.getElementById('adminUsername').value.trim();
+      const adminPassword = document.getElementById('adminPassword').value.trim();
+
+      if (adminUsername === "Admin" && adminPassword === "q123") {
+        alertDiv.className = 'alert success';
+        alertDiv.textContent = 'Admin Login Successful! Redirecting...';
+        alertDiv.style.display = 'block';
+
+        setTimeout(() => {
+          window.location.href = 'addstudent.html'; // Redirect to admin page (addstudent.html)
+        }, 1500);
+      } else {
+        alertDiv.className = 'alert error';
+        alertDiv.textContent = 'Invalid Admin Username or Password.';
+        alertDiv.style.display = 'block';
+      }
+    } else if (userType === "student") {
+      const adnumber = document.getElementById('adnumber').value.trim();
+      const dob = document.getElementById('dob').value;
+
+      // Format DOB to "dd/mm/yyyy" (assuming this format is required by your script)
+      const formattedDOB = formatDate(dob);
+
+      fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=studentlogin&adnumber=<span class="math-inline">\{adnumber\}&dob\=</span>{formattedDOB}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alertDiv.className = 'alert success';
+            alertDiv.textContent = 'Login successful! Redirecting...';
+            alertDiv.style.display = 'block';
+
+            setTimeout(() => {
+              window.location.href = 'student.html'; // Redirect to student dashboard
+
+              localStorage.setItem("stuAdnumber", data.aDnumber);
+              localStorage.setItem("stuClass", data.class);
+              localStorage.setItem("stuName", data.name);
+            }, 1500);
+          } else {
+            alertDiv.className = 'alert error';
+            alertDiv.textContent = 'Invalid ADNUMBER or DOB.';
+            alertDiv.style.display = 'block';
+          }
+        })
+
             .catch(error => {
                 console.error('Error:', error);
                 const alertDiv = document.getElementById('alert');
