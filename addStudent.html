@@ -1717,6 +1717,7 @@ async function loadStudentPhotos(studentId, divid) {
            
         // Edit student
         async function editStudent(Id) {
+            showLoader();
             fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentById&mobile=${Id}`)
                 .then(response => response.json())
                 .then(data => {
@@ -1737,9 +1738,17 @@ async function loadStudentPhotos(studentId, divid) {
                             if (student.stu_Id.startsWith("KG")) {
                             document.getElementById("KG").checked = true;
                             populateClassOptions('KG');
+                                const sectorRadios = document.getElementsByName("sector");
+                            sectorRadios.forEach(radio => {
+                                radio.disabled = true; 
+                            });
                             } else {
                              document.getElementById("School").checked = true;
                              populateClassOptions('School');
+                                const sectorRadios = document.getElementsByName("sector");
+                            sectorRadios.forEach(radio => {
+                                radio.disabled = true; 
+                            });
                             }
                             
                             
@@ -1815,6 +1824,8 @@ async function loadStudentPhotos(studentId, divid) {
     const siblingDetailsInput = document.getElementById("siblingDetails");
     siblingDetailsInput.value = "";
     siblingDetailsInput.disabled = true;
+                            
+                            
 } else {
     // Sibling information is provided
     const siblingYesCheckbox = document.getElementById("siblingYes");
@@ -1836,11 +1847,13 @@ async function loadStudentPhotos(studentId, divid) {
                             setDefaultSelections(student.admittedClass);
                         document.getElementById('studentMobile').value = student.mobile;
                         loadStudentPhotos(student.stu_Id,"student-photo");
+                        hideLoader();
                     } else {
                         alert(data.error);
+                        hideLoader();
                     }
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error =>{ hideLoader(); console.error('Error:', error)});
         }
         async function sendWhatsAppMessageToStudent(studentId) {
         showLoader();
