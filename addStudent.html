@@ -1222,10 +1222,10 @@ function showCropper(event, index) {
 }
 
        // document.getElementById('addStudentForm').addEventListener('submit', function (event) {
-       // function saveStudent() {
-            document.getElementById("addStudentForm").addEventListener("submit", function(event) {
+       function saveStudent() {
+          //  document.getElementById("addStudentForm").addEventListener("submit", function(event) {
     // Prevents default form submission
-    event.preventDefault();
+   // event.preventDefault();
     
     showLoader();
 
@@ -1352,7 +1352,7 @@ if (missingFields.length > 0) {
         })
         .finally(() =>{ hideLoader();
              spinner.style.display = 'none'});
-});
+}
 
 
         let studentsData = []; // Variable to hold student data
