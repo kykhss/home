@@ -1615,6 +1615,7 @@ window.onload = loadStudentPhotos("KYHSS","logo");
 
     // Function to upload a new student photo, delete the old one from localStorage (and server if needed), and update the displayed image
 async function uploadCroppedImage() {
+    showLoader();
     const studentId = document.getElementById('studentId').value;
     const croppedImage = document.getElementById('student-photo').getAttribute('data-cropped'); // Assume base64 format
 
@@ -1659,12 +1660,15 @@ async function uploadCroppedImage() {
             loadStudentTable();
             //document.getElementById('student-photo').src = newPhotoUrl; // Update the displayed image
             alert('Photo uploaded and updated successfully!');
+            hideLoader();
         } else {
             alert('Error uploading photo: ' + data.message);
+            hideLoader();
         }
     } catch (error) {
         console.error('Error:', error);
         alert('Failed to upload new photo.');
+        hideLoader();
     }
 }
 
