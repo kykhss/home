@@ -1991,6 +1991,7 @@ async function getStudentbyMobile(mobiles) {
       
 <script>
     function generatePoster(name, position, totalMarks, imgId) {
+        showLoader();
   const canvas = document.getElementById("posterCanvas");
   const ctx = canvas.getContext("2d");
 
@@ -2086,17 +2087,20 @@ async function getStudentbyMobile(mobiles) {
 
         // Show Preview
         document.getElementById("posterPreview").style.display = "block";
+          hideLoader();
       };
 
       // Handle School Logo Load Error
       schoolLogo.onerror = function () {
         alert("Error loading the school logo.");
+          hideLoader();
       };
     
 
     // Handle Broken Student Photo
     photo.onerror = function () {
       alert("Error loading the student photo. Unable to create the poster.");
+        hideLoader();
     };
     
   };
@@ -2104,6 +2108,7 @@ async function getStudentbyMobile(mobiles) {
   // Handle Background Image Load Error
   background.onerror = function () {
     alert("Error loading the background image.");
+      hideLoader();
   };
 }
 
