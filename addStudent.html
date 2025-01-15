@@ -924,6 +924,8 @@ function displayClassDivisionGenderCount(data) {
   if (hasSiblings === "Yes") {
     // Enable sibling details input field
     siblingDetailsInput.disabled = false;
+      requiredFields.push("siblingDetails");
+
   } else {
     // If no siblings, clear and disable the input field
     if (siblingDetailsInput.value) { 
@@ -932,6 +934,7 @@ function displayClassDivisionGenderCount(data) {
         //alert("Sibling information fields have been cleared.");
       }
     }
+      requiredFields.splice(requiredFields.indexOf("siblingDetails"), 1);
     siblingDetailsInput.disabled = true;
   }
 }
@@ -1309,6 +1312,7 @@ const vehicleStageInput = document.getElementById("vehicleStage");
 if (vehicleNeededCheckbox.checked) {
   // Add "vehiclePoint" and "vehicleStage" to requiredFields
   requiredFields.push("vehiclePoint", "vehicleStage");
+requiredFields.splice(requiredFields.indexOf("vehiclePoint"), 1);
 
   
 } else {
