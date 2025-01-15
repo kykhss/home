@@ -1270,7 +1270,7 @@ const requiredFields = [
     'studentId', 'adNumber', 'studentName', 'gender', 'dob', 'sector',
     'houseName', 'place', 'pin', 'postOffice', 'fatherName', 'fatherMobile', 'motherName',
     'motherMobile', 'whatsappNo', 'guardian', 'relation', 'admissionDate', 'admittedClass',
-    'currentClass', 'status', 'vehiclePoint', 'vehicleStage', 'siblingDetails'
+    'currentClass', 'status', 'vehiclePoint', 'vehicleStage'
 ];
 
 
@@ -1287,11 +1287,11 @@ if (isAdharChecked) {
   }
 }
 
-const siblingYesCheckbox = document.getElementById("siblingYes");
+const siblingYesCheckbox = document.getElementById("siblingYes").checked;
 const siblingDetailsInput = document.getElementById("siblingDetails");
 
 // Check if the checkbox is checked
-if (siblingYesCheckbox.checked) {
+if (siblingYesCheckbox) {
   // Add "siblingDetails" to requiredFields
   requiredFields.push("siblingDetails");
 
