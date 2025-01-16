@@ -427,7 +427,203 @@ button[type="submit"]:hover {
 </head>
 <body>
     <!-- <div class="loader"></div> -->
+<style>
+.alert {
+  padding: 20px;
+  background-color: #67c37c; /* Green */
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  margin-bottom: 15px;
+  top: 10px;
+  right: 10px;
+  width: 500px;
+  height: inherit;
+  z-index: 1000;
+  position:fixed;
+}
 
+.alert-danger {
+  padding: 20px;
+  background-color: #f8d7da; /* Red */
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  margin-bottom: 15px;
+  top: 20px;
+  right: 10px;
+  width: 500px;
+  height: inherit;
+  z-index: 1000;
+  position:fixed;
+}
+
+.alert-warning {
+  padding: 20px;
+  background-color: #fff3cd; /* Yellow */
+  color: #856404;
+  border: 1px solid #ffeeba;
+  margin-bottom: 15px;
+}
+
+.closebtn {
+  margin-left: 15px;
+  color: #de1203;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.closebtn:hover {
+  color: black;
+}
+
+.confirmation-container {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  z-index: 9999;
+}
+
+.confirmation-buttons {
+    display: flex;
+  text-align: center;
+  margin-top: 15px;
+}
+
+.confirmation-button {
+  padding: 10px 20px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.confirmation-button-ok {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.confirmation-button-cancel {
+  background-color: #f44336;
+  color: white;
+}
+</style>
+</head>
+<body>
+
+<div id="successAlert" class="alert" style="display:none;">
+  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+  <strong>Success!</strong> 
+</div>
+
+<div id="errorAlert" class="alert-danger" style="display:none;">
+  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+  <strong>Error!</strong> 
+</div>
+
+<div id="confirmationAlert" class="alert-warning confirmation-container">
+  <p id="confirmationMessage"></p>
+  <div class="confirmation-buttons">
+    <button class="confirmation-button confirmation-button-ok">OK</button>
+    <button class="confirmation-button confirmation-button-cancel">Cancel</button>
+  </div>
+</div>
+
+<script>
+// Function to show the success message
+function showSuccessMessage(message) {
+  document.getElementById("successAlert").innerHTML = 
+    `<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+    <strong>Success!</strong> ${message}`; 
+  document.getElementById("successAlert").style.display = "block";
+  setTimeout(function(){ 
+    document.getElementById("successAlert").style.display = "none"; 
+  }, 15000); // 15 seconds timeout
+}
+
+// Function to show the error message
+function showErrorMessage(message) {
+  document.getElementById("errorAlert").innerHTML = 
+    `<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+    <strong>Error!</strong> ${message}`;
+  document.getElementById("errorAlert").style.display = "block";
+  setTimeout(function(){ 
+    document.getElementById("errorAlert").style.display = "none"; 
+  }, 15000); // 15 seconds timeout
+}
+
+// Function to show the confirmation message
+// Function to show the confirmation message
+function showConfirmationMessage(message) {
+  return new Promise(resolve => {
+    const confirmationMessageEl = document.getElementById("confirmationMessage");
+    const confirmationAlertEl = document.getElementById("confirmationAlert");
+
+    // Set the message and make the alert visible
+    confirmationMessageEl.textContent = message;
+    confirmationAlertEl.style.display = "block";
+
+    // Add event listeners for buttons
+    const okButton = document.querySelector('.confirmation-button-ok');
+    const cancelButton = document.querySelector('.confirmation-button-cancel');
+
+    // OK button click handler
+    const onOkClick = () => {
+      confirmationAlertEl.style.display = "none"; // Hide the alert
+      cleanup(); // Cleanup event listeners
+      resolve(true); // Resolve promise with true
+    };
+
+    // Cancel button click handler
+    const onCancelClick = () => {
+      confirmationAlertEl.style.display = "none"; // Hide the alert
+      cleanup(); // Cleanup event listeners
+      resolve(false); // Resolve promise with false
+    };
+
+    // Cleanup function to remove event listeners
+    const cleanup = () => {
+      okButton.removeEventListener("click", onOkClick);
+      cancelButton.removeEventListener("click", onCancelClick);
+    };
+
+    okButton.addEventListener("click", onOkClick);
+    cancelButton.addEventListener("click", onCancelClick);
+  });
+}
+
+// Example usage
+// document.addEventListener("DOMContentLoaded", () => {
+//   document.getElementById("testButton").addEventListener("click", async () => {
+//     const result = await showConfirmationMessage("Are you sure you want to proceed?");
+//     if (result) {
+//       showSuccessMessage("Confirmed!");
+//     } else {
+//       showErrorMessage("Cancelled!");
+//     }
+//   });
+// });
+
+// }showConfirmationMessage("Are you sure you want to proceed?")
+//   .then(result => {
+//     if (result) {
+//       // User clicked "OK"
+//       showSuccessMessage("User confirmed."); 
+//       // Perform the action
+//     } else {
+//       // User clicked "Cancel"
+//       showErrorMessage("User canceled.");
+//     }
+//   });
+</script>
 <script>
   window.onload = function() {
     // Code to hide the loader after the page has fully loaded
@@ -864,20 +1060,19 @@ function displayClassDivisionGenderCount(data) {
         </div>
     
     <script>
-        function toggleVehicleInfo(value) {
-  const vehicleInfoDiv = document.getElementById("vehicleInfo");
+        async function toggleVehicleInfo(value) {
   const vehiclePointInput = document.getElementById("vehiclePoint");
   const vehicleStageInput = document.getElementById("vehicleStage");
 
   if (value === "YES") {
-    // Display the vehicle info fields and enable inputs
-    //vehicleInfoDiv.style.display = "block";
+    // Enable inputs when the value is "YES"
     vehiclePointInput.disabled = false;
     vehicleStageInput.disabled = false;
   } else {
-    // Show a confirmation dialog
-    if (confirm("Are you sure you want to clear the vehicle information?")) {
-      // Clear inputs and disable them
+    // Show a confirmation dialog before clearing the vehicle information
+    const confirmed = await showConfirmationMessage("Are you sure you want to clear the vehicle information?");
+    if (confirmed) {
+      // Clear inputs and disable them if the user confirms
       vehiclePointInput.value = "";
       vehicleStageInput.value = "";
       vehiclePointInput.disabled = true;
@@ -885,6 +1080,7 @@ function displayClassDivisionGenderCount(data) {
     }
   }
 }
+
     </script>
     
     </div>
@@ -918,26 +1114,33 @@ function displayClassDivisionGenderCount(data) {
         </div>
     </div>
     <script>
-        function toggleSiblingInfo(hasSiblings) {
+        async function toggleSiblingInfo(hasSiblings) {
   const siblingDetailsInput = document.getElementById("siblingDetails");
 
   if (hasSiblings === "Yes") {
     // Enable sibling details input field
     siblingDetailsInput.disabled = false;
-      requiredFields.push("siblingDetails");
+    requiredFields.push("siblingDetails");
 
   } else {
-    // If no siblings, clear and disable the input field
-    if (siblingDetailsInput.value) { 
-      if (confirm("Are you sure you want to clear the sibling information?")) {
+    // If no siblings, show confirmation and clear the input field if confirmed
+    if (siblingDetailsInput.value) {
+      const confirmed = await showConfirmationMessage("Are you sure you want to clear the sibling information?");
+      if (confirmed) {
         siblingDetailsInput.value = ""; 
-        //alert("Sibling information fields have been cleared.");
+        showSuccessMessage("Sibling information fields have been cleared.");
       }
     }
-      requiredFields.splice(requiredFields.indexOf("siblingDetails"), 1);
+
+    // Remove "siblingDetails" from requiredFields array and disable input
+    const index = requiredFields.indexOf("siblingDetails");
+    if (index !== -1) {
+      requiredFields.splice(index, 1);
+    }
     siblingDetailsInput.disabled = true;
   }
 }
+
 //hideLoader();
     </script>
     <div class="form-group">
@@ -960,11 +1163,14 @@ function displayClassDivisionGenderCount(data) {
               <div id="cropModal">
                 <div>
                   <h2>Crop Photo</h2>
-                  <img id="cropImage" src="https://i.gifer.com/4V0b.gif" width="500"height="300"/>
-                  <button type="button" onclick="cropImageto()">CropImage</button>
+                  <img id="cropImage" src="https://i.gifer.com/4V0b.gif" width="500" height="300" />
+                  <button type="button" onclick="cropImageto()">Crop Image</button>
                   <button type="button" onclick="deleteImage()">Delete</button>
+                  <!-- Close Button to hide the modal -->
+                  <button type="button" onclick="closeCropModal()">Close</button>
                 </div>
               </div>
+              
               <div id="student-photo-container" style="position: relative; display: none;">
                 <img id="student-photo" src="https://i.gifer.com/4V0b.gif" alt="Student Photo" style="display: block; margin: auto;">
                 
@@ -1006,6 +1212,11 @@ function displayClassDivisionGenderCount(data) {
 </div>
 </body>
 <script>
+    function closeCropModal() {
+  const cropModal = document.getElementById("cropModal");
+  cropModal.style.display = "none"; // Hides the modal
+}
+
     function showForm() {
         const form = document.getElementById("formcontainer");
             const button = document.getElementById("addStudentButton");
@@ -1140,11 +1351,22 @@ function showCropper(event, index) {
   }
 
 
-  function editImage() {
-  if (confirm("Are you sure you want to edit the image?")) {
+  async function editImage() {
+  // Get the original image element
+  const img = document.getElementById('student-photo');
+
+  // Check if the image source is empty or invalid
+  if (!img.src || img.src === '') {
+    alert("Please select an image first.");
+    return; 
+  }
+
+  // Show confirmation message
+  const confirmed = await showConfirmationMessage("Are you sure you want to edit the image?");
+  
+  if (confirmed) {
     document.getElementById('cropModal').style.display = 'block';
 
-    const img = document.getElementById('student-photo');
     const cropImage = document.getElementById('cropImage');
 
     // Assign the source of the existing image to the cropImage element
@@ -1162,43 +1384,48 @@ function showCropper(event, index) {
     });
   }
 }
-    function deleteImage() {
-        if (confirm("Are you sure you want to delete the image?")) {
-            const imageElement = document.getElementById('student-photo');
-            imageElement.src = '';
-            
-            document.getElementById('imagepicker').style.display = 'block';
-            document.getElementById('studentPhoto').value = '';
-            document.getElementById('student-photo-container').style.display = 'none';
-            document.getElementById('crop-btn').style.display = 'none';
-            document.getElementById('upload-btn').style.display = 'none';
-            document.getElementById('edit-btn').style.display = 'none';
-            document.getElementById('delete-btn').style.display = 'none';
 
-            if (cropper) {
-                cropper.destroy();
-                cropper = null;
-            }
+async function deleteImage() {
+    const confirmed = await showConfirmationMessage("Are you sure you want to delete the image?");
+    if (confirmed) {
+        const imageElement = document.getElementById('student-photo');
+        imageElement.src = '';
+
+        document.getElementById('imagepicker').style.display = 'block';
+        document.getElementById('studentPhoto').value = '';
+        document.getElementById('student-photo-container').style.display = 'none';
+        document.getElementById('crop-btn').style.display = 'none';
+        document.getElementById('upload-btn').style.display = 'none';
+        document.getElementById('edit-btn').style.display = 'none';
+        document.getElementById('delete-btn').style.display = 'none';
+
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
         }
     }
+}
 
 
-    function uploadCroppedImage2() {
-    event.preventDefault();
+async function uploadCroppedImage2(event) {
+  event.preventDefault();
 
-        const croppedImage = document.getElementById('student-photo').getAttribute('data-cropped');
+  const croppedImage = document.getElementById('student-photo').getAttribute('data-cropped');
 
-        if (croppedImage) {
-            if (confirm("Are you sure you want to upload the image?")) {
-                // Implement your upload logic here, e.g., send it to your server or Google Apps Script
-                console.log("Cropped image ready for upload:", croppedImage);
-                alert("Image uploaded successfully!"); // Confirmation message for upload
-            }
-        } else {
-            console.error("No cropped image to upload.");
-            document.getElementById('error-message').textContent = 'No cropped image to upload.';
-        }
+  if (croppedImage) {
+    // Await the confirmation dialog
+    const confirmed = await showConfirmationMessage("Are you sure you want to upload the image?");
+    
+    if (confirmed) {
+      // Implement your upload logic here (e.g., send it to your server or Google Apps Script)
+      console.log("Cropped image ready for upload:", croppedImage);
+      showSuccessMessage("Image uploaded successfully!"); // Confirmation message for upload
     }
+  } else {
+    console.error("No cropped image to upload.");
+    document.getElementById('error-message').textContent = 'No cropped image to upload.';
+  }
+}
 
 
     function cropImageto() {
@@ -1329,7 +1556,7 @@ requiredFields.splice(requiredFields.indexOf("vehiclePoint"), 1);
 const missingFields = requiredFields.filter(field => !studentData[field]);
 
 if (missingFields.length > 0) {
-  alert(`Please fill out all required fields: ${missingFields.join(', ')}`);
+  showErrorMessage(`Please fill out all required fields: ${missingFields.join(', ')}`);
   spinner.style.display = 'none';
   hideLoader();
   return;
@@ -1347,12 +1574,12 @@ if (missingFields.length > 0) {
                 loadStudentTable(studentData.studentId);
                 document.getElementById('addStudentForm').reset();
             } else {
-                alert('Error adding or updating student');
+                showErrorMessage('Error adding or updating student');
             }
         })
         .catch(error => {
             console.error('Fetch error:', error);
-            alert('Network or server error. Please try again.');
+            showErrorMessage('Network or server error. Please try again.');
         })
         .finally(() =>{ hideLoader();
              spinner.style.display = 'none'});
@@ -1624,12 +1851,12 @@ async function uploadCroppedImage() {
     const croppedImage = document.getElementById('student-photo').getAttribute('data-cropped'); // Assume base64 format
 
     if (!studentId) {
-        alert('Please generate the student ID first');
+        showErrorMessage('Please generate the student ID first');
         return;
     }
 
     if (!croppedImage) {
-        alert('Please crop the student photo');
+        showErrorMessage('Please crop the student photo');
         return;
     }
 
@@ -1663,15 +1890,15 @@ async function uploadCroppedImage() {
             //document.getElementById('student-photo-container').style.display = 'block';
             loadStudentTable();
             //document.getElementById('student-photo').src = newPhotoUrl; // Update the displayed image
-            alert('Photo uploaded and updated successfully!');
+            showSuccessMessage('Photo uploaded and updated successfully!');
             hideLoader();
         } else {
-            alert('Error uploading photo: ' + data.message);
+            showErrorMessage('Error uploading photo: ' + data.message);
             hideLoader();
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Failed to upload new photo.');
+        showErrorMessage('Failed to upload new photo.');
         hideLoader();
     }
 }
@@ -1853,7 +2080,7 @@ async function loadStudentPhotos(studentId, divid) {
                         loadStudentPhotos(student.stu_Id,"student-photo");
                         hideLoader();
                     } else {
-                        alert(data.error);
+                        showErrorMessage(data.error);
                         hideLoader();
                     }
                 })
@@ -1873,17 +2100,17 @@ async function loadStudentPhotos(studentId, divid) {
       const whatsappUrl = `https://wa.me/+91 ${student.whatsappNo}?text=${encodeURIComponent(message)}`; 
       window.open(whatsappUrl, '_blank');
 
-      alert('WhatsApp message sent successfully!'); 
+      showSuccessMessage('WhatsApp message sent successfully!'); 
       hideLoader();
     } else {
-      alert('Error fetching student data or student not found.'); 
+      showErrorMessage('Error fetching student data or student not found.'); 
       hideLoader();
     }
 
   } catch (error) {
     console.error('Error sending message:', error);
     hideLoader();
-        alert('An error occurred while sending the message. Please try again later.');
+        showErrorMessage('An error occurred while sending the message. Please try again later.');
   }
 }
 
@@ -1906,28 +2133,28 @@ async function sendWhatsAppMessageToStudent3(Id) {
       const whatsappUrl = `https://wa.me/${student.fatherMobile || student.motherMobile}?text=${encodeURIComponent(message)}`; 
       window.open(whatsappUrl, '_blank');
 
-      alert('WhatsApp message sent successfully!'); 
+      showSuccessMessage('WhatsApp message sent successfully!'); 
     } else {
-      alert('Error fetching student data or student not found.'); 
+      showErrorMessage('Error fetching student data or student not found.'); 
     }
 
   } catch (error) {
     console.error('Error sending message:', error);
-    alert('An error occurred while sending the message. Please try again later.');
+    showErrorMessage('An error occurred while sending the message. Please try again later.');
   }
 }
 
 
         // Delete student
         function deleteStudent(mobile) {
-            if (confirm('Are you sure you want to delete this student?')) {
+            if (conshowConfirmationMessage('Are you sure you want to delete this student?')) {
                 fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=deleteStudent&mobile=${mobile}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
                             loadStudentTable('new');
                         } else {
-                            alert('Error deleting student');
+                            showErrorMessage('Error deleting student');
                         }
                     })
                     .catch(error => console.error('Error:', error));
@@ -1950,7 +2177,7 @@ async function sendWhatsAppMessageToStudent3(Id) {
                 document.getElementById('adNumber').value = data.newAdNumber;
                 hideLoader();
             } else {
-                alert('Error generating Student ID');
+                showErrorMessage('Error generating Student ID');
                 hideLoader();
             }
         })
@@ -2113,14 +2340,14 @@ async function getStudentbyMobile(mobiles) {
 
       // Handle School Logo Load Error
       schoolLogo.onerror = function () {
-        alert("Error loading the school logo.");
+        showErrorMessage("Error loading the school logo.");
           hideLoader();
       };
     
 
     // Handle Broken Student Photo
     photo.onerror = function () {
-      alert("Error loading the student photo. Unable to create the poster.");
+      showErrorMessage("Error loading the student photo. Unable to create the poster.");
         hideLoader();
     };
     
@@ -2128,7 +2355,7 @@ async function getStudentbyMobile(mobiles) {
 
   // Handle Background Image Load Error
   background.onerror = function () {
-    alert("Error loading the background image.");
+    showErrorMessage("Error loading the background image.");
       hideLoader();
   };
 }
