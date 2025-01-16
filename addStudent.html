@@ -737,7 +737,7 @@ function showConfirmationMessage(message) {
     <input type="checkbox" id="adharCheckbox" name="adharCheckbox" checked>
     </div>
     <label for="adharNumber">Adhaar Number:</label>
-    <input type="number" id="adharNumber" name="adharNumber" placeholder="Enter Adhaar Number" required>
+    <input type="number" id="adharNumber" name="adharNumber" placeholder="Enter Adhaar Number" >
 <script>
     const adharCheckbox = document.getElementById('adharCheckbox');
 const adharNumber = document.getElementById('adharNumber');
@@ -790,7 +790,7 @@ adharCheckbox.addEventListener('change', () => {
     </div>
     <div class="form-group">
         <label for="whatsappNo">WhatsApp Number:</label>
-        <input type="text" id="whatsappNo" name="whatsappNo" placeholder="Enter WhatsApp Number" required onchange="getStudentbyMobile([this.value]);">
+        <input type="text" id="whatsappNo" name="whatsappNo" placeholder="Enter WhatsApp Number" required onchange="getStudentbyMobile();">
     </div>
     <!-- Radio Buttons to Select Guardian -->
     <div class="form-group">
@@ -1109,8 +1109,8 @@ function displayClassDivisionGenderCount(data) {
             <!--</select>
         </div> -->
         <div class="form-group">
-            <label for="siblingDetails">Sibling Details:</label>
-            <input type="text" id="siblingDetails" name="siblingDetails" placeholder="Enter details about siblings" >
+            <label for="siblingDetail">Sibling Details:</label>
+            <input type="text" id="siblingDetails" placeholder="Enter details about siblings" >
         </div>
     </div>
     <script>
@@ -1120,7 +1120,8 @@ function displayClassDivisionGenderCount(data) {
   if (hasSiblings === "Yes") {
     // Enable sibling details input field
     siblingDetailsInput.disabled = false;
-    requiredFields.push("siblingDetails");
+    //requiredFields.push("siblingDetails");
+    siblingDetailsInput.value="";
 
   } else {
     // If no siblings, show confirmation and clear the input field if confirmed
@@ -1133,10 +1134,10 @@ function displayClassDivisionGenderCount(data) {
     }
 
     // Remove "siblingDetails" from requiredFields array and disable input
-    const index = requiredFields.indexOf("siblingDetails");
-    if (index !== -1) {
-      requiredFields.splice(index, 1);
-    }
+    // const index = requiredFields.indexOf("siblingDetails");
+    // if (index !== -1) {
+    //   requiredFields.splice(index, 1);
+    // }
     siblingDetailsInput.disabled = true;
   }
 }
@@ -1194,7 +1195,7 @@ function displayClassDivisionGenderCount(data) {
 </div>
 
      <!-- Submit Button -->
-    <button type="submit" onclick="saveStudent()">Add/Update Student</button>
+    <button type="button" onclick="saveStudent()">Add/Update Student</button>
 </form>
 
 </div>
@@ -1452,116 +1453,76 @@ async function uploadCroppedImage2(event) {
 }
 
        // document.getElementById('addStudentForm').addEventListener('submit', function (event) {
-       function saveStudent() {
+      // function saveStudent() {
           //  document.getElementById("addStudentForm").addEventListener("submit", function(event) {
     // Prevents default form submission
    // event.preventDefault();
-    
+   function saveStudent() {
     showLoader();
 
-  const spinner = document.getElementById('spinner');
-  spinner.style.display = 'block';
+    const spinner = document.getElementById('spinner');
+    spinner.style.display = 'block';
 
-  const studentData = {
-    action: 'addOrUpdateStudent',
-    studentId: document.getElementById('studentId')?.value,
-    adNumber: document.getElementById('adNumber')?.value,
-    studentName: document.getElementById('studentName')?.value,
-    gender: document.querySelector('input[name="genderOptions"]:checked')?.value,
-    dob: document.getElementById('dob')?.value,
-    adharNumber: document.getElementById('adharNumber')?.value || "",
-    sector: document.querySelector('input[name="sector"]:checked')?.value,
-    houseName: document.getElementById('houseName')?.value,
-    place: document.getElementById('place')?.value,
-    pin: document.getElementById('pin')?.value,
-    postOffice: document.getElementById('postOffice')?.value,
-    fatherName: document.getElementById('fatherName')?.value,
-    fatherMobile: document.getElementById('fatherMobile')?.value,
-    motherName: document.getElementById('motherName')?.value,
-    motherMobile: document.getElementById('motherMobile')?.value,
-    whatsappNo: document.getElementById('whatsappNo')?.value,
-    guardian: document.getElementById('guardian')?.value,
-    relation: document.getElementById('relation')?.value,
-    admissionDate: document.getElementById('admissionDate')?.value,
-    admittedClass: document.getElementById('admittedClass')?.value,
-    currentClass: document.getElementById('currentClass')?.value,
-    status: document.getElementById('status')?.value,
-    studentMobile: document.getElementById('studentMobile')?.value,
-    vehiclePoint: document.getElementById('vehiclePoint')?.value || "",
-    vehicleStage: document.getElementById('vehicleStage')?.value || "",
-    siblings: document.getElementById('siblingDetails')?.value || "",
-  };
+    const studentData = {
+        action: 'addOrUpdateStudent',
+        studentId: document.getElementById('studentId')?.value,
+        adNumber: document.getElementById('adNumber')?.value,
+        studentName: document.getElementById('studentName')?.value,
+        gender: document.querySelector('input[name="genderOptions"]:checked')?.value,
+        dob: document.getElementById('dob')?.value,
+        adharNumber: document.getElementById('adharNumber')?.value || "",
+        sector: document.querySelector('input[name="sector"]:checked')?.value,
+        houseName: document.getElementById('houseName')?.value,
+        place: document.getElementById('place')?.value,
+        pin: document.getElementById('pin')?.value,
+        postOffice: document.getElementById('postOffice')?.value,
+        fatherName: document.getElementById('fatherName')?.value,
+        fatherMobile: document.getElementById('fatherMobile')?.value,
+        motherName: document.getElementById('motherName')?.value,
+        motherMobile: document.getElementById('motherMobile')?.value,
+        whatsappNo: document.getElementById('whatsappNo')?.value,
+        guardian: document.getElementById('guardian')?.value,
+        relation: document.getElementById('relation')?.value,
+        admissionDate: document.getElementById('admissionDate')?.value,
+        admittedClass: document.getElementById('admittedClass')?.value,
+        currentClass: document.getElementById('currentClass')?.value,
+        status: document.getElementById('status')?.value,
+        studentMobile: document.getElementById('studentMobile')?.value,
+        vehiclePoint: document.getElementById('vehiclePoint')?.value || "",
+        vehicleStage: document.getElementById('vehicleStage')?.value || "",
+        siblingDetails: document.getElementById('siblingDetails')?.value || document.getElementById('siblingDetails')?.textContent||"",
+    };
 
-// Check if required fields are present
-const requiredFields = [
-    'studentId', 'adNumber', 'studentName', 'gender', 'dob', 'sector',
-    'houseName', 'place', 'pin', 'postOffice', 'fatherName', 'fatherMobile', 'motherName',
-    'motherMobile', 'whatsappNo', 'guardian', 'relation', 'admissionDate', 'admittedClass',
-    'currentClass', 'status', 'vehiclePoint', 'vehicleStage'
-];
+    // Define required fields
+    const requiredFields = [
+        'studentId', 'adNumber', 'studentName', 'gender', 'dob', 'sector',
+        'houseName', 'place', 'pin', 'postOffice', 'fatherName', 'fatherMobile', 
+        'motherName', 'motherMobile', 'whatsappNo', 'guardian', 'relation', 
+        'admissionDate', 'admittedClass', 'currentClass', 'status','siblingDetails'
+    ];
 
+    const isAdharChecked = document.getElementById('adharCheckbox').checked;
+    if (isAdharChecked) requiredFields.push("adharNumber");
 
-  const isAdharChecked = document.getElementById('adharCheckbox').checked;
-
-if (isAdharChecked) {
-  // Add "adharNumber" to requiredFields
-  requiredFields.push("adharNumber");
-} else {
-  // Remove "adharNumber" from requiredFields (if present)
-  const index = requiredFields.indexOf("adharNumber");
-  if (index !== -1) {
-    requiredFields.splice(index, 1);
-  }
-}
-
-const siblingYesCheckbox = document.getElementById("siblingYes").checked;
-const siblingDetailsInput = document.getElementById("siblingDetails");
-
-// Check if the checkbox is checked
-if (siblingYesCheckbox) {
-  // Add "siblingDetails" to requiredFields
-  requiredFields.push("siblingDetails");
-
-  
-} else {
-  // Remove "siblingDetails" from requiredFields
-  const index = requiredFields.indexOf("siblingDetails");
-  if (index !== -1) {
-    requiredFields.splice(index, 1);
-  }
-
-}
-
-const vehicleNeededCheckbox = document.getElementById("vehicleNeed");
-const vehiclePointInput = document.getElementById("vehiclePoint");
-const vehicleStageInput = document.getElementById("vehicleStage");
-
-if (vehicleNeededCheckbox.checked) {
-  // Add "vehiclePoint" and "vehicleStage" to requiredFields
-  requiredFields.push("vehiclePoint", "vehicleStage");
-requiredFields.splice(requiredFields.indexOf("vehiclePoint"), 1);
-
-  
-} else {
-  // Remove "vehiclePoint" and "vehicleStage" from requiredFields
-  requiredFields.splice(requiredFields.indexOf("vehiclePoint"), 1);
-  requiredFields.splice(requiredFields.indexOf("vehicleStage"), 1);
-
-
-}
+    const siblingYesCheckbox = document.getElementById("siblingYes").checked;
     
+    if (!siblingYesCheckbox){
+        const index = requiredFields.indexOf("siblingDetails");
+     if (index !== -1) {
+       requiredFields.splice(index, 1);
+     }
+    }
+    const vehicleNeededCheckbox = document.getElementById("vehicleNeed").checked;
+    if (vehicleNeededCheckbox) requiredFields.push("vehiclePoint", "vehicleStage");
 
-// ...
-
-const missingFields = requiredFields.filter(field => !studentData[field]);
-
-if (missingFields.length > 0) {
-  showErrorMessage(`Please fill out all required fields: ${missingFields.join(', ')}`);
-  spinner.style.display = 'none';
-  hideLoader();
-  return;
-}
-
+    // Check for missing fields
+    const missingFields = requiredFields.filter(field => !studentData[field]);
+    if (missingFields.length > 0) {
+        showErrorMessage(`Please fill out all required fields: ${missingFields.join(', ')}`);
+        spinner.style.display = 'none';
+        hideLoader();
+        return; // Stop further execution
+    }
 
     const params = new URLSearchParams(studentData).toString();
     console.log(params);
@@ -1572,7 +1533,8 @@ if (missingFields.length > 0) {
             console.log(data); // Log full response for debugging
             if (data.success) {
                 loadStudentTable(studentData.studentId);
-                document.getElementById('addStudentForm').reset();
+                showSuccessMessage("Student saved successfully");
+                 document.getElementById('addStudentForm').reset(); // Clear the form only on success
             } else {
                 showErrorMessage('Error adding or updating student');
             }
@@ -1581,8 +1543,10 @@ if (missingFields.length > 0) {
             console.error('Fetch error:', error);
             showErrorMessage('Network or server error. Please try again.');
         })
-        .finally(() =>{ hideLoader();
-             spinner.style.display = 'none'});
+        .finally(() => {
+            hideLoader();
+            spinner.style.display = 'none';
+        });
 }
 
 
@@ -2062,14 +2026,14 @@ async function loadStudentPhotos(studentId, divid) {
     const siblingYesCheckbox = document.getElementById("siblingYes");
     const siblingDetailsInput = document.getElementById("siblingDetails");
 
+    // Enable the sibling details input
+    siblingDetailsInput.disabled = false;
     // Check the "Yes Siblings" option
     siblingYesCheckbox.checked = true;
 
     // Populate the sibling details input
     siblingDetailsInput.value = student.siblingDetails;
 
-    // Enable the sibling details input
-    siblingDetailsInput.disabled = false;
 
     // Ensure sibling info block is displayed
     document.getElementById("siblingInfo").style.display = "block";
@@ -2147,6 +2111,7 @@ async function sendWhatsAppMessageToStudent3(Id) {
 
         // Delete student
         function deleteStudent(mobile) {
+
             if (conshowConfirmationMessage('Are you sure you want to delete this student?')) {
                 fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=deleteStudent&mobile=${mobile}`)
                     .then(response => response.json())
@@ -2184,10 +2149,20 @@ async function sendWhatsAppMessageToStudent3(Id) {
         .catch(error => console.error('Error:', error));
 }
 
-async function getStudentbyMobile(mobiles) { 
+async function getStudentbyMobile() {
+    const fatherMobile = String(document.getElementById('fatherMobile').value || "");
+const motherMobile = String(document.getElementById('whatsappNo').value || "");
+
+    let numbers = [];
+    numbers.push(fatherMobile, motherMobile);
+    console.log(numbers);
+
     try {
+        // Serialize the array into a comma-separated string
+        const mobileNumbers = encodeURIComponent(numbers.join(","));
+console.log(mobileNumbers);
         // Fetch the student details from the server
-        const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentByMobile&numbers=${mobiles}`);
+        const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentByMobile&numbers=${numbers}`);
         
         if (!response.ok) {
             throw new Error(`Server returned status: ${response.status}`);
@@ -2207,21 +2182,24 @@ async function getStudentbyMobile(mobiles) {
             const siblingDetailsElement = document.getElementById("siblingDetails");
             siblingDetailsElement.value = siblingDetails;
             siblingDetailsElement.disabled = false; // Enable the field
+            showSuccessMessage('siblers are added '+ siblingDetails);
         } else {
             // If no valid data is returned, clear the field or show a message
             const siblingDetailsElement = document.getElementById("siblingDetails");
-            siblingDetailsElement.value = "No siblings found";
-            siblingDetailsElement.disabled = true; // Disable the field
+            siblingDetailsElement.ariaPlaceholder = "No student found with these mobile numbers";
+            //siblingDetailsElement.disabled = true; // Disable the field
+            showErrorMessage("no siblers found");
         }
     } catch (error) {
         console.error('Error fetching student by mobile number:', error);
 
         // Handle error by showing a message or clearing the field
         const siblingDetailsElement = document.getElementById("siblingDetails");
-        siblingDetailsElement.value = "Error fetching sibling details";
+        siblingDetailsElement.value = "Error fetching student details";
         siblingDetailsElement.disabled = true; // Disable the field
     }
 }
+
 
 
 
