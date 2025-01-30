@@ -153,9 +153,12 @@
         const adminPassword = document.getElementById('adminPassword').value.trim();
 
         if (adminUsername === "Admin" && adminPassword === "q123") {
-            showAlert('Admin Login Successful! Redirecting...', 'success');
-            setTimeout(() => window.location.href = 'addStudent.html', 1500);
-        } else {
+    showAlert('Admin Login Successful! Redirecting...', 'success');
+
+    localStorage.setItem("logged", "success"); // Store login status
+
+    setTimeout(() => window.location.href = 'addStudent.html', 1500);
+} else {
             showAlert('Invalid Admin Username or Password.', 'error');
             spinner.style.display = 'none'; // Hide the spinner on error
         }
