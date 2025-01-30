@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html ng-app>
+<html lang="en">
 <head>
+    <title>KYHSS ATHAVAND</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="common.js"></script>
@@ -608,26 +609,6 @@ document.addEventListener("mousemove", updateLastUsedTime);
 document.addEventListener("keydown", updateLastUsedTime);
 document.addEventListener("click", updateLastUsedTime);
 
-window.onload = function() {
-    let loggedStatus = localStorage.getItem("logged");
-    let loginTime = localStorage.getItem("loginTime");
-
-    // Check if logged in
-    if (loggedStatus !== "success" || !loginTime) {
-        window.location.href = "index.html";
-        return;
-    }
-
-    let currentTime = new Date().getTime();
-    let timeDiff = (currentTime - parseInt(loginTime)) / (1000 * 60); // Convert to minutes
-
-    if (timeDiff > 30) {
-        localStorage.removeItem("logged"); // Clear login status
-        localStorage.removeItem("loginTime"); // Clear login time
-        window.location.href = "index.html"; // Redirect to login
-    }
-};
-
 
 // Example usage
 // document.addEventListener("DOMContentLoaded", () => {
@@ -658,6 +639,23 @@ window.onload = function() {
     // Code to hide the loader after the page has fully loaded
     var loader = document.querySelector('.loader');
     loader.style.display = 'none';
+    let loggedStatus = localStorage.getItem("logged")||"empty";
+    let loginTime = localStorage.getItem("lastUsedTime");
+console.log(loggedStatus);
+    // Check if logged in
+    if (loggedStatus !== "success" || !loginTime) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    let currentTime = new Date().getTime();
+    let timeDiff = (currentTime - parseInt(loginTime)) / (1000 * 60); // Convert to minutes
+
+    if (timeDiff > 30) {
+        localStorage.removeItem("logged"); // Clear login status
+        localStorage.removeItem("loginTime"); // Clear login time
+        window.location.href = "index.html"; // Redirect to login
+    }
   }
 
   function waitingOn(){
@@ -669,12 +667,23 @@ window.onload = function() {
     var loader = document.querySelector('.loader');
     loader.style.display = 'none';
   }
+  function logout() {
+    localStorage.removeItem("logged"); // Clear login status
+    localStorage.removeItem("lastUsedTime"); // Clear last activity time
+    window.location.href = "index.html"; // Redirect to login page
+}
+
 </script>
 
+<div class="appbars" style="width: 100%; border: 1px solid black; height: auto;background-color: rgb(15, 153, 42);position: sticky; padding: 7px;"><h1 style="margin: 0;"> KYHSS ATHAVANAD</h1>
 
-    <div >
-        <iframe src="appbar.html" style="width: 100%; height: 100%; border: none; position: sticky; margin-top: 0;"></iframe>
+    <div style="display: flex;justify-content: space-between;"><h3 id="pageHead" style=" color: blanchedalmond; margin: 0;"> PAGE HEAD SHOWN HERE </h3>
+        <p style="display:flex ; justify-content: flex-end;padding-right: 20px;margin-top: px;font-size: larger;">cmiqbalc@gmail.com <span style=" border-radius: 20%;border: none;background-color: rgb(153, 230, 230);"><button style=" margin-left: 4px; border: none;" onclick="logout();"  >logout</button></span></p>
     </div>
+    </div>
+    <!-- <div >
+        <iframe src="appbar.html" style="width: 100%; height: 100%; border: none; position: sticky; margin-top: 0;"></iframe>
+    </div> -->
         <!-- Loading overlay -->
         <div id="loading" style="display: none;">
             <div class="loader"></div>
@@ -1138,7 +1147,7 @@ function displayClassDivisionGenderCount(data) {
             <!--</select>
         </div> -->
         <div class="form-group">
-            <label for="siblingDetail">Sibling Details:</label>
+            <label for="siblingDetails">Sibling Details:</label>
             <input type="text" id="siblingDetails" placeholder="Enter details about siblings" >
         </div>
     </div>
@@ -1187,13 +1196,13 @@ function displayClassDivisionGenderCount(data) {
     <div class="section-title" >Student Image</div>
           <div class="form-group">
               <div id="imagepicker">
-              <label for="studentPhoto"style="width:200px";>Student Photo:</label>
-              <input style=" width:200px;"type="file" accept="image/*" onchange="showCropper(event, 'student-photo')"> 
+              <label for="imgStudent"style="width:200px";>Student Photo:</label>
+              <input id="imgStudent" style=" width:200px;"type="file" accept="image/*" onchange="showCropper(event, 'student-photo')"alt="studentphoto" placeholder="croppedimg" title="croppedimg"> 
               <!-- Image Preview and Crop Container -->
               <div id="cropModal">
                 <div>
                   <h2>Crop Photo</h2>
-                  <img id="cropImage" src="https://i.gifer.com/4V0b.gif" width="500" height="300" />
+                  <img id="cropImage" src="https://i.gifer.com/4V0b.gif" width="500" height="300" alt="cropimage" />
                   <button type="button" onclick="cropImageto()">Crop Image</button>
                   <button type="button" onclick="deleteImage()">Delete</button>
                   <!-- Close Button to hide the modal -->
@@ -1604,7 +1613,7 @@ generateReport(studentsData);
                 studentsData.forEach(student => {
                     updateStudentList(student); // Call updateStudentList for each student
                 });
-
+                
                 generateTable(); // Render the table with the latest data
             } else {
                 document.getElementById('studentTableContainer').innerHTML = '<p>No students found</p>';
@@ -1641,7 +1650,7 @@ function updateStudentList(newStudent) {
     // Update localStorage with the new list
     localStorage.setItem("studentsList", JSON.stringify(studentsList));
 
-    console.log(`Updated studentsList with student ID ${newStudent.stu_id}:`, studentsList);
+    //console.log(`Updated studentsList with student ID ${newStudent.stu_id}:`);//, studentsList);
 }
 
 
@@ -1755,8 +1764,11 @@ function renderStudentTable(students) {
             <td>${index + 1}</td>
             <td> 
   <div class="image-container">
-  <img id="${imgId}" src="" alt="Image">
-  <button type="button" id="refreshButton" onclick="loadStudentPhoto('${student.stu_id}','${imgId}');">&#x21bb;</button>
+  <img id="${imgId}" src="" alt="Image"><button type="button" id="refreshButton${imgId}" 
+        onclick="loadStudentPhoto('${student.stu_id}', '${imgId}');">
+    &#x21bb;
+</button>
+
 </div>
 
 </td>
