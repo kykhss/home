@@ -599,6 +599,35 @@ function showConfirmationMessage(message) {
     cancelButton.addEventListener("click", onCancelClick);
   });
 }
+    function updateLastUsedTime() {
+    localStorage.setItem("lastUsedTime", new Date().getTime());
+}
+
+// Update last used time on user activity
+document.addEventListener("mousemove", updateLastUsedTime);
+document.addEventListener("keydown", updateLastUsedTime);
+document.addEventListener("click", updateLastUsedTime);
+
+window.onload = function() {
+    let loggedStatus = localStorage.getItem("logged");
+    let loginTime = localStorage.getItem("loginTime");
+
+    // Check if logged in
+    if (loggedStatus !== "success" || !loginTime) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    let currentTime = new Date().getTime();
+    let timeDiff = (currentTime - parseInt(loginTime)) / (1000 * 60); // Convert to minutes
+
+    if (timeDiff > 30) {
+        localStorage.removeItem("logged"); // Clear login status
+        localStorage.removeItem("loginTime"); // Clear login time
+        window.location.href = "index.html"; // Redirect to login
+    }
+};
+
 
 // Example usage
 // document.addEventListener("DOMContentLoaded", () => {
