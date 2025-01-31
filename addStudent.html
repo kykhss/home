@@ -2191,55 +2191,62 @@ async function sendWhatsAppMessageToStudent3(Id) {
 }
 
 async function getStudentbyMobile() {
-    const fatherMobile = String(document.getElementById('fatherMobile').value || "");
-const motherMobile = String(document.getElementById('whatsappNo').value || "");
+    const fatherMobile = String(document.getElementById('fatherMobile').value || "").trim();
+    const motherMobile = String(document.getElementById('whatsappNo').value || "").trim();
 
     let numbers = [];
-    numbers.push(fatherMobile, motherMobile);
-    console.log(numbers);
+    if (fatherMobile) numbers.push(fatherMobile);
+    if (motherMobile) numbers.push(motherMobile);
+
+    console.log("Numbers to check:", numbers);
+
+    if (numbers.length === 0) {
+        showErrorMessage("Please enter at least one mobile number.");
+        return;
+    }
 
     try {
-        // Serialize the array into a comma-separated string
         const mobileNumbers = encodeURIComponent(numbers.join(","));
-console.log(mobileNumbers);
-        // Fetch the student details from the server
-        const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentByMobile&numbers=${numbers}`);
+        console.log("Encoded mobile numbers:", mobileNumbers);
+
+        // Fetch student details from Google Apps Script
+        const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentByMobile&numbers=${mobileNumbers}`);
         
         if (!response.ok) {
             throw new Error(`Server returned status: ${response.status}`);
         }
 
         const data = await response.json();
-        console.log('Server response:', data);
+        console.log("Server response:", data);
 
-        // Check if the data contains a valid student object
-        if (data && data.student) {
-            const student = data.student; // Access the student object
-            
-            // Format the student details
-            const siblingDetails = `${student.name} (${student.stuId}_ ${student.adNumber})`;
-            
-            // Update the siblingDetails input field
-            const siblingDetailsElement = document.getElementById("siblingDetails");
+        const siblingDetailsElement = document.getElementById("siblingDetails");
+
+        // Check if the data contains multiple students
+        if (data && data.students && data.students.length > 0) {
+            // Join student names in a readable format
+            const siblingDetails = data.students.map(student => `${student.name} (${student.stuId} - ${student.adNumber})`).join(", ");
+
+            // Update the input field
             siblingDetailsElement.value = siblingDetails;
             siblingDetailsElement.disabled = false; // Enable the field
-            showSuccessMessage('siblers are added '+ siblingDetails);
+
+            showSuccessMessage(`Siblings added: ${siblingDetails}`);
         } else {
-            // If no valid data is returned, clear the field or show a message
-            const siblingDetailsElement = document.getElementById("siblingDetails");
-            siblingDetailsElement.ariaPlaceholder = "No student found with these mobile numbers";
-            //siblingDetailsElement.disabled = true; // Disable the field
-            showErrorMessage("no siblers found");
+            // No students found
+            siblingDetailsElement.value = "";
+            siblingDetailsElement.placeholder = "No student found with these mobile numbers";
+            showErrorMessage("No siblings found");
         }
     } catch (error) {
-        console.error('Error fetching student by mobile number:', error);
+        console.error("Error fetching student by mobile number:", error);
 
-        // Handle error by showing a message or clearing the field
+        // Handle errors
         const siblingDetailsElement = document.getElementById("siblingDetails");
         siblingDetailsElement.value = "Error fetching student details";
         siblingDetailsElement.disabled = true; // Disable the field
     }
 }
+
 
 
 
