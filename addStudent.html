@@ -46,7 +46,7 @@
   background-color: #fcfafa;
 }
 
-#refreshButton {
+.refreshButton {
   display: none;
   position: absolute;
   top: 50%;
@@ -63,7 +63,7 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.image-container:hover #refreshButton {
+.image-container:hover .refreshButton {
   display: block;
 }
 canvas{
@@ -643,7 +643,7 @@ document.addEventListener("click", updateLastUsedTime);
     let loginTime = localStorage.getItem("lastUsedTime");
 console.log(loggedStatus);
     // Check if logged in
-    if (loggedStatus !== "success" || !loginTime) {
+    if (loggedStatus !== "success" || !loginTime|| !loggedStatus) {
         window.location.href = "index.html";
         return;
     }
@@ -1764,7 +1764,7 @@ function renderStudentTable(students) {
             <td>${index + 1}</td>
             <td> 
   <div class="image-container">
-  <img id="${imgId}" src="" alt="Image"><button type="button" id="refreshButton${imgId}" 
+  <img id="${imgId}" src="" alt="Image"><button type="button" class="refreshButton" id="refreshButton${imgId}" 
         onclick="loadStudentPhoto('${student.stu_id}', '${imgId}');">
     &#x21bb;
 </button>
