@@ -84,11 +84,12 @@ canvas{
             border: 2px solid #28a745; /* Border for the image */
             border-radius: 4px; /* Slight rounding for the image */
         }
-        #crop-btn, #upload-btn {
+         #upload-btn {
             display: none; /* Hide buttons until an image is selected */
             margin-top: 10px;
         }
         #student-photo-container{
+            display: none;
             width: 400px;
             margin: auto;
         }
@@ -124,7 +125,7 @@ canvas{
         .batch {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
-    gap: 20px; /* Spacing between fields */
+    gap: 5px; /* Spacing between fields */
     max-width: auto; 
     margin: 0 auto;
     background-color: rgb(240, 249, 250);
@@ -144,8 +145,7 @@ canvas{
         font-size: 18px;
         color: #007BFF;
     }
-
-    #crop-btn, #upload-btn {
+ #upload-btn {
         margin-top: 10px;
         padding: 8px 12px;
         font-size: 16px;
@@ -154,10 +154,7 @@ canvas{
         cursor: pointer;
     }
     
-    #crop-btn {
-        background-color: #007bff;
-        color: #fff;
-    }
+   
 
     #upload-btn {
         background-color: #28a745;
@@ -182,7 +179,7 @@ canvas{
 
         form {
             background-color: #fff;
-            padding: 20px;
+            padding: 10px;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             width: 90%;
@@ -705,14 +702,15 @@ console.log(loggedStatus);
        // document.getElementById("pageHead").textContent = ""; 
     </script>
     <div id="studentAlert" class="alert"></div>
+    
+    <div id="reportContainer"></div>
     <div style="display: flex;">
-        <button onclick="showForm()" id="addStudentButton" style="width: fit-content;" >Add Student +</button>
+        <button onclick="showForm()" id="addStudentButton"  >Add Student +</button>
     
         <span><img id="logo" src="KYHSSLOGO.jpg" width="50" height="50" alt="School Logo" style="border-radius: 50%;">    
     </span>
     </div>
-    <div id="reportContainer"></div>
-<div id="formcontainer" style="display: block;">
+<div id="formcontainer" style="display: none;">
 <form id="addStudentForm" class="addForm" style="display:block;">
     <div class="section-title" style="display: flex;justify-content: space-between; padding: auto;">Personal Information <span><input type="reset" style=" width:100px;"></span></div>
     <div class="batch">
@@ -750,16 +748,29 @@ console.log(loggedStatus);
     <p id="referenceDate"></p></span>
     </div>
     <script type="text/javascript">
-        // Reset form and clear image preview
-//   document.getElementById('addStudentForm').addEventListener('reset', function() {
-//     document.getElementById('cropImage').src = '';
-//     document.getElementById('cropImage').style.display = 'none';
-//     document.getElementById('student-photo').src = '';
-//     document.getElementById('student-photo-container').style.display = 'none';
-//     document.getElementById('crop-btn').style.display = 'none';
-//     document.getElementById('error-message').textContent = '';
- // });
+      //  Reset form and clear image preview
+  document.getElementById('addStudentForm').addEventListener('reset', function() {
+    document.getElementById('cropImage').src = '';
+    document.getElementById('cropImage').style.display = 'none';
+    document.getElementById('student-photo').src = '';
+    document.getElementById('student-photo-container').style.display = 'none';
+   // document.getElementById('crop-btn').style.display = 'none';
+    document.getElementById('error-message').textContent = '';
+    resetForm();
+ });
+ function resetForm() {
+    // // Clear selected radio buttons
+    // document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    //     radio.checked = false;
+    // });
+    
+    // Enable all radio buttons
+    document.getElementsByName("sector").forEach(radio => radio.disabled = false );
+    document.getElementsByName("vehicleNeed").forEach(radio => radio.disabled = false);
+    document.getElementsByName("hasSibling").forEach(radio => radio.disabled = false);
 
+    
+}
         function datetoText(value){
            var text=  convertDateToText(value);
            var age =calculateAge(value);
@@ -826,10 +837,20 @@ adharCheckbox.addEventListener('change', () => {
         <label for="motherMobile">Mother's Mobile Number:</label>
         <input type="text" id="motherMobile" name="motherMobile" placeholder="Enter Mother's Mobile Number" required>
     </div>
+    <style>
+        @keyframes blinker {
+          50% {
+            opacity: 0;
+          }
+        }
+        </style>
+        
     <div class="form-group">
         <label for="whatsappNo">WhatsApp Number:</label>
         <input type="text" id="whatsappNo" name="whatsappNo" placeholder="Enter WhatsApp Number" required onchange="getStudentbyMobile();">
-    </div>
+        <span id="siblingloading" style="display: none; color: red; animation: blinker 1s linear infinite;">loading Sibling Details</span>
+
+ </div>
     <!-- Radio Buttons to Select Guardian -->
     <div class="form-group">
     <label>Is Guardian the same as:</label>
@@ -1160,6 +1181,7 @@ function displayClassDivisionGenderCount(data) {
     siblingDetailsInput.disabled = false;
     //requiredFields.push("siblingDetails");
     siblingDetailsInput.value="";
+    document.getElementById("admissionFee").value=14600;
 
   } else {
     // If no siblings, show confirmation and clear the input field if confirmed
@@ -1167,6 +1189,7 @@ function displayClassDivisionGenderCount(data) {
       const confirmed = await showConfirmationMessage("Are you sure you want to clear the sibling information?");
       if (confirmed) {
         siblingDetailsInput.value = ""; 
+        document.getElementById("admissionFee").value=15600;
         showSuccessMessage("Sibling information fields have been cleared.");
       }
     }
@@ -1190,6 +1213,10 @@ function displayClassDivisionGenderCount(data) {
         <label for="studentMobile">Student Mobile Number:</label>
         <input type="text" id="studentMobile" name="studentMobile" placeholder="Enter Student Mobile Number" >
     </div>
+    <div class="form-group">
+        <label for="admissionFee">Admisson fee:</label>
+        <input type="text" id="admissionFee" name="admissionFee" placeholder="Enter admissionFee Mobile Number" value=15600 >
+    </div>
 </div>
 <!-- Image Upload Section -->
 <div id="childphoto">
@@ -1202,8 +1229,8 @@ function displayClassDivisionGenderCount(data) {
               <div id="cropModal">
                 <div>
                   <h2>Crop Photo</h2>
-                  <img id="cropImage" src="https://i.gifer.com/4V0b.gif" width="500" height="300" alt="cropimage" />
-                  <button type="button" onclick="cropImageto()">Crop Image</button>
+                  <img id="cropImage" src="https://i.gifer.com/4V0b.gif" width="500" height="300" alt="cropimage" style="display: none;"/>
+                  <button type="button" onclick="cropImageto()">Crope Image</button>
                   <button type="button" onclick="deleteImage()">Delete</button>
                   <!-- Close Button to hide the modal -->
                   <button type="button" onclick="closeCropModal()">Close</button>
@@ -1218,8 +1245,8 @@ function displayClassDivisionGenderCount(data) {
                 <div class="del" >
                 <button type="button" id="edit-btn" class="icon-button overlay-btn" onclick="editImage()" title="Edit Image" style="display: inline-block">✎</button>
                 <button type="button" id="delete-btn" class="icon-button overlay-btn" onclick="deleteImage()" title="Delete Image" style="display: block;">❌</button>
-            </div>
-            
+                </div>
+              </div>
               <!-- Cropped Image Display -->
               
       
@@ -1230,7 +1257,6 @@ function displayClassDivisionGenderCount(data) {
           </div>
       </div>
 </div>
-</div>
 
      <!-- Submit Button -->
     <button type="button" onclick="saveStudent()">Add/Update Student</button>
@@ -1240,7 +1266,7 @@ function displayClassDivisionGenderCount(data) {
 
     
     <div id="spinner"></div>
-    <span  style="padding: 0;display:flex; gap: 20px;align-items: center; width: 270px;"><h2>Student List</h2> <input type="text" style="width: 100px;" placeholder="2025" value="2025" id="curruntyear" onchange="loadStudentTable('new');">
+    <span  style="padding: 0;display:flex; gap: 20px;align-items: center; width: 270px; pointer-events: mo;"><h2 onclick="loadStudentTable('Reload') ; ">Student List</h2> <input type="text" style="width: 100px;" placeholder="2025" value="2025" id="curruntyear" onchange="loadStudentTable('new');">
         <button type="button" onclick="loadStudentTable('Reload') ; ">reloadData</button>
     </span>
 <div>
@@ -1433,7 +1459,7 @@ async function deleteImage() {
         document.getElementById('imagepicker').style.display = 'block';
         document.getElementById('studentPhoto').value = '';
         document.getElementById('student-photo-container').style.display = 'none';
-        document.getElementById('crop-btn').style.display = 'none';
+       // document.getElementById('crop-btn').style.display = 'none';
         document.getElementById('upload-btn').style.display = 'none';
         document.getElementById('edit-btn').style.display = 'none';
         document.getElementById('delete-btn').style.display = 'none';
@@ -1526,6 +1552,7 @@ async function uploadCroppedImage2(event) {
         currentClass: document.getElementById('currentClass')?.value,
         status: document.getElementById('status')?.value,
         studentMobile: document.getElementById('studentMobile')?.value,
+        admissionFee: document.getElementById('admissionFee')?.value,
         vehiclePoint: document.getElementById('vehiclePoint')?.value || "",
         vehicleStage: document.getElementById('vehicleStage')?.value || "",
         siblingDetails: document.getElementById('siblingDetails')?.value || document.getElementById('siblingDetails')?.textContent||"",
@@ -1536,7 +1563,7 @@ async function uploadCroppedImage2(event) {
         'studentId', 'adNumber', 'studentName', 'gender', 'dob', 'sector',
         'houseName', 'place', 'pin', 'postOffice', 'fatherName', 'fatherMobile', 
         'motherName', 'motherMobile', 'whatsappNo', 'guardian', 'relation', 
-        'admissionDate', 'admittedClass', 'currentClass', 'status','siblingDetails'
+        'admissionDate', 'admittedClass', 'currentClass', 'status','siblingDetails','admissionFee'
     ];
 
     const isAdharChecked = document.getElementById('adharCheckbox').checked;
@@ -1919,7 +1946,7 @@ async function loadStudentPhotos(studentId, divid) {
         
         if (savedPhoto) {
             // If photo exists in localStorage, use it directly
-            document.getElementById('student-photo-container').style.display = 'block';
+            document.getElementById(divid).style.display = 'block';
             document.getElementById(divid).src = savedPhoto; // Set the photo from localStorage
             console.log('Photo loaded from localStorage');
         } else {
@@ -1949,11 +1976,45 @@ async function loadStudentPhotos(studentId, divid) {
         document.getElementById('error-message').textContent = 'Failed to fetch photo.';
     }
 }
+async function loadStudentPhotosEdit(studentId, divid) {
+    document.getElementById('student-photo-container').style.display = 'block';
+    const loading = document.getElementById(divid);
+    loading.src="https://i.gifer.com/4V0b.gif";
+    try {
+        // Check if the photo exists in localStorage
+        //const savedPhoto = localStorage.getItem(`studentPhotos_${studentId}`);
 
+            // If no photo in localStorage, fetch it from the server
+            const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentPhoto&studentId=${studentId}`);
+            const data = await response.json();
+
+            if (data.photo) {
+                loading.src="";
+                // If the photo is found on the server, save it to localStorage
+                const photoUrl = `data:image/jpeg;base64,${data.photo}`;
+                localStorage.setItem(`studentPhotos_${studentId}`, photoUrl); // Save to localStorage
+                document.getElementById('student-photo-container').style.display = 'block';
+                document.getElementById(divid).src = photoUrl; // Set the photo from server
+                console.log('Photo loaded from server and saved to localStorage');
+            } else if(data.photo===""){
+                const demophoto = localStorage.getItem(`studentPhotos_KYHSS`);
+                loading.src="";
+                document.getElementById(divid).src = demophoto; // Set the photo from localStorage
+           
+            }else if (data.error) {
+                document.getElementById('error-message').textContent = data.error; // Show error message
+            }
+        
+    } catch (error) {
+        console.error('Error fetching photo:', error);
+        document.getElementById('error-message').textContent = 'Failed to fetch photo.';
+    }
+}
            
         // Edit student
         async function editStudent(Id) {
             showLoader();
+            document.getElementById("formcontainer").style.display='block';
             fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentById&mobile=${Id}`)
                 .then(response => response.json())
                 .then(data => {
@@ -2082,14 +2143,18 @@ async function loadStudentPhotos(studentId, divid) {
 
                             setDefaultSelections(student.admittedClass);
                         document.getElementById('studentMobile').value = student.mobile;
-                        loadStudentPhotos(student.stu_Id,"student-photo");
+                        document.getElementById('admissionFee').value = student.admissionFee;
+            
+                        loadStudentPhotosEdit(student.stu_Id,"student-photo");
                         hideLoader();
                     } else {
                         showErrorMessage(data.error);
                         hideLoader();
                     }
                 })
-                .catch(error =>{ hideLoader(); console.error('Error:', error)});
+                .catch(error =>{ 
+                    document.getElementById("formcontainer").style.display='none';
+                    hideLoader(); console.error('Error:', error)});
         }
         async function sendWhatsAppMessageToStudent(studentId) {
         showLoader();
@@ -2191,6 +2256,7 @@ async function sendWhatsAppMessageToStudent3(Id) {
 }
 
 async function getStudentbyMobile() {
+    document.getElementById("siblingloading").style.display="block";
     const fatherMobile = String(document.getElementById('fatherMobile').value || "").trim();
     const motherMobile = String(document.getElementById('whatsappNo').value || "").trim();
 
@@ -2203,6 +2269,7 @@ async function getStudentbyMobile() {
     if (numbers.length === 0) {
         showErrorMessage("Please enter at least one mobile number.");
         return;
+        document.getElementById("siblingloading").style.display="none";
     }
 
     try {
@@ -2231,17 +2298,23 @@ async function getStudentbyMobile() {
             siblingDetailsElement.disabled = false; // Enable the field
 
             showSuccessMessage(`Siblings added: ${siblingDetails}`);
+            toggleSiblingInfo("Yes");
+            document.getElementById("siblingloading").style.display="none";
         } else {
             // No students found
             siblingDetailsElement.value = "";
             siblingDetailsElement.placeholder = "No student found with these mobile numbers";
             showErrorMessage("No siblings found");
+            toggleSiblingInfo("No");
+            document.getElementById("siblingloading").style.display="none";
         }
     } catch (error) {
         console.error("Error fetching student by mobile number:", error);
+        document.getElementById("siblingloading").style.display="none";
 
         // Handle errors
         const siblingDetailsElement = document.getElementById("siblingDetails");
+        document.getElementById("siblingloading").style.display="none";
         siblingDetailsElement.value = "Error fetching student details";
         siblingDetailsElement.disabled = true; // Disable the field
     }
