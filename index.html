@@ -154,7 +154,8 @@
 
         if (adminUsername === "Admin" && adminPassword === "q123") {
     showAlert('Admin Login Successful! Redirecting...', 'success');
-
+    var currentTime = new Date().getTime();
+    localstorage.setItem("lastUsedTime",curruntTime);
     localStorage.setItem("logged", "success"); // Store login status
 
     setTimeout(() => window.location.href = 'addStudent.html', 1500);
