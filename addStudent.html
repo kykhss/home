@@ -2538,53 +2538,75 @@ function downloadPoster() {
 }
 
 
+
 function generateReport(studentsData) {
     const reportContainer = document.getElementById('reportContainer');
-  reportContainer.innerHTML = ''; // Clear previous content
+    reportContainer.innerHTML = ''; // Clear previous content
 
-  const table = document.createElement('table');
-  table.classList.add('report-table');
+    const table = document.createElement('table');
+    table.classList.add('report-table');
 
-  const headerRow = table.insertRow();
-  headerRow.innerHTML = `
-    <th>Class</th>
-    <th>Division</th>
-    <th>Male</th>
-    <th>Female</th>
-  `;
+    // Table Header
+    const headerRow = table.insertRow();
+    headerRow.innerHTML = `
+        <th>Class</th>
+        <th>Division</th>
+        <th>Male</th>
+        <th>Female</th>
+        <th>Total</th>
+    `;
 
-  const uniqueClasses = [...new Set(studentsData.map(student => student.admittedClass))];
+    // Extract unique classes
+    const uniqueClasses = [...new Set(studentsData.map(student => student.currentClass.split(" ")[0]))];
 
-  uniqueClasses.forEach(className => {
-    const divisions = [...new Set(studentsData.filter(student => student.admittedClass === className).map(student => student.currentClass))];
+    uniqueClasses.forEach(className => {
+        // Extract unique divisions for this class
+        const divisions = [...new Set(
+            studentsData
+                .filter(student => student.currentClass.startsWith(className + " "))
+                .map(student => student.currentClass.split(" ")[1])
+        )];
 
-    divisions.forEach(division => {
-      const genderCounts = {
-        male: studentsData.filter(student => 
-          student.admittedClass === className && 
-          student.currentClass === division && 
-          student.gender === "Male"
-        ).length,
-        female: studentsData.filter(student => 
-          student.admittedClass === className && 
-          student.currentClass === division && 
-          student.gender === "Female"
-        ).length
-      };
+        let classTotalMale = 0;
+        let classTotalFemale = 0;
 
-      const row = table.insertRow();
-      row.innerHTML = `
-        <td>${className}</td>
-        <td>${division}</td>
-        <td>${genderCounts.male}</td>
-        <td>${genderCounts.female}</td>
-      `;
+        divisions.forEach(division => {
+            const maleCount = studentsData.filter(student =>
+                student.currentClass === `${className} ${division}` && student.gender === "Male"
+            ).length;
+
+            const femaleCount = studentsData.filter(student =>
+                student.currentClass === `${className} ${division}` && student.gender === "Female"
+            ).length;
+
+            const row = table.insertRow();
+            row.innerHTML = `
+                <td>${className}</td>
+                <td>${division}</td>
+                <td>${maleCount}</td>
+                <td>${femaleCount}</td>
+                <td>${maleCount + femaleCount}</td>
+            `;
+
+            classTotalMale += maleCount;
+            classTotalFemale += femaleCount;
+        });
+
+        // Add row for class total
+        const totalRow = table.insertRow();
+        totalRow.innerHTML = `
+            <td><b>${className} (Total)</b></td>
+            <td>-</td>
+            <td><b>${classTotalMale}</b></td>
+            <td><b>${classTotalFemale}</b></td>
+            <td><b>${classTotalMale + classTotalFemale}</b></td>
+        `;
+        totalRow.style.background = "#f0f0f0"; // Light gray background for total rows
     });
-  });
 
-  reportContainer.appendChild(table);
-
+    reportContainer.appendChild(table);
 }
+
 
 
 </script>
