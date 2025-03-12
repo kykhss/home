@@ -1,2614 +1,744 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>KYHSS ATHAVAND</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="common.js"></script>
-    <!-- Include Cropper.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-
-    <link rel="stylesheet" href="styles.css">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
+    <title>Hall Ticket</title>
     <style>
+       @media print {
+            .page-break {
+                page-break-after: always;
+            }
+            .print-button, .generate-button {
+                display: none;
+            }
+            body {
+                font-family: Arial, sans-serif;
+                padding: 5mm;
+                margin: 0;
+            }
+            #switch{
+            display : none;
+        }
+        }
 
-.report-table {
-  border:1px;
-  border-radius: 20px;
-  border-color: #007bff;
-  width: 400px; 
-    
-}
+        h3, h2 {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+        }
 
-.report-table th, .report-table td {
-  border: 1px solid #c91313; 
-  padding: 8px; 
-  text-align: center; 
-}
+        .details {
+            display:flex;
+            justify-content:space-between;
+            margin: 0;
+            padding: 10px;
+            border: 1px solid black;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
 
-.report-table th {
-  background-color: #f2f2f2; 
-}
-        .image-container {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: lightgray;
-  position: relative;
-}
+        .details .photo {
+            position:relative;
+            margin-top: 10px;
+            margin-right: 20px;
+            width: 150px;
+            height: 180px;
+            border: 1px solid #000;
+            padding:5px;
+            object-fit: cover;
+            z-index: index -600;
+        }
 
-.image-container img {
-  width: 100%;
-  height:100%;
-  object-fit: cover;
-  background-color: #fcfafa;
-}
+        .photo img {
+            padding:7px;
+            width: 150px;
+            height:180px;
+            object-fit: cover;
+        }
 
-.refreshButton {
-  display: none;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 30px;
-  height: 30px;
-  border: none;
-  border-radius: 50%;
-  background-color: #007BFF;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
+        .timetable {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
 
-.image-container:hover .refreshButton {
-  display: block;
-}
-canvas{
-    background-color: red;
-}
+        .timetable th, .timetable td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
 
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            gap: 1px 0;
-            background-color: rgb(221, 214, 214);
+        
+
+        .watermark {
+            mix-blend-mode: color-burn;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .watermark img {
+            width: 700px;
+            height: 700px;
         }
         
-        img {
-            max-width: 100%;
-            display: block; /* Hide image until selected */
-            border: 2px solid #28a745; /* Border for the image */
-            border-radius: 4px; /* Slight rounding for the image */
+        #title h2{
+            margin:1px;
         }
-         #upload-btn {
-            display: none; /* Hide buttons until an image is selected */
-            margin-top: 10px;
-        }
-        #student-photo-container{
-            display: none;
-            width: 200px;
-            margin: auto;
-        }
-        #student-photo-container {
-    position: relative; /* Ensures child elements are positioned relative to this container */
-}
-
-#student-photo-container .del {
-    z-index: 1000;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 50px;
-    flex-direction: column;
-    gap: 10px 0;
-    opacity: 0; /* Hide by default */
-    visibility: hidden; /* Prevents interaction when hidden */
-    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-}
-
-/* Show .del buttons only when hovering over #student-photo-container */
-#student-photo-container:hover .del {
-    opacity: 1;
-    visibility: visible;
-}
-
-        .icon-button {
-            position: relative;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 255, 255, 0.8);
-            border: solid black !important;
-            cursor: pointer;
-            border-radius: 50%;
-            padding: 1px;
-            display: none; /* Hidden by default */
-        }
-        .error {
-            color: red;
-        }
-        .batch {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
-    gap: 5px; /* Spacing between fields */
-    max-width: auto; 
-    margin: 0 auto;
-    background-color: rgb(240, 249, 250);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-   
+       
 
 
-  
-    .icon-button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 18px;
-        color: #007BFF;
-    }
- #upload-btn {
-        margin-top: 10px;
-        padding: 8px 12px;
-        font-size: 16px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-    
-   
-
-    #upload-btn {
-        background-color: #28a745;
-        color: #fff;
-    }
-
-    .error {
-        color: red;
-        font-size: 14px;
-        margin-top: 10px;
-    }
-
-    button[type="submit"] {
-        padding: 10px 20px;
-        font-size: 16px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-        form {
-            background-color: #fff;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            width: 90%;
-        }
-
-        input, button {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
+        .hall-ticket {
+            border: 2px solid #000;
             padding: 8px;
-            border: 1px solid #144917;
-            border-radius: 4px;
-        }
-
-        button {
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
-
-        table {
-            width: 100%;
-            margin-top: 2px;
-            border-collapse: collapse;
+            width: 210mm;
+            min-height: 290mm;
             
-
-        }
-        table img{
-            width: 100;
-            height: 100;
-        }
-        #studentTableContainer{
-    margin-top: 0;
-    max-height: 600px; /* Set the height of the container */
-    overflow-y: auto;  /* Enable vertical scrolling */
-        }
-        th{
-            position: sticky;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
+            padding: 8px;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+            width: 210mm;
+            height: 297mm;
+            box-sizing: border-box;
+            position: relative;
         }
 
-        th, td {
-            padding: 10px;
-            text-align: left;
+        
+
+        .footer {
+            position: absolute;
+            font-size: 12px;
+            color: #555;
+            text-align: center !important;
+            justify-content: center;
+            bottom: 1px;
         }
 
-        th {
-            background-color: #f4f4f9;
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: space-evenly;
-        }
-
-        .edit-btn {
-            background-color: #ffc107;
-            color: #fff;
-        }
-
-        .delete-btn {
-            background-color: #dc3545;
-            color: #fff;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
+        .print-button, .generate-button {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
         }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        #studentAlert {
-            color: red;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        /* Responsive for desktop - 3 columns layout */
-        @media (max-width: 768px) {
-            
-            .batch {
-        grid-template-columns: 1fr; /* On mobile, make it 1 column */
-    }
-
-            .form-group {
-                flex-direction: column;
-                margin-bottom: 15px;
-
-            }
-           
-
-
-            .form-group label,
-            .form-group input {
-                flex: 1;
-                margin-right: 10px;
-            }
-
-            .form-group input {
-                margin-left: 10px;
-            }
-
-            .form-group img {
-                display: inline-block;
-                margin-left: 20px;
-            }
-        }
-
-        /* Mobile - 1 column layout */
-        @media (max-width: 768px) {
-            form {
-                width: 100%;
-            }
-
-            .form-group label {
-                font-size: 14px;
-            }
-
-            .form-group img {
-                max-width: 200px;
-            }
-            #cropModal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #fff;
-    padding: 20px;
-    border: 1px solid #ccc;
-    z-index: 1000;
-    display: none;
+        table {
+            margin: auto;
+  border-collapse: collapse;
+  
+  width: 100%; /* Adjust the width as needed */
+}
+#examschedule table{
     max-width: 500px;
-    width: 90%;
-    max-height: 90vh;
-    overflow: auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-/* Ensures the crop image is centered properly */
-#cropImage {
-    max-width: 100%;
-    display: block;
-    margin: auto;
+th, td {
+  border: 1px solid black;
+  padding: 5px;
+  text-align: left;
 }
 
-
-        }
-        #searchInput {
-    width:max-content;
-    margin-right: 20px;
-    padding: 8px;
-    border: 1px solid #a33e3e;
-    border-radius: 4px;
+th {
+  background-color: #f2f2f2;
 }
-button[type="submit"]:hover {
-        background-color: #0056b3;
-    }
-    .section-title {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-        .form-group {
-                margin-bottom: 15px;
-
-            }
-            .flex-row {
-            display: flex !important;
-            flex-direction: row !important;
-            gap: 10px;
-            min-width: max-content!important;
-        }
-        .radio-group {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0;
-  max-width:auto;
-  border: 1px solid #431010; 
-  border-radius: 20px;
-  padding: 10px; 
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-.radio-group label {
-  margin-right: 15px; 
-  font-size: 14px; 
+button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.radio-group input[type="radio"] {
-  accent-color: #007bff; 
-  margin-right: 5px; 
-  border-radius: 50%; 
-  width: 20px; 
-  height: 20px; 
+button:hover {
+  background-color: #3e8e41;
 }
-.radio-group input[type="radio"]:hover {
-  transform: scale(1.1); 
-  accent-color: #28a745;
-}
-#cropModal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #fff;
-    padding: 20px;
-    border: 1px solid #ccc;
-    z-index: 1000;
-    display: none;
-    max-width: 600px;
-    width: 90%;
-    max-height: 90vh;
-    overflow: auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    </style>
+</head>
+<body>
+    <div id="waitinganimation">
+<style>
+#loading-overlay {
+position: fixed;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ z-index: 9999; /* Ensure it's on top */
 }
 
-/* Ensures the crop image is centered properly */
-#cropImage {
-    max-width: 100%;
-    display: block;
-    margin: auto;
+.hidden {
+ display: none;
 }
 
-    #cropModal h2 {
-      margin: 0 0 10px;
-    }
-    #cropModal button {
-      margin-top: 10px;
-    }
-    .loader {
-        position: fixed;
-        margin: 50% 43%;
-  border: 16px solid #f3f3f3; /* Light grey */
-  border-top: 16px solid #3498db; /* Blue */
-  border-radius: 50%;
-  width: 80px;
-  height: 80px;
-  animation: spin 1s linear infinite;
-  z-index: 1000;
+.loader {
+ border: 4px solid rgba(0, 0, 0, 0.1);
+ border-top: 4px solid #3498db;
+ border-radius: 50%;
+ width: 40px;
+ height: 40px;
+ animation: spin 2s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+ 0% { transform: rotate(0deg); }
+ 100% { transform: rotate(360deg); }
 }
 
-</style>
-
-</head>
-<body>
-    <!-- <div class="loader"></div> -->
-<style>
-.alert {
-  padding: 20px;
-  background-color: #67c37c; /* Green */
-  color: #155724;
-  border: 1px solid #c3e6cb;
-  margin-bottom: 15px;
-  top: 10px;
-  right: 10px;
-  width: 500px;
-  height: inherit;
-  z-index: 1000;
-  position:fixed;
-}
-
-.alert-danger {
-  padding: 20px;
-  background-color: #f8d7da; /* Red */
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-  margin-bottom: 15px;
-  top: 20px;
-  right: 10px;
-  width: 500px;
-  height: inherit;
-  z-index: 1000;
-  position:fixed;
-}
-
-.alert-warning {
-  padding: 20px;
-  background-color: #fff3cd; /* Yellow */
-  color: #856404;
-  border: 1px solid #ffeeba;
-  margin-bottom: 15px;
-}
-
-.closebtn {
-  margin-left: 15px;
-  color: #de1203;
-  font-weight: bold;
-  float: right;
-  font-size: 22px;
-  line-height: 20px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.closebtn:hover {
-  color: black;
-}
-
-.confirmation-container {
-  display: none;
+.confirm-container {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: #fff;
+  border-radius: 10px;
   padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  z-index: 9999;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  z-index: 9999; /* High z-index to ensure it's on top */
 }
 
-.confirmation-buttons {
-    display: flex;
-  text-align: center;
-  margin-top: 15px;
+.button-container {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
 }
 
-.confirmation-button {
+.yes-button, .no-button {
   padding: 10px 20px;
-  margin: 0 5px;
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-.confirmation-button-ok {
+.yes-button {
   background-color: #4CAF50;
   color: white;
 }
 
-.confirmation-button-cancel {
+.no-button {
   background-color: #f44336;
   color: white;
 }
+h2{
+font-family:sans-serif;
+}
+.comment-container {
+  margin-top: 20px;
+}
+#classList{
+    max-width: fit-content;
+    overflow: auto;
+}
+#classList table {
+  border-collapse: collapse;
+  width: 100%;
+  
+}
+
+#classList th, td {
+  border: 1px solid black;
+  padding: 8px;
+  text-align: left;
+}
+
+#classList th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+#classList tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #classList table {
+    font-size: 0.8em;
+  }
+}
+.printed{
+    background-color: #3e8e41 !important;
+}
 </style>
-</head>
-<body>
-
-<div id="successAlert" class="alert" style="display:none;">
-  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
-  <strong>Success!</strong> 
-</div>
-
-<div id="errorAlert" class="alert-danger" style="display:none;">
-  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
-  <strong>Error!</strong> 
-</div>
-
-<div id="confirmationAlert" class="alert-warning confirmation-container">
-  <p id="confirmationMessage"></p>
-  <div class="confirmation-buttons">
-    <button class="confirmation-button confirmation-button-ok">OK</button>
-    <button class="confirmation-button confirmation-button-cancel">Cancel</button>
-  </div>
+<div id="loading-overlay" style="display:none;">
+ <div class="loader"></div>
 </div>
 
 <script>
-// Function to show the success message
-function showSuccessMessage(message) {
-  document.getElementById("successAlert").innerHTML = 
-    `<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
-    <strong>Success!</strong> ${message}`; 
-  document.getElementById("successAlert").style.display = "block";
-  setTimeout(function(){ 
-    document.getElementById("successAlert").style.display = "none"; 
-  }, 15000); // 15 seconds timeout
+  
+function showLoading() {
+ document.getElementById("loading-overlay").style.display="block";
 }
 
-// Function to show the error message
-function showErrorMessage(message) {
-  document.getElementById("errorAlert").innerHTML = 
-    `<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
-    <strong>Error!</strong> ${message}`;
-  document.getElementById("errorAlert").style.display = "block";
-  setTimeout(function(){ 
-    document.getElementById("errorAlert").style.display = "none"; 
-  }, 15000); // 15 seconds timeout
+function hideLoading() {
+document.getElementById("loading-overlay").style.display="none";
+ //document.getElementById("loading-overlay").classList.add("hidden");
 }
-
-// Function to show the confirmation message
-// Function to show the confirmation message
-function showConfirmationMessage(message) {
-  return new Promise(resolve => {
-    const confirmationMessageEl = document.getElementById("confirmationMessage");
-    const confirmationAlertEl = document.getElementById("confirmationAlert");
-
-    // Set the message and make the alert visible
-    confirmationMessageEl.textContent = message;
-    confirmationAlertEl.style.display = "block";
-
-    // Add event listeners for buttons
-    const okButton = document.querySelector('.confirmation-button-ok');
-    const cancelButton = document.querySelector('.confirmation-button-cancel');
-
-    // OK button click handler
-    const onOkClick = () => {
-      confirmationAlertEl.style.display = "none"; // Hide the alert
-      cleanup(); // Cleanup event listeners
-      resolve(true); // Resolve promise with true
-    };
-
-    // Cancel button click handler
-    const onCancelClick = () => {
-      confirmationAlertEl.style.display = "none"; // Hide the alert
-      cleanup(); // Cleanup event listeners
-      resolve(false); // Resolve promise with false
-    };
-
-    // Cleanup function to remove event listeners
-    const cleanup = () => {
-      okButton.removeEventListener("click", onOkClick);
-      cancelButton.removeEventListener("click", onCancelClick);
-    };
-
-    okButton.addEventListener("click", onOkClick);
-    cancelButton.addEventListener("click", onCancelClick);
-  });
-}
-    function updateLastUsedTime() {
-    localStorage.setItem("lastUsedTime", new Date().getTime());
-}
-
-// Update last used time on user activity
-document.addEventListener("mousemove", updateLastUsedTime);
-document.addEventListener("keydown", updateLastUsedTime);
-document.addEventListener("click", updateLastUsedTime);
-
-
-// Example usage
-// document.addEventListener("DOMContentLoaded", () => {
-//   document.getElementById("testButton").addEventListener("click", async () => {
-//     const result = await showConfirmationMessage("Are you sure you want to proceed?");
-//     if (result) {
-//       showSuccessMessage("Confirmed!");
-//     } else {
-//       showErrorMessage("Cancelled!");
-//     }
-//   });
-// });
-
-// }showConfirmationMessage("Are you sure you want to proceed?")
-//   .then(result => {
-//     if (result) {
-//       // User clicked "OK"
-//       showSuccessMessage("User confirmed."); 
-//       // Perform the action
-//     } else {
-//       // User clicked "Cancel"
-//       showErrorMessage("User canceled.");
-//     }
-//   });
 </script>
+</div>
+
+
 <script>
-  window.onload = function() {
-    // Code to hide the loader after the page has fully loaded
-    var loader = document.querySelector('.loader');
-    loader.style.display = 'none';
-    let loggedStatus = localStorage.getItem("logged")||"empty";
-    let loginTime = localStorage.getItem("lastUsedTime");
-console.log(loggedStatus);
-    // Check if logged in
-    if (loggedStatus !== "success" || !loginTime|| !loggedStatus) {
-        window.location.href = "index.html";
-        return;
-    }
 
-    let currentTime = new Date().getTime();
-    let timeDiff = (currentTime - parseInt(loginTime)) / (1000 * 60); // Convert to minutes
-
-    if (timeDiff > 30) {
-        localStorage.removeItem("logged"); // Clear login status
-        localStorage.removeItem("loginTime"); // Clear login time
-        window.location.href = "index.html"; // Redirect to login
-    }
+  document.getElementById("togglePhoto").addEventListener("change", function () {
+  if (this.checked) {
+   // generateHallTicketsphotos(); // Call the function when toggle is switched on
+  } else {
+   // clearPhoto(); // Optional: Clear the photo output when toggle is off
   }
-
-  function waitingOn(){
-    var loader = document.querySelector('.loader');
-    loader.style.display = 'block';
-  }
-
-  function waitingOff(){
-    var loader = document.querySelector('.loader');
-    loader.style.display = 'none';
-  }
-  function logout() {
-    localStorage.removeItem("logged"); // Clear login status
-    localStorage.removeItem("lastUsedTime"); // Clear last activity time
-    window.location.href = "index.html"; // Redirect to login page
-}
-
-</script>
-
-<div class="appbars" style="width: 100%; border: 1px solid black; height: auto;background-color: rgb(15, 153, 42);position: sticky; padding: 7px;"><h1 style="margin: 0;"> KYHSS ATHAVANAD</h1>
-
-    <div style="display: flex;justify-content: space-between;"><h3 id="pageHead" style=" color: blanchedalmond; margin: 0;"> PAGE HEAD SHOWN HERE </h3>
-        <p style="display:flex ; justify-content: flex-end;padding-right: 20px;margin-top: px;font-size: larger;">cmiqbalc@gmail.com <span style=" border-radius: 20%;border: none;background-color: rgb(153, 230, 230);"><button style=" margin-left: 4px; border: none;" onclick="logout();"  >logout</button></span></p>
-    </div>
-    </div>
-    <!-- <div >
-        <iframe src="appbar.html" style="width: 100%; height: 100%; border: none; position: sticky; margin-top: 0;"></iframe>
-    </div> -->
-        <!-- Loading overlay -->
-        <div id="loading" style="display: none;">
-            <div class="loader"></div>
-        </div>
-    <script>
-      //  showLoader();
-        let photoFile =[];
-        function showLoader() {
-            const loader = document.getElementById('loading');
-            loader.style.display = 'flex';
-            loader.style.animation = 'fadeIn 0.3s forwards'; // Smooth fade-in
-        }
-    
-        function hideLoader() {
-            const loader = document.getElementById('loading');
-            loader.style.animation = 'fadeOut 0.3s forwards'; // Smooth fade-out
-            setTimeout(() => { loader.style.display = 'none'; }, 300); // Hide after fade-out
-        }
-       // document.getElementById("pageHead").textContent = ""; 
-    </script>
-    <div id="studentAlert" class="alert"></div>
-    
-    <div id="reportContainer"></div>
-    <div style="display: flex;">
-        <button onclick="showForm()" id="addStudentButton"  >Add Student +</button>
-    
-        <span><img id="logo" src="KYHSSLOGO.jpg" width="50" height="50" alt="School Logo" style="border-radius: 50%;">    
-    </span>
-    </div>
-<div id="formcontainer" style="display: none;">
-<form id="addStudentForm" class="addForm" style="display:block;">
-    <div class="section-title" style="display: flex;justify-content: space-between; padding: auto;">Personal Information <span><input type="reset" style=" width:100px;"></span></div>
-    <div class="batch">
-    
-
-    <div class="form-group" style="max-width: 200px;">
-        <label for="studentId">Student ID (Auto-generated):</label>
-        <input type="text" id="studentId" name="studentId" readonly>    
-            <div class="radio-group form-group flex-row" style="margin: 0; max-width: 200px;">
-                <label>Select Sector:</label>
-                <label><input type="radio" name="sector" id="School" value="School" onchange="populateClassOptions('School');generateStudentId();"> School</label>
-                <label><input type="radio" name="sector" id="KG" value="KG" onchange="populateClassOptions('KG');generateStudentId();"> KG</label>
-            </div>
-    </div> 
-    <div class="form-group" style="max-width: 200px;">
-        <label for="adNumber">Admission Number:</label>
-        <input type="text" id="adNumber" name="adNumber" placeholder="Enter Admission Number" required onchange="checkAdNumber()"readonly >
-        <div id="adNumberResult"></div>
-    </div>
-    
-    <div class="form-group">
-        <label for="studentName">Student Name:</label>
-        <input type="text" id="studentName" name="studentName" placeholder="Enter Student Name" required>
-    
-    <div class="radio-group form-group flex-row" style="margin: 0; max-width: 200px;">
-            <label>Gender:</label>
-            <label><input type="radio" name="genderOptions" value="Male" id="genderMale"> Male</label>
-            <label><input type="radio" name="genderOptions" value="Female" id="genderFemale"> Female</label>
-          </div>
-    </div>
-    <div class="form-group">
-        <label for="dob">Date of Birth:</label>
-        <input type="date" id="dob" name="dob" onchange="datetoText(this.value);calculateAge(this.value)" required/>
-        <span style=" margin: 0 0;"><p id="ageResult" ></p>
-    <p id="referenceDate"></p></span>
-    </div>
-    <script type="text/javascript">
-      //  Reset form and clear image preview
-  document.getElementById('addStudentForm').addEventListener('reset', function() {
-    document.getElementById('cropImage').src = '';
-    document.getElementById('cropImage').style.display = 'none';
-    document.getElementById('student-photo').src = '';
-    document.getElementById('student-photo-container').style.display = 'none';
-   // document.getElementById('crop-btn').style.display = 'none';
-    document.getElementById('error-message').textContent = '';
-    resetForm();
- });
- function resetForm() {
-    // // Clear selected radio buttons
-    // document.querySelectorAll('input[type="radio"]').forEach(radio => {
-    //     radio.checked = false;
-    // });
-    
-    // Enable all radio buttons
-    document.getElementsByName("sector").forEach(radio => radio.disabled = false );
-    document.getElementsByName("vehicleNeed").forEach(radio => radio.disabled = false);
-    document.getElementsByName("hasSibling").forEach(radio => radio.disabled = false);
-
-    
-}
-        function datetoText(value){
-           var text=  convertDateToText(value);
-           var age =calculateAge(value);
-            document.getElementById("ageResult").textContent = text;
-            document.getElementById("referenceDate").textContent = age
-        }
-    </script>
-    
-
-<div class="form-group">
-    <div class="radio-group form-group flex-row" style="margin: 0; max-width: fit-content;">
-    <label for="adharCheckbox">Adhaar Got?</label>
-    <input type="checkbox" id="adharCheckbox" name="adharCheckbox" checked>
-    </div>
-    <label for="adharNumber">Adhaar Number:</label>
-    <input type="number" id="adharNumber" name="adharNumber" placeholder="Enter Adhaar Number" >
-<script>
-    const adharCheckbox = document.getElementById('adharCheckbox');
-const adharNumber = document.getElementById('adharNumber');
-
-adharCheckbox.addEventListener('change', () => {
-  adharNumber.disabled = !adharCheckbox.checked;
-  adharNumber.required = !adharCheckbox.checked;
-  adharNumber.value = ''; // Clear the field when disabled
 });
 
-</script>
+  </script>
+    <!-- Generate and Print Buttons -->
+     <div id="switch">    
+       <input type="text" placeholder="enterClass" id="classSelect">
+       <input type="text" placeholder="divisions"id="division">
+       <button id="fetch" onclick="fetchData();">fetchdetails</button>
+       <label for="togglePhoto">Load Photo:</label>
+  <input type="checkbox" id="togglePhoto" />
+       <div style="overflow-y: auto;overflow-y: auto; display: flex;gap: 30px; max-height: 500px;">
+       <div id="examschedule"></div>
+       <div id="classList"></div>
+       </div>
+       <div style="display: flex; gap: 3px;">
+        <button class="generate-button" onclick="generateAllHallTickets()">Generate Hall Tickets</button>
+    
+        <button class="print-button" onclick=" hideSwitch()">Print All Hall Tickets</button>
+    </div>
+    </div>
+
+
+
+    <!-- Container for Hall Tickets -->
+    <div id="hallTicketsContainer" style="max-height: 9ovh; overflow: auto; width: 21cm; margin: auto;"></div>
+   <div id="confirmContainer" class="confirm-container">
+  <h2>Are you sure print the hall ticket?</h2>
+  <div class="button-container">
+    <button class="yes-button" onclick="savePrintedData();">Yes</button>
+    <button class="no-button" onclick="hideConfirmation();">No</button>
+  </div>
+  <div class="comment-container">
+    <!-- <label for="comment">Comment:</label>
+    <textarea id="comment" rows="4" cols="50"></textarea> -->
+  </div>
 </div>
-    </div>
-        <div class="section-title">Adress Section</div>
-        <div class="batch">
-               <div class="form-group">
-        <label for="houseName">House Name:</label>
-        <input type="text" id="houseName" name="houseName" placeholder="Enter House Name" required>
-    </div>
-    <div class="form-group">
-        <label for="place">Place:</label>
-        <input type="text" id="place" name="place" placeholder="Enter Place" required>
-    </div>
-    <div class="form-group">
-        <label for="postOffice">Post Office:</label>
-        <input type="text" id="postOffice" name="postOffice" placeholder="Enter Post Office" required>
-    </div>
-    <div class="form-group">
-        <label for="postOffice">Pin:</label>
-        <input type="text" id="pin" name="pin" placeholder="Enter Postal Index Number" required>
-    </div>
-        </div>
-        <div class="section-title">Parent Details</div>
-        <div class="batch">
-    <div class="form-group">
-        <label for="fatherName">Father's Name:</label>
-        <input type="text" id="fatherName" name="fatherName" placeholder="Enter Father's Name" required>
-    </div>
-    <div class="form-group">
-        <label for="fatherMobile">Father's Mobile Number:</label>
-        <input type="text" id="fatherMobile" name="fatherMobile" placeholder="Enter Father's Mobile Number" required>
-    </div>
-    <div class="form-group">
-        <label for="motherName">Mother's Name:</label>
-        <input type="text" id="motherName" name="motherName" placeholder="Enter Mother's Name" required>
-    </div>
-    <div class="form-group">
-        <label for="motherMobile">Mother's Mobile Number:</label>
-        <input type="text" id="motherMobile" name="motherMobile" placeholder="Enter Mother's Mobile Number" required>
-    </div>
-    <style>
-        @keyframes blinker {
-          50% {
-            opacity: 0;
-          }
-        }
-        </style>
+    <script>
+      hideConfirmation();
+      function showConfirmation() {
+  document.getElementById('confirmContainer').style.display = 'block';
+}
+
+function hideConfirmation() {
+  document.getElementById('confirmContainer').style.display = 'none';
+}
+//fetchData();
+
+        function fetchData(){
+        showLoading();
+        loadExamSchedule();
+        loadStudentTable();
+        //hideLoading();
         
-    <div class="form-group">
-        <label for="whatsappNo">WhatsApp Number:</label>
-        <input type="text" id="whatsappNo" name="whatsappNo" placeholder="Enter WhatsApp Number" required onchange="getStudentbyMobile();">
-        <span id="siblingloading" style="display: none; color: red; animation: blinker 1s linear infinite;">loading Sibling Details</span>
-
- </div>
-    <!-- Radio Buttons to Select Guardian -->
-    <div class="form-group">
-    <label>Is Guardian the same as:</label>
-    <div class="radio-group form-group flex-row">
-        <label><input type="radio" name="guardianOption" id="guardianFather" value="father" onclick="setGuardian()"> Father</label>
-        <label><input type="radio" name="guardianOption" id="guardianMother" value="mother" onclick="setGuardian()"> Mother</label>
-        <label><input type="radio" name="guardianOption" id="guardianOther" value="other" onclick="setGuardian()"> Local Guardin</label>
-    </div>
-    </div>
-
-    <div class="form-group">
-        <label for="guardian">Guardian:</label>
-        <input type="text" id="guardian" name="guardian" placeholder="Enter Guardian Name" required>
-    </div>
-    <div class="form-group">
-        <label for="relation">Relation with Guardian:</label>
-        <input type="text" id="relation" name="relation" placeholder="Enter Relation with Guardian" required>
-    </div>
-        </div>
-        <div class="section-title">Academic Details</div>
-        <div class="batch">
-       
-    <div class="form-group">
-        <label for="admissionDate">Admission Date:</label>
-        <input type="date" id="admissionDate" name="admissionDate" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="classSelect">Select Class:</label>
-        <select id="classSelect" name="classSelect" required onchange="updateAdmittedClass()">
-            <!-- Options will be populated based on sector selection -->
-        </select>
-    </div>
-    <div id="currentStrength" style="display: flex;justify-content: space-between;"></div>
-    <div class="form-group">
-        <label for="divisionSelect">Select Division:</label>
-        <select id="divisionSelect" name="divisionSelect" required onchange="updateAdmittedClass()">
-            <!-- Options will be A to E -->
-        </select>
-    </div>
-
-    <script>
-        function setDefaultSelections(admitted) {
-            const [admittedClass, division] = admitted.split(' ');
-            console.log(admittedClass+"---"+division);
-                //alert(division);
-            // Set the class dropdown to the admitted class
-            const classSelect = document.getElementById("classSelect");
-            for (let option of classSelect.options) {
-                if (option.value === admittedClass) {
-                    option.selected = true;
-                    break;
-                }
-            }
-
-            // Set the division dropdown to the admitted division
-            const divisionSelect = document.getElementById("divisionSelect");
-            for (let option of divisionSelect.options) {
-                if (option.value === division) {
-                    option.selected = true;
-                    break;
-                }
-            }
         }
-
-        // Function to populate class options based on the selected sector
-        function populateClassOptions(sector) {
-            //showLoader();
-    //const sector ="KG";// document.querySelector('input[name="sector"]:checked').value;
-    const classSelect = document.getElementById('classSelect');
-    classSelect.innerHTML = ''; // Clear previous options
-
-    // Add a default first option with an empty value
-    const defaultOption = document.createElement('option');
-    defaultOption.value = ''; // Empty value
-    defaultOption.textContent = 'Select Class';
-    defaultOption.disabled = true; // Make it unselectable
-    defaultOption.selected = true; // Set as default selected
-    classSelect.appendChild(defaultOption);
-
-    if (sector === 'School') {
-        // School options from 1 to 10
-        for (let i = 1; i <= 10; i++) {
-            const option = document.createElement('option');
-            option.value = i;
-            option.textContent = i;
-            classSelect.appendChild(option);
-        }
-    } else if (sector === 'KG') {
-        // KG options LKG and UKG
-        const kgOptions = ['LKG', 'UKG'];
-        kgOptions.forEach(kgClass => {
-            const option = document.createElement('option');
-            option.value = kgClass;
-            option.textContent = kgClass;
-            classSelect.appendChild(option);
-        });
-    }
-
-    // Populate divisions after class options are updated
-    populateDivisionOptions(sector);
-    //updateAdmittedClass();
-   // hideLoader();
-}
-
-        // Function to populate division options A to E
-        function populateDivisionOptions(sector) {
-            const divisionSelect = document.getElementById('divisionSelect');
-            divisionSelect.innerHTML = ''; // Clear previous options
-
-                // Add a default first option with an empty value
-    const defaultOption = document.createElement('option');
-    defaultOption.value = ''; // Empty value
-    defaultOption.textContent = 'Select division';
-    //defaultOption.disabled = true; // Make it unselectable
-    defaultOption.selected = true; // Set as default selected
-    divisionSelect.appendChild(defaultOption);
-
-            ['A', 'B', 'C', 'D', 'E'].forEach(division => {
-                const option = document.createElement('option');
-                option.value = division;
-                option.textContent = division;
-                divisionSelect.appendChild(option);
-            });
-            updateAdmittedClass();
-        }
-
-       
-    </script>
-    <div class="form-group">
-        <label for="admittedClass">Admitted Class&Div:</label>
-        <input type="text" id="admittedClass" name="admittedClass" placeholder="Enter Admitted Class" required readonly>
-    </div>
-    <script>
-      function updateAdmittedClass() {
-        const classValue = document.getElementById('classSelect').value;
-        const divisionValue = document.getElementById('divisionSelect').value;
-        const admittedClassField = document.getElementById('admittedClass');
-        const curruntClassField = document.getElementById('currentClass');
-        getClassDivisionGenderCount(classValue);
-        // Display the combined value of class and division in admittedClass
-        admittedClassField.value = (classValue && divisionValue) ? `${classValue} ${divisionValue}` : '';
-        curruntClassField.value = (classValue && divisionValue) ? `${classValue} ${divisionValue}` : '';
-    }
-    async function getClassDivisionGenderCount(classValue) {
-        document.getElementById('currentStrength').textContent = 'loading..... class strength';
-       // document.getElementById('currentStrength').textContent = '';
-       
-    // Retrieve selected class, division, and current year
-    const selectedClass = document.getElementById('classSelect').value;
-    const selectedDivision = document.getElementById('divisionSelect').value;
-    const curruntyear = new Date().getFullYear(); // Replace with actual value if dynamic
-
-    // Ensure both class and division are selected
-    if (!selectedClass) {
-        document.getElementById('currentStrength').textContent = 'Please select both class';
-        return;
-    }
-
-    try {
-        // Fetch data from Google Apps Script API with class, division, and year as parameters
-        const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getclassStrenth&newClass=${selectedClass}&division=${selectedDivision}&year=${curruntyear}`);
         
-        // Check if response is ok (status code 200)
-        if (!response.ok) {
-            throw new Error(`Error: ${response.statusText}`);
-        }
-
-        // Parse the JSON response
-        const data = await response.json();
-        console.log(data);
-
-        // Process and display the data
-        if (data && data.result) {
-            displayClassDivisionGenderCount(data.result);
-        } else {
-            document.getElementById('currentStrength').textContent = 'No data available for the selected class and division.';
-        }
-    } catch (error) {
-        document.getElementById('currentStrength').textContent = `Failed to fetch data: ${error.message}`;
-    }
-}
-
-async function checkAdNumber() {
-    const adNumberInput = document.getElementById('adNumber').value.trim();
-    const sector = document.querySelector('input[name="sector"]:checked').value;
-    console.log(adNumberInput); 
-    // Assumes there's an input or select element with id="sector"
-    const adNumberResultDiv = document.getElementById('adNumberResult');
-
-    if (!adNumberInput) {
-        adNumberResultDiv.textContent = 'Please enter an Admission Number.';
-        return;
-    }
-
-    try {
-        // Fetch from Google Apps Script API
-        const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=AdmissionCheck&adNumber=${adNumberInput}&sector=${sector}`);
-        
-        const data = await response.json();
-        console.log(data);
-
-        if (data.exists === "Yes") {
-            adNumberResultDiv.textContent = `Admission Number not exists`;
-            adNumberResultDiv.style.color = 'green';
-        } else {
-            adNumberResultDiv.textContent = `Admission Number is available. Suggested: ${data.nextAdNumber}`;
-            adNumberResultDiv.style.color = 'red';
-        }
-    } catch (error) {
-        adNumberResultDiv.textContent = `Error checking Admission Number: ${error.message}`;
-        adNumberResultDiv.style.color = 'red';
-    }
-}
-
-
-function displayClassDivisionGenderCount(data) {
-    const currentStrengthDiv = document.getElementById('currentStrength');
-    currentStrengthDiv.innerHTML = ''; // Clear previous content
-
-    // Check if data is empty or null
-    if (!data || !data.length) {
-        currentStrengthDiv.textContent = 'No data found for the selected class and division.';
-        return;
-    }
-
-    // Iterate over the data and create HTML content
-    data.forEach(dataItem => {
-        const html = `
-            <p><strong>Division ${dataItem.division}: Male ${dataItem.Male}, Female ${dataItem.Female}</strong></p>
-        `;
-
-        // Append each HTML block to the currentStrengthDiv
-        currentStrengthDiv.innerHTML += html;
-    });
-}
-
-    // Initialize the options on page load
-    //window.onload = populateClassOptions('KG');
-</script>
-    <div class="form-group">
-        <label for="currentClass">Current Class:</label>
-        <input type="text" id="currentClass" name="currentClass" placeholder="Enter Current Class" required>
-    </div>
-        </div>
-    <div class="section-title" style="display: flex; justify-content: space-between;">
-        Vehicle Info
-        <span>
-            <div class="radio-group form-group flex-row" style="margin: 0; max-width: 200px;">
-                <label style="width: fit-content;">Vehicle Need</label>
-                <label><input type="radio" id="vehicleNeed" name="vehicleNeed" value="YES" onchange="toggleVehicleInfo(this.value)"> YES</label>
-                <label><input type="radio" id="noVehicle" name="vehicleNeed" value="NO" onchange="toggleVehicleInfo(this.value)"> NO</label>
-            </div>
-        </span>
-    </div>
-    <div class="batch">
-    
-    <div id="vehicleInfo" class="form-group">
-        <div class="form-group">
-            <label for="vehiclePoint">Vehicle Point:</label>
-            <input type="text" id="vehiclePoint" name="vehiclePoint" placeholder="Enter Vehicle point" required >
-        </div>
-        <div class="form-group">
-            <label for="vehicleStage">Vehicle Stage:</label>
-            <input type="text" id="vehicleStage" name="vehicleStage" placeholder="Enter Vehicle stage" required>
-        </div>
-    
-    <script>
-        async function toggleVehicleInfo(value) {
-  const vehiclePointInput = document.getElementById("vehiclePoint");
-  const vehicleStageInput = document.getElementById("vehicleStage");
-
-  if (value === "YES") {
-    // Enable inputs when the value is "YES"
-    vehiclePointInput.disabled = false;
-    vehicleStageInput.disabled = false;
-  } else {
-    // Show a confirmation dialog before clearing the vehicle information
-    const confirmed = await showConfirmationMessage("Are you sure you want to clear the vehicle information?");
-    if (confirmed) {
-      // Clear inputs and disable them if the user confirms
-      vehiclePointInput.value = "";
-      vehicleStageInput.value = "";
-      vehiclePointInput.disabled = true;
-      vehicleStageInput.disabled = true;
-    }
-  }
-}
-
-    </script>
-    
-    </div>
-    </div>
-    <div class="section-title" style="display: flex; justify-content: space-between;">
-        Sibling Information
-        <span>
-            <div class="radio-group form-group flex-row" style="margin: 0; max-width: 200px;">
-                <label style="width: fit-content;">Siblings</label>
-                <label><input type="radio" id="siblingYes" name="hasSibling" value="Yes" onchange="toggleSiblingInfo(this.value)"> Yes</label>
-                <label><input type="radio" id="siblingNo" name="hasSibling" value="No" onchange="toggleSiblingInfo(this.value)"> No</label>
-            </div>
-        </span>
-    </div>
-    <div class="batch">
-    
-    <div id="siblingInfo" >
-        <!-- <div class="form-group">
-            <label for="siblingSelect">Select Siblings:</label>
-            <select id="siblingSelect" name="siblingSelect" multiple>
-                <option value="sibling1">Sibling 1</option>
-                <option value="sibling2">Sibling 2</option>
-                <option value="sibling3">Sibling 3</option>
-                <option value="sibling4">Sibling 4</option>
-                Add more options as needed -->
-            <!--</select>
-        </div> -->
-        <div class="form-group">
-            <label for="siblingDetails">Sibling Details:</label>
-            <input type="text" id="siblingDetails" placeholder="Enter details about siblings" >
-        </div>
-    </div>
-    <script>
-        async function toggleSiblingInfo(hasSiblings) {
-  const siblingDetailsInput = document.getElementById("siblingDetails");
-
-  if (hasSiblings === "Yes") {
-    // Enable sibling details input field
-    siblingDetailsInput.disabled = false;
-    //requiredFields.push("siblingDetails");
-    siblingDetailsInput.value="";
-    document.getElementById("admissionFee").value=14600;
-
-  } else {
-    // If no siblings, show confirmation and clear the input field if confirmed
-    if (siblingDetailsInput.value) {
-      const confirmed = await showConfirmationMessage("Are you sure you want to clear the sibling information?");
-      if (confirmed) {
-        siblingDetailsInput.value = ""; 
-        document.getElementById("admissionFee").value=15600;
-        showSuccessMessage("Sibling information fields have been cleared.");
-      }
-    }
-
-    // Remove "siblingDetails" from requiredFields array and disable input
-    // const index = requiredFields.indexOf("siblingDetails");
-    // if (index !== -1) {
-    //   requiredFields.splice(index, 1);
-    // }
-    siblingDetailsInput.disabled = true;
-  }
-}
-
-//hideLoader();
-    </script>
-    <div class="form-group">
-        <label for="status">Status:</label>
-        <input type="text" id="status" name="status" placeholder="Enter Status" value="Ongoing" required>
-    </div>
-    <div class="form-group">
-        <label for="studentMobile">Student Mobile Number:</label>
-        <input type="text" id="studentMobile" name="studentMobile" placeholder="Enter Student Mobile Number" >
-    </div>
-    <div class="form-group">
-        <label for="admissionFee">Admisson fee:</label>
-        <input type="text" id="admissionFee" name="admissionFee" placeholder="Enter admissionFee Mobile Number" value=15600 >
-    </div>
-</div>
-<!-- Image Upload Section -->
-<div id="childphoto">
-    <div class="section-title" >Student Image</div>
-          <div class="form-group">
-              <div id="imagepicker">
-              <label for="imgStudent"style="width:200px";>Student Photo:</label>
-              <input id="imgStudent" style=" width:200px;"type="file" accept="image/*" onchange="showCropper(event, 'student-photo')"alt="studentphoto" placeholder="croppedimg" title="croppedimg"> 
-              <!-- Image Preview and Crop Container -->
-              <div id="cropModal">
-                <div>
-                  <h2>Crop Photo</h2>
-                  <img id="cropImage" src="https://i.gifer.com/4V0b.gif" alt="cropimage" style="display: block;"/>
-                  <button type="button" onclick="cropImageto()">Crope Image</button>
-                  <button type="button" onclick="deleteImage()">Delete</button>
-                  <!-- Close Button to hide the modal -->
-                  <button type="button" onclick="closeCropModal()">Close</button>
-                </div>
-              </div>
-              
-              <div id="student-photo-container" style="position: relative; display: none;">
-                <img id="student-photo" src="" alt="Student Photo" style="display: block; margin: auto;">
-                
-                <!-- Edit and Delete buttons overlayed on the image -->
-            
-                <div class="del" >
-                <button type="button" id="edit-btn" class="icon-button overlay-btn" onclick="editImage()" title="Edit Image" style="display: inline-block">✎</button>
-                <button type="button" id="delete-btn" class="icon-button overlay-btn" onclick="deleteImage()" title="Delete Image" style="display: block;">❌</button>
-                </div>
-              </div>
-              <!-- Cropped Image Display -->
-              
-      
-              <!-- Image Crop & Upload Controls -->
-              
-              <input type="button" id="upload-btn" onclick="uploadCroppedImage()" style="display: block;" value="uploadStudentPhoto"/>
-              <div class="error" id="error-message"></div>
-          </div>
-      </div>
-</div>
-
-     <!-- Submit Button -->
-    <button type="button" onclick="saveStudent()">Add/Update Student</button>
-</form>
-
-</div>
-
-    
-    <div id="spinner"></div>
-    <span  style="padding: 0;display:flex; gap: 20px;align-items: center; width: 270px; pointer-events: mo;"><h2 onclick="loadStudentTable('Reload') ; ">Student List</h2> <input type="text" style="width: 100px;" placeholder="2025" value="2025" id="curruntyear" onchange="loadStudentTable('new');">
-        <button type="button" onclick="loadStudentTable('Reload') ; ">reloadData</button>
-    </span>
-<div>
-    <input type="text" id="searchInput" placeholder="Search by AD Number, Name, or Class" onkeyup="filterTable()">
-</div>
-<div id="studentTableContainer">
-
-</div>
-</body>
-<script>
-    function closeCropModal() {
-  const cropModal = document.getElementById("cropModal");
-  cropModal.style.display = "none"; // Hides the modal
-}
-
-    function showForm() {
-        const form = document.getElementById("formcontainer");
-            const button = document.getElementById("addStudentButton");
-
-            // Toggle the display between 'none' and 'block'
-            if (form.style.display === "none" || form.style.display === "") {
-                form.style.display = "block";
-                
-               // document.getElementById("childphoto").style.display = "block";
-                button.textContent = "Close Form -";
-            } else {
-                form.style.display = "none";
-              //  document.getElementById("childphoto").style.display = "none";
-                button.textContent = "Add Student +";
-            }
-        }
-
-
-        function setGuardian() {
-  const guardianOption = document.querySelector('input[name="guardianOption"]:checked').value;
-  const guardianNameField = document.getElementById("guardian");
-  const guardianRelation = document.getElementById("relation");
-
-  switch (guardianOption) {
-    case "father":
-      guardianNameField.value = document.getElementById("fatherName").value;
-      guardianRelation.value = "FATHER";
-      guardianNameField.readOnly = true; // Set read-only after all cases
-      guardianRelation.readOnly = true; // Set read-only after all cases
-      break;
-    case "mother":
-      guardianNameField.value = document.getElementById("motherName").value;
-      guardianRelation.value = "MOTHER";
-      guardianNameField.readOnly = true; // Set read-only after all cases
-      guardianRelation.readOnly = true; // Set read-only after all cases
-      break;
-      case "other":
-      guardianNameField.value = ""//document.getElementById("motherName").value;
-      guardianRelation.value = "";
-      guardianNameField.readOnly = false; // Set read-only after all cases
-      guardianRelation.readOnly = false; // Set read-only after all cases
-
-    default:
-      // Handle unexpected guardianOption values (optional)
-      console.warn("Invalid guardianOption:", guardianOption);
-      break;
-  }
-
+       function hideSwitch() {
+  document.getElementById("switch").style.display = "none";
   
+  window.print();
+
+  // Wait for 2 seconds before showing the switch again
+  setTimeout(() => {
+    document.getElementById("switch").style.display = "block";
+    showConfirmation();
+  }, 2000);
 }
-    function setGender() {
-        const guardianOption = document.querySelector('input[name="guardianOption"]:checked').value;
-        const guardianNameField = document.getElementById("guardian");
-       // const guardianNumberField = document.getElementById("guardianNumber");
+        const classTimetables = {
+            "8": [
+                { date: "2024-11-15", day: "Monday", subject: "Math", time: "9:00 AM - 12:00 PM" },
+                { date: "2024-11-16", day: "Tuesday", subject: "English", time: "9:00 AM - 12:00 PM" },
+                { date: "2024-11-17", day: "Wednesday", subject: "Science", time: "9:00 AM - 12:00 PM" }
+            ],
+            "11": [
+                { date: "2024-11-15", day: "Friday", subject: "Physics", time: "9:00 AM - 12:00 PM" },
+                { date: "2024-11-16", day: "Saturday", subject: "Chemistry", time: "9:00 AM - 12:00 PM" }
+            ]
+        };
 
-        if (guardianOption === "father") {
-            guardianNameField.value = document.getElementById("fatherName").value;
-            guardianNumberField.value = document.getElementById("fatherMobile").value;
-        } else if (guardianOption === "mother") {
-            guardianNameField.value = document.getElementById("motherName").value;
-            guardianNumberField.value = document.getElementById("motherMobile").value;
-        }
-    }
-
-    // Update guardian fields if Father’s or Mother’s name/mobile is edited
-    document.getElementById("fatherName").addEventListener("input", () => {
-        if (document.querySelector('input[name="guardianOption"]:checked')?.value === "father") {
-            setGuardian();
-        }
-    });
-
-    document.getElementById("fatherMobile").addEventListener("input", () => {
-        if (document.querySelector('input[name="guardianOption"]:checked')?.value === "father") {
-            setGuardian();
-        }
-    });
-
-    document.getElementById("motherName").addEventListener("input", () => {
-        if (document.querySelector('input[name="guardianOption"]:checked')?.value === "mother") {
-            setGuardian();
-        }
-    });
-
-    document.getElementById("motherMobile").addEventListener("input", () => {
-        if (document.querySelector('input[name="guardianOption"]:checked')?.value === "mother") {
-            setGuardian();
-        }
-    });
-</script>
-
-<script>
-    // Function to transform input to uppercase, remove extra spaces, and trim leading/trailing spaces
-    function formatInput(event) {
-        const input = event.target;
-        input.value = input.value
-            .toUpperCase()                   // Convert to uppercase
-            .replace(/\s+/g, ' ')             // Replace multiple spaces with a single space
-            .trimStart();                          // Remove leading and trailing spaces
-    }
-
-    // Apply the formatting to each text input field
-    document.querySelectorAll("input[type='text']").forEach((input) => {
-        input.addEventListener("input", formatInput);
-    });
-</script>
-
-
-    <script>
-
-let cropper;
-function showCropper(event, index) {
-    const file = event.target.files[0];
-    currentIndex = index;
-
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById('cropImage').src = e.target.result;
-        document.getElementById('cropModal').style.display = 'block';
-        if (cropper) {
-                    cropper.destroy(); // Destroy any existing cropper instance
-                }
-        // Initialize Cropper.js
-        cropper = new Cropper(document.getElementById('cropImage'), {
-          aspectRatio: 3 / 4,
-    ViewTransition:1,
-    viewMode:1
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-
-  async function editImage() {
-  // Get the original image element
-  const img = document.getElementById('student-photo');
-
-  // Check if the image source is empty or invalid
-  if (!img.src || img.src === '') {
-    alert("Please select an image first.");
-    return; 
-  }
-
-  // Show confirmation message
-  const confirmed = await showConfirmationMessage("Are you sure you want to edit the image?");
-  
-  if (confirmed) {
-    document.getElementById('cropModal').style.display = 'block';
-
-    const cropImage = document.getElementById('cropImage');
-
-    // Assign the source of the existing image to the cropImage element
-    cropImage.src = img.src;
-
-    if (cropper) {
-      cropper.destroy(); // Destroy any existing cropper instance
-    }
-
-    // Initialize Cropper.js on the cropImage element
-    cropper = new Cropper(cropImage, {
-      aspectRatio: 3 / 4,
-      viewMode: 1,
-      // Other Cropper.js options as needed
-    });
-  }
-}
-
-async function deleteImage() {
-    const confirmed = await showConfirmationMessage("Are you sure you want to delete the image?");
-    if (confirmed) {
-        const imageElement = document.getElementById('student-photo');
-        imageElement.src = '';
-
-        document.getElementById('imagepicker').style.display = 'block';
-        document.getElementById('studentPhoto').value = '';
-        document.getElementById('student-photo-container').style.display = 'none';
-       // document.getElementById('crop-btn').style.display = 'none';
-        document.getElementById('upload-btn').style.display = 'none';
-        document.getElementById('edit-btn').style.display = 'none';
-        document.getElementById('delete-btn').style.display = 'none';
-
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
-        }
-    }
-}
-
-
-async function uploadCroppedImage2(event) {
-  event.preventDefault();
-
-  const croppedImage = document.getElementById('student-photo').getAttribute('data-cropped');
-
-  if (croppedImage) {
-    // Await the confirmation dialog
-    const confirmed = await showConfirmationMessage("Are you sure you want to upload the image?");
-    
-    if (confirmed) {
-      // Implement your upload logic here (e.g., send it to your server or Google Apps Script)
-      console.log("Cropped image ready for upload:", croppedImage);
-      showSuccessMessage("Image uploaded successfully!"); // Confirmation message for upload
-    }
-  } else {
-    console.error("No cropped image to upload.");
-    document.getElementById('error-message').textContent = 'No cropped image to upload.';
-  }
-}
-
-
-    function cropImageto() {
-  try {
-    const canvas = cropper.getCroppedCanvas({
-      width: 150,
-      height: 200,
-    });
-
-    document.getElementById('student-photo-container').style.display = 'block';
-
-    // Convert canvas to base64 and set the data-cropped attribute
-    const base64Data = canvas.toDataURL();
-    document.getElementById('student-photo').src = base64Data;
-    document.getElementById('student-photo').setAttribute('data-cropped', base64Data);
-
-    document.getElementById('cropModal').style.display = 'none';
-    cropper.destroy();
-    document.getElementById('upload-btn').style.display = 'block';
-    
-  } catch (error) {
-    // ... (error handling as before)
-  }
-}
-
-       // document.getElementById('addStudentForm').addEventListener('submit', function (event) {
-      // function saveStudent() {
-          //  document.getElementById("addStudentForm").addEventListener("submit", function(event) {
-    // Prevents default form submission
-   // event.preventDefault();
-   function saveStudent() {
-    showLoader();
-
-    const spinner = document.getElementById('spinner');
-    spinner.style.display = 'block';
-
-    const studentData = {
-        action: 'addOrUpdateStudent',
-        studentId: document.getElementById('studentId')?.value,
-        adNumber: document.getElementById('adNumber')?.value,
-        studentName: document.getElementById('studentName')?.value,
-        gender: document.querySelector('input[name="genderOptions"]:checked')?.value,
-        dob: document.getElementById('dob')?.value,
-        adharNumber: document.getElementById('adharNumber')?.value || "",
-        sector: document.querySelector('input[name="sector"]:checked')?.value,
-        houseName: document.getElementById('houseName')?.value,
-        place: document.getElementById('place')?.value,
-        pin: document.getElementById('pin')?.value,
-        postOffice: document.getElementById('postOffice')?.value,
-        fatherName: document.getElementById('fatherName')?.value,
-        fatherMobile: document.getElementById('fatherMobile')?.value,
-        motherName: document.getElementById('motherName')?.value,
-        motherMobile: document.getElementById('motherMobile')?.value,
-        whatsappNo: document.getElementById('whatsappNo')?.value,
-        guardian: document.getElementById('guardian')?.value,
-        relation: document.getElementById('relation')?.value,
-        admissionDate: document.getElementById('admissionDate')?.value,
-        admittedClass: document.getElementById('admittedClass')?.value,
-        currentClass: document.getElementById('currentClass')?.value,
-        status: document.getElementById('status')?.value,
-        studentMobile: document.getElementById('studentMobile')?.value,
-        admissionFee: document.getElementById('admissionFee')?.value,
-        vehiclePoint: document.getElementById('vehiclePoint')?.value || "",
-        vehicleStage: document.getElementById('vehicleStage')?.value || "",
-        siblingDetails: document.getElementById('siblingDetails')?.value || document.getElementById('siblingDetails')?.textContent||"",
-    };
-
-    // Define required fields
-    const requiredFields = [
-        'studentId', 'adNumber', 'studentName', 'gender', 'dob', 'sector',
-        'houseName', 'place', 'pin', 'postOffice', 'fatherName', 'fatherMobile', 
-        'motherName', 'motherMobile', 'whatsappNo', 'guardian', 'relation', 
-        'admissionDate', 'admittedClass', 'currentClass', 'status','siblingDetails','admissionFee'
-    ];
-
-    const isAdharChecked = document.getElementById('adharCheckbox').checked;
-    if (isAdharChecked) requiredFields.push("adharNumber");
-
-    const siblingYesCheckbox = document.getElementById("siblingYes").checked;
-    
-    if (!siblingYesCheckbox){
-        const index = requiredFields.indexOf("siblingDetails");
-     if (index !== -1) {
-       requiredFields.splice(index, 1);
-     }
-    }
-    const vehicleNeededCheckbox = document.getElementById("vehicleNeed").checked;
-    if (vehicleNeededCheckbox) requiredFields.push("vehiclePoint", "vehicleStage");
-
-    // Check for missing fields
-    const missingFields = requiredFields.filter(field => !studentData[field]);
-    if (missingFields.length > 0) {
-        showErrorMessage(`Please fill out all required fields: ${missingFields.join(', ')}`);
-        spinner.style.display = 'none';
-        hideLoader();
-        return; // Stop further execution
-    }
-
-    const params = new URLSearchParams(studentData).toString();
-    console.log(params);
-
-    fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?${params}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data); // Log full response for debugging
-            if (data.success) {
-                loadStudentTable(studentData.studentId);
-                showSuccessMessage("Student saved successfully");
-                 document.getElementById('addStudentForm').reset(); // Clear the form only on success
-            } else {
-                showErrorMessage('Error adding or updating student');
-            }
-        })
-        .catch(error => {
-            console.error('Fetch error:', error);
-            showErrorMessage('Network or server error. Please try again.');
-        })
-        .finally(() => {
-            hideLoader();
-            spinner.style.display = 'none';
-        });
-}
-
-
-        let studentsData = []; // Variable to hold student data
-        
-loadStudentTable();
-        function loadStudentTable(studentId) {
-            showLoader();
-    const spinner = document.getElementById('spinner');
-    spinner.style.display = 'block';
-            if(studentId==="Reload"){
-                localStorage.setItem("studentsList","");
-            }
+        var studentsData = [
+            { examNo: "B1234", name: "John Doe", admissionNo: "12345", class: "8", division: "A", classTeacher: "Ms. Smith", photoURL: "1251.jpg" },
+            { examNo: "B5678", name: "Jane Smith", admissionNo: "67890", class: "8", division: "B", classTeacher: "Mr. Brown", photoURL: "1252.jpg" },
+            { examNo: "B9101", name: "Emily Davis", admissionNo: "54321", class: "11", division: "A", classTeacher: "Dr. Green", photoURL: "1253.jpg" }
+        ];
+        var examName = "";
+        var examSchedule=[];
+        var classTeacher=[];
+        var photofile = [];
+         renderStudentTable(studentsData); // Render the table
+        generateHallTicketHTML(studentData);
+        generateExamScheduleTable(examSchedule);
+        function loadExamSchedule() {
+        showLoading();
+    //const spinner = document.getElementById('spinner');
+    //spinner.style.display = 'block';
+   // console.log("data");
     // Get the current year from the input
-    const curruntyear = document.getElementById("curruntyear").value;
+    const selectedClass =document.getElementById("classSelect").value; // Ensure it's a string
+    const division =document.getElementById("division").value; // Ensure it's a string
 
-    fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudents&curruntyear=${curruntyear}&stuIds=${studentId || ""}`)
+    fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getExamSchedule&selectedClass=${selectedClass}`)
         .then(response => response.json())
         .then(data => {
-            if (data.students && data.students.length > 0) {
-                const studentsData = data.students; // Local variable for the fetched data
-                
-// Call the function to generate the report
-generateReport(studentsData);
-                // Update each student in localStorage
-                studentsData.forEach(student => {
-                    updateStudentList(student); // Call updateStudentList for each student
-                });
-                
-                generateTable(); // Render the table with the latest data
+            if (data.examSchedule && data.examSchedule.length > 0) {
+                examSchedule = data.examSchedule; // Store data in the variable
+                examName = data.examName;
+                console.log(examSchedule);
+              //  renderStudentTable(studentsData); // Render the table
+             // generateHallTicketHTML(studentData);
+             generateExamScheduleTable(examSchedule);
             } else {
+            console.log(data);
                 document.getElementById('studentTableContainer').innerHTML = '<p>No students found</p>';
             }
         })
         .catch(error => console.error('Error:', error))
-        .finally(() => {
-            hideLoader();
-            spinner.style.display = 'none'});
+        .finally(() =>""); //spinner.style.display = 'none');
 }
 
-function updateStudentList(newStudent) {
-    // Retrieve the existing list from localStorage and handle any parsing errors
-    let studentsList;
-    try {
-        const storedData = localStorage.getItem("studentsList");
-        studentsList = storedData ? JSON.parse(storedData) : []; // Parse only if there's valid data
-    } catch (error) {
-        console.error("Error parsing localStorage data:", error);
-        studentsList = []; // If error occurs, initialize as an empty array
-    }
+function generateExamScheduleTable(schedule) {
+  // ... (same as before)
+  var index = 0;
+const timetableRows = schedule.map((item ,index)=>
+ `
+    <tr>
+    <td>${index+1}</td>
+      <td>${formatDate(item.date)}</td>
+      <td>${item.day}</td>
+      <td>${item.class}</td>
+      <td>${item.subject}</td>
+      <td>${item.time}</td>
+      <td></td>
+    </tr>
+  `).join('');
 
-    // Find index of the student with the same stu_id, if exists
-    const existingIndex = studentsList.findIndex(student => student.stu_id === newStudent.stu_id);
+  const tableHTML = `
+    <table border="1">
+        <thead>
+          <tr>
+          <th>sl</th>
+            <th>Date</th>
+            <th>Day</th>
+            <th>Subject</th>
+            <th>Time</th>
+            <th>Signature</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${timetableRows}
+        </tbody>
+      </table>
+    </div>
+  `;
 
-    if (existingIndex !== -1) {
-        // If found, remove the existing student
-        studentsList.splice(existingIndex, 1);
-    }
+  // Get the division with the ID "examschedule"
+  const examscheduleDiv = document.getElementById('examschedule');
 
-    // Add the newStudent to the beginning of the array
-    studentsList.unshift(newStudent);
-
-    // Update localStorage with the new list
-    localStorage.setItem("studentsList", JSON.stringify(studentsList));
-
-    //console.log(`Updated studentsList with student ID ${newStudent.stu_id}:`);//, studentsList);
+  // Set the inner HTML of the division to the generated table HTML
+  examscheduleDiv.innerHTML = tableHTML;
+  hideLoading();
 }
 
+function generateClassList(schedule) {
+  // ... (same as before)
+showLoading();
+const studentRows = schedule.map((item, index) => {
+  const isHallTicketIssued = item.hallticket === "YES";
+  const hallTicketClass = isHallTicketIssued ? 'printed' : '';
 
-async function loadStudentPhoto(studentId, imgId) {
-    const loading =document. getElementById(imgId);
-    loading.src="https://i.gifer.com/4V0b.gif";
-    
-    console.log(`Fetching photo for student ID: ${studentId}`);
-    try {
-        // Fetch the photo from the server
-        const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentPhoto&studentId=${studentId}`);
-        
-        if (!response.ok) {
-            throw new Error(`Server returned status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Server response:', data);
-
-        // Handle the case where a photo is returned
-        if (data.photo) {
-            const photoUrl = `data:image/jpeg;base64,${data.photo}`;
-
-            // Check if an existing photo is stored in localStorage
-            const existingPhoto = localStorage.getItem(`studentPhotos_${studentId}`);
-            if (existingPhoto) {
-                // Remove the old photo to avoid unnecessary storage usage
-                localStorage.removeItem(`studentPhotos_${studentId}`);
-                console.log(`Old photo for student ID ${studentId} removed from localStorage.`);
-            }
-
-            // Save the new photo in localStorage
-            localStorage.setItem(`studentPhotos_${studentId}`, photoUrl);
-            console.log(`Photo for student ID ${studentId} saved to localStorage.`);
-
-            // Set the `src` attribute of the image element to the Base64 encoded photo
-            const imgElement = document.getElementById(imgId);
-            if (imgElement) {
-                imgElement.src = photoUrl;
-                console.log(`Photo set for image element with ID: ${imgId}`);
-            } else {
-                console.warn(`Image element with ID ${imgId} not found.`);
-            }
-
-            // Clear any previous error messages
-            const errorMessageElement = document.getElementById('error-message');
-            if (errorMessageElement) {
-                errorMessageElement.textContent = '';
-            }
-
-        } else if (data.error) {
-            // Display the error message if provided in the server response
-            const errorMessageElement = document.getElementById('error-message');
-            if (errorMessageElement) {
-                errorMessageElement.textContent = data.error;
-            }
-            console.warn(`Error from server: ${data.error}`);
-        }
-    } catch (error) {
-        // Handle fetch or other errors
-        console.error('Error fetching photo:', error);
-        const errorMessageElement = document.getElementById('error-message');
-        if (errorMessageElement) {
-            errorMessageElement.textContent = 'Failed to fetch photo.';
-        }
-    }
-}
-
-function generateTable(){
-    const students = JSON.parse(localStorage.getItem("studentsList") || "[]"); // Parse the JSON string
-renderStudentTable(students);
-
-}
-
-// Function to render the student table
-function renderStudentTable(students) {
-    photoFile=[];
-    //const students = JSON.parse(localStorage.getItem("studentsList") || "[]"); // Parse the JSON string
-
-    if (students.length === 0) {
-        document.getElementById('studentTableContainer').innerHTML = '<p>No students found</p>';
-        return;
-    }
-
-    let table = `<table>
-        <tr>
+  return `
+    <tr class="${hallTicketClass}">
+      <td>${index + 1}</td>
+      <td>${item.adNumber}</td>
+      <td>${item.name}</td>
+      <td>${item.gender}</td>
+      <td>${item.stuClass}</td>
+      <td>${item.division}</td>
+      <td>${item.examCode}</td>
+      <td>${item.feeBalance > 1000 || item.feeBalance !== "Request for pay later" ? "YES" : "NO"}${item.feeBalance}</td>
+      <td class="${hallTicketClass}">${isHallTicketIssued ? "YES" : "NO"}</td>
+    </tr>
+  `;
+}).join('');
+  const tableHTML = `
+    <table border="1" class="classList">
+        <thead>
+          <tr>
             <th>SL</th>
-            <th>Photo</th>
-            <th>stu_Id</th>
-            <th>AD Number</th>
+            <th>AdNumber</th>
             <th>Name</th>
             <th>Gender</th>
-            <th>DOB</th>
-            <th>Class</th>
-            <th>Father Name</th>
-            <th>Father Mobile</th>
-            <th>House</th>
-            <th>WhatsApp No</th>
-            <th>Actions</th>
-        </tr>`;
-    
-    students.forEach((student, index) => {
-        const imgId = `pic${index + 1}`; // Create a unique imgId for each student
-        //var divId= "photo" + studentData.adNumber
-        const imageGet = {
-    adNumber: student.stu_id,
-    divId: imgId
-  };
-  photoFile.push(imageGet);
-        table += `<tr>
-            <td>${index + 1}</td>
-            <td> 
-  <div class="image-container">
-  <img id="${imgId}" src="" alt="Image"><button type="button" class="refreshButton" id="refreshButton${imgId}" 
-        onclick="loadStudentPhoto('${student.stu_id}', '${imgId}');">
-    &#x21bb;
-</button>
+            <th>class</th>
+            <th>Division</th>
+            <th>Exam Code</th>
+            <th>Fee Pending</th>
+            <th> printed</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${studentRows}
+        </tbody>
+      </table>
+    </div>
+  `;
 
+  // Get the division with the ID "examschedule"
+  const examscheduleDiv = document.getElementById('classList');
+
+  // Set the inner HTML of the division to the generated table HTML
+  examscheduleDiv.innerHTML = tableHTML;
+  hideLoading();
+}
+function loadStudentTable() {
+    //const spinner = document.getElementById('spinner');
+    //spinner.style.display = 'block';
+    
+    // Get the current year from the input
+    const selectedClass =document.getElementById("classSelect").value; // Ensure it's a string
+    const division = document.getElementById("division").value; // Ensure it's a string
+console.log(selectedClass+division);
+    fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=gethallTicket&selectedClass=${selectedClass}&division=${division}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.students && data.students.length > 0) {
+                studentsData = data.students; // Store data in the variable
+                classTeacher = data.classTeacher;
+                console.log(classTeacher);
+              //  renderStudentTable(studentsData); // Render the table
+              generateClassList(studentsData);
+            } else {
+              //  document.getElementById('studentTableContainer').innerHTML = '<p>No students found</p>';
+            }
+        })
+        .catch(error => console.error('Error:', error))
+        .finally(() =>console.error("SOMETHING WRONG")); //spinner.style.display = 'none');
+}
+        function generateHallTicketHTML(studentData) {
+        var divId= "photo" + studentData.adNumber
+        const imageGet = {
+        photoId:studentData.photoId,
+    adNumber: studentData.adNumber,
+    divId: "photo" + studentData.adNumber
+  };
+  photofile.push(imageGet);
+
+        const image = "https://drive.google.com/uc?export=view&id=1j7aMhS463vC_tGexzzXbtQSVICk7aHwf";
+            const schedule = examSchedule;
+            const exam=examName;
+            const teacher = classTeacher[0].name; // Accesses the name of the first teacher
+            console.log(schedule)
+            const timetableRows = schedule.map(item => `
+                <tr>
+                    <td>${formatDate(item.date)}</td>
+                    <td>${item.day}</td>
+                    <td>${item.subject}</td>
+                    <td>${item.time}</td>
+                    <td></td>
+                </tr>
+            `).join('');
+
+            return `
+                <div class="hall-ticket page-break">
+            <!-- Watermark -->
+<div class="watermark"><img src="emblom.png" alt="Emblem"></div>
+
+<!-- Header with School Logo -->
+<div style="display:flex;">
+ <div id="pmsa" style="z-index:-900; position:absolute; left:5px; top: 20px; mix-blend-mode: color-burn;border-radius:50%">
+     <img src="KYHSSLOGO.jpg" width="200" height="200" alt="School Logo">    
+ </div>
+ <div id="title" style="gap:3px;">
+     <h2 style="margin-bottom: 30px; font-family:Arial, Helvetica, sans-serif">KATTILANGADI YETHEEMKHANA HIGHER SECONDARY SCHOOL<br>ATHAVANAD-19094</h2>
+    <div style=" top: auto;font-family: sans-serif; padding: 7px; background-color: #000; width: 250px; margin: auto; border-radius: 10% / 50%; text-align: center;">
+<h2 style="font-weight: bolder; color: #f2f2f2; margin: 0;">HALL TICKET</h2>
+</div>
+ </div>
+</div>
+<h3 style="margin:20px; margin-bottom: 10px;">${exam}_2024-25</h3>
+
+<div class="details">
+                 <div id="studentInfo">
+                     <h3 style="text-align:right;margin-right:-90px;"><strong>Exam Register No:</strong> ${studentData.examCode}</h3>
+                     <p>Student Name:<strong> ${studentData.name}</strong></p>
+                     <p>Admission number:<strong> ${studentData.adNumber}</strong></p>
+                     <span style="display:flex;gap:40px;">
+                     <p>Class: <strong style="left:20px;">${studentData.stuClass}</strong></p>
+                     <p>Division : <strong>${studentData.division}</strong></p>
+                     </span>
+                     <p><strong>Signature Of Candidate</strong> - - - - - - - - - - - - - - - - -</p>
+                 </div>
+ 
+ <div class="photo" id="photoContainer">
+      <img id="${divId}" src="https://drive.google.com/thumbnail?id=${studentData.photoId}&sz=800" alt="Student Photo" id="studentPhoto" >
+ </div>
 </div>
 
-</td>
-
-            <td>${student.stu_id}</td>
-            <td>${student.adNumber}</td>
-            <td>${student.name}</td>
-            <td>${student.gender}</td>
-            <td>${formatDate(student.dob)}</td>
-            <td>${student.currentClass}</td>
-            <td>${student.fatherName}</td>
-            <td>${student.fatherMobile}</td>
-            <td>${student.houseName}</td>
-            <td>${student.whatsappNo}</td>
-            <td class="action-buttons">
-                <button type="button" class="edit-btn" onclick="editStudent('${student.stu_id}')">Edit</button>
-                <button type="button" class="delete-btn" onclick="deleteStudent('${student.stu_id}')">Delete</button>
-                <button type="button" class="print-btn" onclick="printform('${student.stu_id}')">Print</button>
-                <button type="button" class="print-btn" onclick="generatePoster('${student.name}','${student.name}', '', '${imgId}')">poster</button>
-                 <button type="button" class="print-btn" onclick="sendWhatsAppMessageToStudent('${student.stu_id}')">Whtsapp</button>
-               
-                </td>
-        </tr>`;
-
-        // Call loadStudentPhoto after setting up the row
-        //loadStudentPhotos(student.stu_id, "pic_"+index + 1);
-    });
-
-    table += '</table>';
-    document.getElementById('studentTableContainer').innerHTML = table;
-    generatestudentPhotos();
-    
-}
-
-async function generatestudentPhotos() {
-
-  for (const imageGet of photoFile) {
+<h3>Exam Schedule</h3>
+                
+             <table class="timetable">
+                 <thead>
+                     <tr>
+                         <th>Date</th>
+                         <th>Day</th>
+                         <th>Subject</th>
+                         <th>Time</th>
+                         <th>Sign of Invigilator</th>
+                     </tr>
+                 </thead>
+                 <tbody>${timetableRows}</tbody>
+             </table>
+            <div id="signature">
+ <p style="display: flex; justify-content: space-between; padding: 30px 30px;">
+     <span style="display: flex;flex-direction: column;gap:20px;">Sign of the Class Teacher <span><b id="classTeacher">${teacher}</b></span></span>
+     <span>School Seal</span>
+     <span style="display: flex;flex-direction: column; gap:0px;">Sign of the Principal <span><b>MUNEER KAPPAN</b></span></span>
+ </p>
+ <div style="display: flex; gap: 100px;"> 
+ <div style="border-radius:50%; position:relative; top:-69px; left: 50%; right: 50%; transform: translate(-50%, -50%); width: 150px; height: 150px; overflow: hidden; background-color: lightgray; mix-blend-mode: color-burn; z-index: -100;">
+     <img src="SEAL.jpg" alt="Seal" style="width: 100%; height: 100%; mix-blend-mode: hard-light; background-color: #fcfafa;">
+ </div>
+ <div style=" position:relative; top:-50px; left: 55%; right: 50%; transform: translate(-50%, -50%); width: 200px; height: 100px; overflow: hidden; background-color: lightgray; mix-blend-mode: color-burn; z-index: -100; ">
+    <img src="sign3.jpg" alt="Seal" width="200px" height="100px">
+</div>
+</div>
+</div>
+             <div class="footer">
+ <p>KATTILANGADI YATHEEMKHANA HIGHER SECONDARY SCHOOL ATHAVANAD, MOB: 9447570250 GMAIL: KYHSSCHOOL@GMAIL.COM</p>
+</div>
+         </div>
+            `
+            ;
+            
+        }
+async function generateHallTicketsphotos() {
+  for (const imageGet of photofile) {
     const studentId = imageGet.adNumber;
     const imgId = imageGet.divId;
+    const photo = imageGet.photoId;
 
     try {
-      await loadStudentPhotos(studentId, imgId);
+    const toggle = document.getElementById("togglePhoto");
+  
+  if (!toggle.checked) {
+    console.warn("Toggle is not checked. Function will not run."); // Debug message
+    return; // Exit the function if not checked
+}
+      //await loadStudentPhotos( photo,studentId, imgId);
     } catch (error) {
       console.error(`Error loading photo for student ${studentId}:`, error);
     }
   }
 }
 
-function printform(studentId) {
-    //localStorage.setItem('stu_idform', "");
-    localStorage.setItem('stu_idform', studentId);
-    window.location.href = `adform.html?stu_id=${encodeURIComponent(studentId)}`; // Pass the student ID as a query parameter
-}
-
-
-
-// Function to filter the table based on search input
-function filterTable() {
-    const searchInput = document.getElementById('searchInput').value.toLowerCase();
-    const students = JSON.parse(localStorage.getItem("studentsList") || "[]"); // Parse the JSON string
-
-    const filteredStudents = students.filter(student => {
-        return (
-            (student.adNumber && student.adNumber.toString().toLowerCase().includes(searchInput)) ||
-            (typeof student.name === 'string' && student.name.toLowerCase().includes(searchInput)) || // Check for name type
-            (student.currentClass && student.currentClass.toLowerCase().includes(searchInput)) // Check for current class
-        );
-    });
-
-    renderStudentTable(filteredStudents); // Re-render table with filtered results
-}
-
-
-
-// Call loadStudentTable when the script loads
-window.onload = loadStudentTable;
-window.onload = loadStudentPhotos("KYHSS","logo");
-
-// Function to upload the student photo separately
-
-    // Function to upload a new student photo, delete the old one from localStorage (and server if needed), and update the displayed image
-async function uploadCroppedImage() {
-    showLoader();
-    const studentId = document.getElementById('studentId').value;
-    const croppedImage = document.getElementById('student-photo').getAttribute('data-cropped'); // Assume base64 format
-
-    if (!studentId) {
-        showErrorMessage('Please generate the student ID first');
-        return;
-    }
-
-    if (!croppedImage) {
-        showErrorMessage('Please crop the student photo');
-        return;
-    }
-
-    
-
-    // Prepare the new photo for upload (Base64)
-    const formData = new FormData();
-    formData.append('studentId', studentId);
-    formData.append('studentPhoto', croppedImage); // Send the new photo (Base64) to the server
-
+async function loadStudentPhotos(photo,studentId, imgId) {
     try {
-        // Upload the new photo to the server
-        const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=uploadStudentPhoto`, {
-            method: 'POST',
-            body: formData
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            // Photo uploaded successfully, save it in localStorage and update the image display
-            // Check if there's an existing photo for this student in localStorage
-            const existingPhoto = localStorage.getItem(`studentPhotos_${studentId}`);
-            if (existingPhoto) {
-             // Remove the old photo from localStorage if it exists
-              localStorage.removeItem(`studentPhotos_${studentId}`);
-                console.log("Old photo for student ID "+studentId+"removed from localStorage");
-            }
-           // const newPhotoUrl = `data:image/jpeg;base64,${data.photo}`;
-           // localStorage.setItem(`studentPhotos_${studentId}`, newPhotoUrl); // Save the new photo in localStorage
-            //document.getElementById('student-photo-container').style.display = 'block';
-            loadStudentTable();
-            //document.getElementById('student-photo').src = newPhotoUrl; // Update the displayed image
-            showSuccessMessage('Photo uploaded and updated successfully!');
-            hideLoader();
-        } else {
-            showErrorMessage('Error uploading photo: ' + data.message);
-            hideLoader();
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        showErrorMessage('Failed to upload new photo.');
-        hideLoader();
-    }
-}
-
-
-       // Function to load student photo from localStorage or Google Drive
-async function loadStudentPhotos(studentId, divid) {
-    const loading = document.getElementById(divid);
-    loading.src="https://i.gifer.com/4V0b.gif";
-    try {
-        // Check if the photo exists in localStorage
-        const savedPhoto = localStorage.getItem(`studentPhotos_${studentId}`);
+       // const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentPhoto&studentId=${studentId}`);
+        const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getPhotoById&photoId=${photo}`);
         
-        if (savedPhoto) {
-            // If photo exists in localStorage, use it directly
-            document.getElementById(divid).style.display = 'block';
-            document.getElementById(divid).src = savedPhoto; // Set the photo from localStorage
-            console.log('Photo loaded from localStorage');
-        } else {
-            // If no photo in localStorage, fetch it from the server
-            const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentPhoto&studentId=${studentId}`);
-            const data = await response.json();
-
-            if (data.photo) {
-                loading.src="";
-                // If the photo is found on the server, save it to localStorage
-                const photoUrl = `data:image/jpeg;base64,${data.photo}`;
-                localStorage.setItem(`studentPhotos_${studentId}`, photoUrl); // Save to localStorage
-                document.getElementById('student-photo-container').style.display = 'block';
-                document.getElementById(divid).src = photoUrl; // Set the photo from server
-                console.log('Photo loaded from server and saved to localStorage');
-            } else if(data.photo===""){
-                const demophoto = localStorage.getItem(`studentPhotos_KYHSS`);
-                loading.src="";
-                document.getElementById(divid).src = demophoto; // Set the photo from localStorage
-           
-            }else if (data.error) {
-                document.getElementById('error-message').textContent = data.error; // Show error message
-            }
+        const data = await response.json();
+            //console.log(data);
+        if (data.photo) {
+            // Set the src attribute of the img tag to the Base64 encoded string
+            document.getElementById(imgId).src = `data:image/jpeg;base64,${data.photo}`;
+           //console.log(data.photo);
+          //  document.getElementById('error-message').textContent = ''; // Clear any previous error messages
+        } else if (data.error) {
+          //  document.getElementById('error-message').textContent = data.error; // Show error message
         }
     } catch (error) {
         console.error('Error fetching photo:', error);
         document.getElementById('error-message').textContent = 'Failed to fetch photo.';
     }
 }
-async function loadStudentPhotosEdit(studentId, divid) {
-    document.getElementById('student-photo-container').style.display = 'block';
-    const loading = document.getElementById(divid);
-    loading.src="https://i.gifer.com/4V0b.gif";
-    try {
-        // Check if the photo exists in localStorage
-        //const savedPhoto = localStorage.getItem(`studentPhotos_${studentId}`);
 
-            // If no photo in localStorage, fetch it from the server
-            const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentPhoto&studentId=${studentId}`);
-            const data = await response.json();
-
-            if (data.photo) {
-                loading.src="";
-                // If the photo is found on the server, save it to localStorage
-                const photoUrl = `data:image/jpeg;base64,${data.photo}`;
-                localStorage.setItem(`studentPhotos_${studentId}`, photoUrl); // Save to localStorage
-                document.getElementById('student-photo-container').style.display = 'block';
-                document.getElementById(divid).src = photoUrl; // Set the photo from server
-                console.log('Photo loaded from server and saved to localStorage');
-            } else if(data.photo===""){
-                const demophoto = localStorage.getItem(`studentPhotos_KYHSS`);
-                loading.src="";
-                document.getElementById(divid).src = demophoto; // Set the photo from localStorage
-           
-            }else if (data.error) {
-                document.getElementById('error-message').textContent = data.error; // Show error message
-            }
-        
-    } catch (error) {
-        console.error('Error fetching photo:', error);
-        document.getElementById('error-message').textContent = 'Failed to fetch photo.';
-    }
-}
-           
-        // Edit student
-        async function editStudent(Id) {
-            showLoader();
-            document.getElementById("formcontainer").style.display='block';
-            fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentById&mobile=${Id}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.student) {
-                        const student = data.student;
-                        console.log(student);
-
-                        document.getElementById('studentId').value = student.stu_Id;
-                        document.getElementById('adNumber').value = student.adNumber;
-                        document.getElementById('studentName').value = student.name;
-                       
-                        if (student.gender === "Male") {
-                            document.getElementById("genderMale").checked = true;
-                            } else {
-                             document.getElementById("genderFemale").checked = true;
-                            }
-
-                            if (student.stu_Id.startsWith("KG")) {
-                            document.getElementById("KG").checked = true;
-                            populateClassOptions('KG');
-                                const sectorRadios = document.getElementsByName("sector");
-                            sectorRadios.forEach(radio => {
-                                radio.disabled = true; 
-                            });
-                            } else {
-                             document.getElementById("School").checked = true;
-                             populateClassOptions('School');
-                                const sectorRadios = document.getElementsByName("sector");
-                            sectorRadios.forEach(radio => {
-                                radio.disabled = true; 
-                            });
-                            }
-                            
-                            
-                        document.getElementById('dob').value = formatDateForInput(student.dob);
-                        datetoText(student.dob);
-
-                        if (student.adharNumber !== "") {
-                            document.getElementById("adharCheckbox").checked = true;
-                            document.getElementById('adharNumber').value = student.adharNumber;
-                            } else {
-                             document.getElementById("adharCheckbox").checked = false;
-                            
-                            }
-                        document.getElementById('houseName').value = student.houseName;
-                        document.getElementById('place').value = student.place;
-                        document.getElementById('pin').value = student.pin;
-                        document.getElementById('postOffice').value = student.postOffice;
-                        document.getElementById('fatherName').value = student.fatherName;
-                        document.getElementById('fatherMobile').value = student.fatherMobile;
-                        document.getElementById('motherName').value = student.motherName;
-                        document.getElementById('motherMobile').value = student.motherMobile;
-                        document.getElementById('whatsappNo').value = student.whatsappNo;
-                        document.getElementById('guardian').value = student.guardian;
-                        
-                        if (student.guardian === student.fatherName) {
-                            document.getElementById("guardianFather").checked = true;
-                            } else if(student.guardian === student.motherName) {
-                             document.getElementById("guardianMother").checked = true;
-                            }else{
-                                document.getElementById("guardianOther").checked = true;
-                            }
-                        
-                        
-                        
-                        document.getElementById('relation').value = student.relation;
-                        document.getElementById('admissionDate').value = formatDateForInput(student.admissionDate);
-                        document.getElementById('admittedClass').value = student.admittedClass;
-                        
-                        document.getElementById('currentClass').value = student.currentClass;
-                        document.getElementById('status').value = student.status;
-                        const vehicleInfoContainer = document.getElementById("vehicleInfo");
-                        const vehiclePointInput = document.getElementById("vehiclePoint");
-                        const vehicleStageInput = document.getElementById("vehicleStage");
-                        const noVehicleCheckbox = document.getElementById("noVehicle");
-                        const vehicleNeededCheckbox = document.getElementById("vehicleNeed");
-
-                        if (student.vehiclePoint === "") {
-                        noVehicleCheckbox.checked = true;
-                       // vehicleInfoContainer.style.display = "block";
-                        vehiclePointInput.disabled = true;
-                        vehicleStageInput.disabled = true;
-                        
-                        } else {
-                        vehicleNeededCheckbox.checked = true;
-                       // vehicleInfoContainer.style.display = "none";
-                        vehiclePointInput.disabled = false;
-                        vehicleStageInput.disabled = false;
-                        vehiclePointInput.value = student.vehiclePoint;
-                        vehicleStageInput.value = student.vehicleStage;
-                        }
-                        if (student.siblingDetails === "") {
-    // No sibling information provided
-    const siblingNoCheckbox = document.getElementById("siblingNo");
-    const siblingInfoContainer = document.getElementById("siblingInfo");
-
-    // Check the "No Siblings" option
-    siblingNoCheckbox.checked = true;
-
-    // Display sibling info block (if hidden)
-    siblingInfoContainer.style.display = "block";
-
-    // Ensure sibling details are cleared and disabled
-    const siblingDetailsInput = document.getElementById("siblingDetails");
-    siblingDetailsInput.value = "";
-    siblingDetailsInput.disabled = true;
-                            
-                            
-} else {
-    // Sibling information is provided
-    const siblingYesCheckbox = document.getElementById("siblingYes");
-    const siblingDetailsInput = document.getElementById("siblingDetails");
-
-    // Enable the sibling details input
-    siblingDetailsInput.disabled = false;
-    // Check the "Yes Siblings" option
-    siblingYesCheckbox.checked = true;
-
-    // Populate the sibling details input
-    siblingDetailsInput.value = student.siblingDetails;
-
-
-    // Ensure sibling info block is displayed
-    document.getElementById("siblingInfo").style.display = "block";
-}
-
-                            setDefaultSelections(student.admittedClass);
-                        document.getElementById('studentMobile').value = student.mobile;
-                        document.getElementById('admissionFee').value = student.admissionFee;
-            
-                        loadStudentPhotosEdit(student.stu_Id,"student-photo");
-                        hideLoader();
-                    } else {
-                        showErrorMessage(data.error);
-                        hideLoader();
-                    }
-                })
-                .catch(error =>{ 
-                    document.getElementById("formcontainer").style.display='none';
-                    hideLoader(); console.error('Error:', error)});
-        }
-        async function sendWhatsAppMessageToStudent(studentId) {
-        showLoader();
-  try {
-    const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentById&mobile=${studentId}`); 
-    const studentData = await response.json();
-
-    if ( studentData.student) {
-      const student = studentData.student;
-
-      const message = `Dear ${student.fatherName || student.motherName},\n\nThis message is to inform you about your ward, ${student.name}. \n\n**Student's Details:**\n* Name: ${student.name}\n* Date of Birth: ${formatDate(student.dob)}\n* Class: ${student.currentClass}\n* Admission Number: ${student.adNumber}\n* Address: ${student.houseName}, ${student.place}, ${student.postOffice}, ${student.pin}\n* Father's Name: ${student.fatherName}\n* ContactNo 1: ${student.fatherMobile}\n* Mother's Name: ${student.motherName}\n* ContactNo 2: ${student.motherMobile}\n* Whatsapp : ${student.whatsappNo}\n\n**School Details:**\n* School Name: KYHSS ATHAVANAD\n\nWe are delighted to welcome ${student.name} to our school family. Thank you for choosing KYHSS ATHAVANAD for your child's education. We look forward to a fruitful and enriching learning experience together.\n\nSincerely,\nThe Management, KYHSS ATHAVANAD`;
-
-      const whatsappUrl = `https://wa.me/+91 ${student.whatsappNo}?text=${encodeURIComponent(message)}`; 
-      window.open(whatsappUrl, '_blank');
-
-      showSuccessMessage('WhatsApp message sent successfully!'); 
-      hideLoader();
-    } else {
-      showErrorMessage('Error fetching student data or student not found.'); 
-      hideLoader();
-    }
-
-  } catch (error) {
-    console.error('Error sending message:', error);
-    hideLoader();
-        showErrorMessage('An error occurred while sending the message. Please try again later.');
-  }
-}
-
-// Helper function to format date 
-function formatDate(dateString) {
-  const date = new Date(dateString);
-  return date.toLocaleDateString(); 
-}
-
-async function sendWhatsAppMessageToStudent3(Id) {
-  try {
-    const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentById&mobile=${Id}`)
-                const studentData = await response.json();
-
-    if(studentData.student) {
-      const student = studentData.student;
-
-      const message = `Dear ${student.fatherName || student.motherName},\n\nThis message is to inform you about your ward, ${student.name}. \n\n[Student Details]\n* Name: ${student.name}\n* Class: ${student.currentClass}\n* Admission Number: ${student.adNumber}\n* ... (Add other relevant details as needed) ...\n\n[Optional: Add a personal message or school information here]\n\nThank you.`;
-
-      const whatsappUrl = `https://wa.me/${student.fatherMobile || student.motherMobile}?text=${encodeURIComponent(message)}`; 
-      window.open(whatsappUrl, '_blank');
-
-      showSuccessMessage('WhatsApp message sent successfully!'); 
-    } else {
-      showErrorMessage('Error fetching student data or student not found.'); 
-    }
-
-  } catch (error) {
-    console.error('Error sending message:', error);
-    showErrorMessage('An error occurred while sending the message. Please try again later.');
-  }
-}
-
-
-        // Delete student
-        function deleteStudent(mobile) {
-
-            if (conshowConfirmationMessage('Are you sure you want to delete this student?')) {
-                fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=deleteStudent&mobile=${mobile}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            loadStudentTable('new');
-                        } else {
-                            showErrorMessage('Error deleting student');
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            }
-        }
-        // Function to auto-generate student ID in the format: currentYear_001
-        function generateStudentId() {
-            showLoader();
-            document.getElementById('studentId').value = "";
-            document.getElementById('adNumber').value = "";
-    // Get the selected sector
-    const sector = document.querySelector('input[name="sector"]:checked').value;
-
-    // Fetch the next student ID based on the selected sector
-    fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getNextStudentId&sector=${sector}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                document.getElementById('studentId').value = data.studentId;
-                document.getElementById('adNumber').value = data.newAdNumber;
-                hideLoader();
-            } else {
-                showErrorMessage('Error generating Student ID');
-                hideLoader();
-            }
-        })
-        .catch(error => console.error('Error:', error));
-}
-
-async function getStudentbyMobile() {
-    document.getElementById("siblingloading").style.display="block";
-    const fatherMobile = String(document.getElementById('fatherMobile').value || "").trim();
-    const motherMobile = String(document.getElementById('whatsappNo').value || "").trim();
-
-    let numbers = [];
-    if (fatherMobile) numbers.push(fatherMobile);
-    if (motherMobile) numbers.push(motherMobile);
-
-    console.log("Numbers to check:", numbers);
-
-    if (numbers.length === 0) {
-        showErrorMessage("Please enter at least one mobile number.");
-        return;
-        document.getElementById("siblingloading").style.display="none";
-    }
-
-    try {
-        const mobileNumbers = encodeURIComponent(numbers.join(","));
-        console.log("Encoded mobile numbers:", mobileNumbers);
-
-        // Fetch student details from Google Apps Script
-        const response = await fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentByMobile&numbers=${mobileNumbers}`);
-        
-        if (!response.ok) {
-            throw new Error(`Server returned status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("Server response:", data);
-
-        const siblingDetailsElement = document.getElementById("siblingDetails");
-
-        // Check if the data contains multiple students
-        if (data && data.students && data.students.length > 0) {
-            // Join student names in a readable format
-            const siblingDetails = data.students.map(student => `${student.name} (${student.stuId} - ${student.adNumber})`).join(", ");
-
-            // Update the input field
-            siblingDetailsElement.value = siblingDetails;
-            siblingDetailsElement.disabled = false; // Enable the field
-
-            showSuccessMessage(`Siblings added: ${siblingDetails}`);
-            toggleSiblingInfo("Yes");
-            document.getElementById("siblingloading").style.display="none";
-        } else {
-            // No students found
-            siblingDetailsElement.value = "";
-            siblingDetailsElement.placeholder = "No student found with these mobile numbers";
-            showErrorMessage("No siblings found");
-            toggleSiblingInfo("No");
-            document.getElementById("siblingloading").style.display="none";
-        }
-    } catch (error) {
-        console.error("Error fetching student by mobile number:", error);
-        document.getElementById("siblingloading").style.display="none";
-
-        // Handle errors
-        const siblingDetailsElement = document.getElementById("siblingDetails");
-        document.getElementById("siblingloading").style.display="none";
-        siblingDetailsElement.value = "Error fetching student details";
-        siblingDetailsElement.disabled = true; // Disable the field
-    }
-}
-
-
-
-
-
-    </script>
-    <div id="posterPreview" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: white; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
-        <canvas id="posterCanvas"></canvas>
-        <div style="text-align: center; margin-top: 20px;">
-          <button type="button" onclick="downloadPoster()">Download Poster</button>
-          <button type="button" onclick="closePreview()">Close Preview</button>
-        </div>
-      </div>
-      
-      <img id="studentImage" src="1251.jpg" alt="Student Image" style="display: none;">
-      <img id="studentImage2" src="https://i.gifer.com/4V0b.gif" alt="Student Image" style="display: none;">
-      
-<script>
-    function generatePoster(name, position, totalMarks, imgId) {
-        showLoader();
-  const canvas = document.getElementById("posterCanvas");
-  const ctx = canvas.getContext("2d");
-
-  // Set Canvas Dimensions
-  canvas.width = 700;
-  canvas.height = 700;
-
-  // Load Background Image
-  const background = new Image();
-  background.src = "welcome.png"; //document.getElementById(imgId).src;
-  background.onload = function () {
-    ctx.drawImage(background, 0, 0, canvas.width, canvas.height); // Draw background image
-
-    // Add Semi-Transparent Overlay
-    //ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; // Black overlay with transparency
-   // ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Draw Rounded Rectangle for Photo Background
-    ctx.fillStyle = "#ffffff";
-    ctx.beginPath(); 
-    //ctx.roundRect(canvas.width / 2 - 110, 95, 220, 220, 20);
-    ctx.fill();
-
-
-    // Load Student Photo
-    const photo = new Image();
-    photo.src =document.getElementById(imgId).src;
-    photo.onload = function () {
-     // const imgX = canvas.width / 2 - 80;
-      //const imgY = 110;
-    //const processedCanvas = removeGreenBackground(photo);
-      const imgX = canvas.width / 2 - 125; 
-  const imgY = 114;
-  //const processedCanvas =  removeBackgroundUsingTensorFlow(photo);
-  
-  //ctx.drawImage(processedCanvas, imgX, imgY, 160, 180);
-
-  //ctx.drawImage(processedCanvas, imgX, imgY, 150, 170);
-    ctx.drawImage(photo, imgX, imgY,250, 250 );
-
-      // Add Text Blocks 
-      drawTextBlock(ctx, `${position}`, canvas.width / 2, 792, 670, 0, "#4f2111", "bold 24px Arial", "#4f2111");
-      
-      if(!name){}else{ drawTextBlock(ctx, name, canvas.width / 2, 377, 4, 0, "#fff", "bold 16px Arial", "#4f2111");
-    }
-    if(!totalMarks){}else{
-      drawTextBlock(ctx, `${totalMarks}`, canvas.width / 2, 158,116, 24, "#ffff", "bold 16px Arial", "#4f2111");
-    }
-}
-    const ndphoto = new Image();
-// ndphoto.src = document.getElementById("termframe"+position).src;//"2nd.png"; // Replace with the path to your photo
-// ndphoto.onload = function () {
-//         const imgX = canvas.width / 2 - 99; // Center horizontally
-//         const imgY = 290; // Adjust vertical position
-//         ctx.drawImage(ndphoto, imgX, imgY, 140, 140);
-//       };
-      // Add Text Blocks
-      //drawTextBlock(ctx, `${position==="1"?"First Rank":position==="2"?"Second Rank":"Third Rank"}`, canvas.width / 2, 397, 270, 0, "#4f2111", " 20px Arial", "#4f2111");
-     // drawTextBlock(textCanvas, name, canvasWidth / 2, 448, 300, 0, "#4f2111", "bold 20px Arial", "#ffffff");
-      //drawTextBlock(textCanvas, totalMarks, canvasWidth / 2+120, 387, 0, 30, "#ffffff", "bold 18px Arial", "#ffffff");
-     
-      // Load School Logo
-      const schoolLogo = new Image();
-      schoolLogo.src =document.getElementById(imgId ).src;
-      schoolLogo.onload = function () {
-        const logoX = 250;
-        const logoY = 50;
-
-        // Draw School Logo
-        ctx.globalCompositeOperation = "source-over"; // Ensure normal drawing mode
-       // ctx.drawImage(schoolLogo, logoX, logoY, 100, 100);
-
-        // Add Separator Line
-        // ctx.strokeStyle = "#ffffff";
-        // ctx.lineWidth = 2;
-        // ctx.beginPath();
-        // ctx.moveTo(10, 540);
-        // ctx.lineTo(canvas.width - 10, 540);
-        // ctx.stroke();
-
-        // // Add Exam Title
-        // ctx.font = "bold 30px Arial";
-        // ctx.fillStyle = "#f39c12";
-        // ctx.textAlign = "center";
-        // ctx.fillText("examSelect" + " ASSESSMENT", canvas.width / 2, 40);
-        // ctx.fillText("TOPPERS", canvas.width / 2, 75);
-
-        // // Add School Name and Address
-        // ctx.font = "italic 12px Arial";
-        // ctx.fillStyle = "#ffffff";
-        // ctx.fillText("KATTILANGADI YATHEEMKHANA HIGHER SECONDARY SCHOOL", canvas.width / 2, 563);
-        // ctx.fillText("ATHAVANAD - 19094", canvas.width / 2, 579);
-
-        // Show Preview
-        document.getElementById("posterPreview").style.display = "block";
-          hideLoader();
-      };
-
-      // Handle School Logo Load Error
-      schoolLogo.onerror = function () {
-        showErrorMessage("Error loading the school logo.");
-          hideLoader();
-      };
-    
-
-    // Handle Broken Student Photo
-    photo.onerror = function () {
-      showErrorMessage("Error loading the student photo. Unable to create the poster.");
-        hideLoader();
-    };
-    
-  };
-
-  // Handle Background Image Load Error
-  background.onerror = function () {
-    showErrorMessage("Error loading the background image.");
-      hideLoader();
-  };
-}
-
-// Helper Function to Draw Text Blocks with Rounded Rectangles
-function drawTextBlock(ctx, text, x, y, width, height, textColor, font, bgColor) {
-  ctx.fillStyle = bgColor;
-  ctx.beginPath();
-  ctx.roundRect(x - width / 2, y - height / 2, width, height, 10);
-  ctx.fill();
-
-  ctx.fillStyle = textColor;
-  ctx.font = font;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(text, x, y);
-}
-
-// Add Rounded Rectangle Function to Canvas API
-CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
-  if (w < 2 * r) r = w / 2;
-  if (h < 2 * r) r = h / 2;
-  this.beginPath();
-  this.moveTo(x + r, y);
-  this.arcTo(x + w, y, x + w, y + h, r);
-  this.arcTo(x + w, y + h, x, y + h, r);
-  this.arcTo(x, y + h, x, y, r);
-  this.arcTo(x, y, x + w, y, r);
-  this.closePath();
-  return this;
+function savePrintedData() {
+    showLoading();
+    const id = photofile.map(element => element.adNumber); // Extract IDs
+
+// Create an object with action and ids properties
+const data = {
+  actions: "printedData",
+  ids: id
 };
 
-//generatePoster('aslaha', '', '', 'studentImage');
-
-function closePreview() {
-  document.getElementById("posterPreview").style.display = "none";
-}
-
-function downloadPoster() {
-  const canvas = document.getElementById("posterCanvas");
-  const link = document.createElement("a");
-  link.href = canvas.toDataURL("image/png");
-  link.download = "poster.png";
-  link.click();
-}
-
-
-
-function generateReport(studentsData) {
-    const reportContainer = document.getElementById('reportContainer');
-    reportContainer.innerHTML = ''; // Clear previous content
-
-    const table = document.createElement('table');
-    table.classList.add('report-table');
-
-    // Table Header
-    const headerRow = table.insertRow();
-    headerRow.innerHTML = `
-        <th>Class</th>
-        <th>Division</th>
-        <th>Male</th>
-        <th>Female</th>
-        <th>Total</th>
-    `;
-
-    // Extract unique classes
-    const uniqueClasses = [...new Set(studentsData.map(student => student.currentClass.split(" ")[0]))];
-
-    uniqueClasses.forEach(className => {
-        // Extract unique divisions for this class
-        const divisions = [...new Set(
-            studentsData
-                .filter(student => student.currentClass.startsWith(className + " "))
-                .map(student => student.currentClass.split(" ")[1])
-        )];
-
-        let classTotalMale = 0;
-        let classTotalFemale = 0;
-
-        divisions.forEach(division => {
-            const maleCount = studentsData.filter(student =>
-                student.currentClass === `${className} ${division}` && student.gender === "Male"
-            ).length;
-
-            const femaleCount = studentsData.filter(student =>
-                student.currentClass === `${className} ${division}` && student.gender === "Female"
-            ).length;
-
-            const row = table.insertRow();
-            row.innerHTML = `
-                <td>${className}</td>
-                <td>${division}</td>
-                <td>${maleCount}</td>
-                <td>${femaleCount}</td>
-                <td>${maleCount + femaleCount}</td>
-            `;
-
-            classTotalMale += maleCount;
-            classTotalFemale += femaleCount;
-        });
-
-        // Add row for class total
-        const totalRow = table.insertRow();
-        totalRow.innerHTML = `
-            <td><b>${className} (Total)</b></td>
-            <td>-</td>
-            <td><b>${classTotalMale}</b></td>
-            <td><b>${classTotalFemale}</b></td>
-            <td><b>${classTotalMale + classTotalFemale}</b></td>
-        `;
-        totalRow.style.background = "#f0f0f0"; // Light gray background for total rows
+// Convert the object to URLSearchParams
+const params = new URLSearchParams(data).toString();
+            fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=printedData&${params}`)
+                .then(response => response.json())
+                .then(data => {
+      if (data.success) {
+        console.log("Success");
+        // Optional: Call any functions to refresh UI or data, e.g., loadStudentTable();
+      } else {
+        alert('Error updating hall ticket statuses.');
+      }
+    })
+    .catch(error => console.error('Error:', error))
+    .finally(() => {
+      // Hide the spinner if it exists
+      hideLoading();
+      loadStudentTable();
+      hideConfirmation()
     });
-
-    reportContainer.appendChild(table);
 }
+// Assuming photofile is an array containing objects with adNumber and divId
+function generateAllHallTickets() {
+  const container = document.getElementById("hallTicketsContainer");
+  container.innerHTML = ""; // Clear existing content before generating new tickets
 
+  const filteredStudents = studentsData.filter(student => {
+    return student.hallticket!=="YES";//&&(student.feeBalance < 1000 || student.feeBalance === "Request for pay later");
+  });
 
+  photofile = []; // Reset photofile array before populating new data
 
-</script>
+  const hallTicketHTML = studentsData.map(student => generateHallTicketHTML(student));
+  container.innerHTML = hallTicketHTML.join('');
+
+ // generateHallTicketsphotos(); // Assuming generateHallTicketsphotos handles photos
+}
+        function generateAllHallTickets33() {
+            const container = document.getElementById("hallTicketsContainer");
+            photofile=[];
+            container.innerHTML = studentsData.map(student => 
+            generateHallTicketHTML(student)).join('');
+            generateHallTicketsphotos();
+        }
+        function formatDate(dateString) {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', options); // Format as "DD/MM/YYYY"
+}
+    </script>
+
+    <div>
+        
+    </div>
 </body>
 </html>
