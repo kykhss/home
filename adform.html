@@ -209,7 +209,7 @@
                 <th colspan="1">Name of Parent or Guardian and Relationship to the Pupil:</th>
                 <td colspan="3"style="height: 30px;">${student.fatherName}/${student.motherName}<br></td>
             <td rowspan="4" class="photo-cell">
-                <img id= "student-photo" src="" alt="Student Photo" width="100px" height="150px">
+                <img id= "student-photo" src="https://drive.google.com/thumbnail?id=${student.imageId}&sz=800" alt="Student Photo" width="100px" height="150px">
             </td>
             </tr>
              <tr style="height: 25px;"> <!-- Fixed row height -->
@@ -345,7 +345,7 @@
             `;
 
             document.getElementById("formContainer").innerHTML = formHTML;
-            loadStudentPhotoform(student.stu_Id);
+            //loadStudentPhotoform(student.stu_Id);
             
         hideLoader();
                         // document.getElementById('adNumber').value = student.adNumber;
