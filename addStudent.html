@@ -1843,7 +1843,7 @@ console.log(students);
             <td>${index + 1}</td>
             <td> 
   <div class="image-container">
-  <img id=" ${imgId}" src="https://drive.google.com/thumbnail?id=${student.image}&sz=800" alt="${student.stu_id}"><button type="button" class="refreshButton" id="refreshButton${imgId}" 
+  <img id="${imgId}" src="https://drive.google.com/thumbnail?id=${student.image}&sz=800" alt="${student.stu_id}"><button type="button" class="refreshButton" id="refreshButton${imgId}" 
        // onclick="loadStudentPhoto('${student.stu_id}', '${imgId}');">
     &#x21bb;
 </button>
@@ -1866,7 +1866,7 @@ console.log(students);
                 <button type="button" class="edit-btn" onclick="editStudent('${student.stu_id}')">Edit</button>
                 <button type="button" class="delete-btn" onclick="deleteStudent('${student.stu_id}')">Delete</button>
                 <button type="button" class="print-btn" onclick="printform('${student.stu_id}')">Print</button>
-                <button type="button" class="print-btn" onclick="generatePoster('${student.name}','${student.name}', '', '${imgId}')">poster</button>
+                <button type="button" class="print-btn" onclick="generatePoster('${student.name}','${student.name}','', '${imgId}')">poster</button>
                  <button type="button" class="print-btn" onclick="sendWhatsAppMessageToStudent('${student.stu_id}')">Whtsapp</button>
                
                 </td>
