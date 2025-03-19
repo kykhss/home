@@ -1718,9 +1718,13 @@ function updateStudentList(newStudent) {
       students: studentsList,
       updatedAt: now
     };
+    try {
     localStorage.setItem("students", JSON.stringify(dataToStore));
-    updatedAt = now; // update the local variable.
-    console.log("studentsList last updated at:", new Date(updatedAt)); // log the update time.
+    console.log("Data saved to localStorage.");
+} catch (e) {
+    console.error("Storage error:", e);
+}
+
 
   } catch (error) {
     console.error("Error updating student list:", error);
