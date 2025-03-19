@@ -1319,6 +1319,13 @@ function displayClassDivisionGenderCount(data) {
 </div>
 <div id="studentTableContainer">
 
+
+</div>
+<input type="text" id="searchInputvhicle" placeholder="Search by AD Number, Name, or Class" onkeyup="filtervehicleTable()">
+<h1>vehicle detail</h1>
+
+<div id="vehicleData">
+
 </div>
 </body>
 <script>
@@ -1812,17 +1819,17 @@ function generateTable(){
     let updatedAt = storedData ? JSON.parse(storedData).updatedAt : null; // Retrieve existing updatedAt
 
     generateReport(studentsList);
-    renderStudentTable(studentsList);
+    renderStudentTable(studentsList,'studentTableContainer');
 
 }
 
 // Function to render the student table
-function renderStudentTable(students) {
+function renderStudentTable(students,divid) {
     photoFile=[];
     //const students = JSON.parse(localStorage.getItem("studentsList") || "[]"); // Parse the JSON string
 
     if (students.length === 0) {
-        document.getElementById('studentTableContainer').innerHTML = '<p>No students found</p>';
+        document.getElementById(divid).innerHTML = '<p>No students found</p>';
         return;
     }
 console.log(students);
@@ -1889,7 +1896,77 @@ console.log(students);
     });
 
     table += '</table>';
-    document.getElementById('studentTableContainer').innerHTML = table;
+    document.getElementById(divid).innerHTML = table;
+   //  generatestudentPhotos();
+    
+}
+
+// Function to render the student table
+function renderStudentTable(students,divid) {
+    photoFile=[];
+    //const students = JSON.parse(localStorage.getItem("studentsList") || "[]"); // Parse the JSON string
+
+    if (students.length === 0) {
+        document.getElementById(divid).innerHTML = '<p>No students found</p>';
+        return;
+    }
+console.log(students);
+    let table = `<table border=1>
+        <tr>
+            <th>SL</th>
+            <th>Photo</th>
+            <th>AD Number</th>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>DOB</th>
+            <th>Class</th>
+            <th>Father Name</th>
+            <th>Father Mobile</th>
+            <th>House</th>
+            <th>WhatsApp No</th>
+            <th>vehicleStage</th>
+            <th>vehiclePoint</th>
+        </tr>`;
+    
+    students.forEach((student, index) => {
+        const imgId = `pic${index + 1}`; // Create a unique imgId for each student
+        //var divId= "photo" + studentData.adNumber
+        const imageGet = {
+    adNumber: student.stu_id,
+    divId: imgId
+  };
+  photoFile.push(imageGet);
+        table += `<tr>
+            <td>${index + 1}</td>
+            <td> 
+  <div class="image-container">
+  <img id="${imgId}" src="https://drive.google.com/thumbnail?id=${student.image}&sz=800" alt="${student.stu_id}"><button type="button" class="refreshButton" id="refreshButton${imgId}" 
+        onclick="loadStudentPhoto('${student.stu_id}', '${imgId}');">
+    &#x21bb;
+</button>
+
+</div>
+
+</td>
+            <td>${student.adNumber}</td>
+            <td style="color:red;">${student.name}</td>
+            <td>${student.gender}</td>
+            <td>${formatDate(student.dob)}</td>
+            <td>${student.currentClass}</td>
+            <td>${student.fatherName}</td>
+            <td>${student.fatherMobile}</td>
+            <td style="color:red;">${student.houseName}</td>
+            <td>${student.whatsappNo}</td>
+            <td>${student.vehicleStage}</td>
+            <td>${student.vehiclePoint}</td>
+        </tr>`;
+
+        // Call loadStudentPhoto after setting up the row
+        //loadStudentPhotos(student.stu_id, "pic_"+index + 1);
+    });
+
+    table += '</table>';
+    document.getElementById(divid).innerHTML = table;
    //  generatestudentPhotos();
     
 }
@@ -1912,6 +1989,7 @@ async function generatestudentPhotos() {
   }
 }
 
+
 function printform(studentId) {
     //localStorage.setItem('stu_idform', "");
     localStorage.setItem('stu_idform', studentId);
@@ -1923,7 +2001,9 @@ function printform(studentId) {
 // Function to filter the table based on search input
 function filterTable() {
     const searchInput = document.getElementById('searchInput').value.toLowerCase();
-    const students = JSON.parse(localStorage.getItem("studentsList") || "[]"); // Parse the JSON string
+    let storedData = localStorage.getItem("students");
+    let students = storedData ? JSON.parse(storedData).students : [];
+    //const students = JSON.parse(localStorage.getItem("studentsList") || "[]"); // Parse the JSON string
 
     const filteredStudents = students.filter(student => {
         return (
@@ -1933,9 +2013,23 @@ function filterTable() {
         );
     });
 
-    renderStudentTable(filteredStudents); // Re-render table with filtered results
+    renderStudentTable(filteredStudents,'studentTableContainer'); // Re-render table with filtered results
 }
 
+function filtervehicleTable() {
+    const searchInput = document.getElementById('searchInputvhicle').value.toLowerCase();
+    let storedData = localStorage.getItem("students");
+    let students = storedData ? JSON.parse(storedData).students : [];
+    const filteredStudents = students.filter(student => {
+        return (
+            (student.vehicleStage && student.vehicleStage.toString().toLowerCase().includes(searchInput)) ||
+            (typeof student.vehiclePoint === 'string' && student.vehiclePoint.toLowerCase().includes(searchInput)) || // Check for name type
+            (student.currentClass && student.currentClass.toLowerCase().includes(searchInput)) // Check for current class
+        );
+    });
+
+    renderStudentTable(filteredStudents,'vehicleData'); // Re-render table with filtered results
+}
 
 
 // Call loadStudentTable when the script loads
