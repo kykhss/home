@@ -2660,6 +2660,26 @@ function loadData(){
 }
 
 loadData();
+    function getLocalStorageSize() {
+    let total = 0;
+
+    for (let key in localStorage) {
+        if (localStorage.hasOwnProperty(key)) {
+            total += localStorage.getItem(key).length;
+        }
+    }
+
+    // Convert bytes to KB and MB
+    let sizeKB = (total / 1024).toFixed(2);
+    let sizeMB = (total / (1024 * 1024)).toFixed(2);
+
+    return { bytes: total, kilobytes: sizeKB, megabytes: sizeMB };
+}
+
+// Example Usage
+let storageSize = getLocalStorageSize();
+console.log(`LocalStorage Used: ${storageSize.bytes} Bytes (${storageSize.kilobytes} KB, ${storageSize.megabytes} MB)`);
+
 </script>
 </body>
 </html>
