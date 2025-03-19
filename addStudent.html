@@ -428,7 +428,6 @@ button[type="submit"]:hover {
     overflow: auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
-    display: flex;
     align-items: center;
     justify-content: center;
 }
@@ -744,8 +743,11 @@ console.log(loggedStatus);
        // document.getElementById("pageHead").textContent = ""; 
     </script>
     <div id="studentAlert" class="alert"></div>
+    <div style="display: flex; gap: 20px; align-items: flex-start;">
+        <div id="reportContainerkg"></div>
+        <div id="reportContainer"></div>
+    </div>
     
-    <div id="reportContainer"></div>
     <div style="display: flex;">
         <button onclick="showForm()" id="addStudentButton"  >Add Student +</button>
     
@@ -1308,8 +1310,8 @@ function displayClassDivisionGenderCount(data) {
 
     
     <div id="spinner"></div>
-    <span  style="padding: 0;display:flex; gap: 20px;align-items: center; width: 270px; pointer-events: mo;"><h2 onclick="loadStudentTable('Reload') ; ">Student List</h2> <input type="text" style="width: 100px;" placeholder="2025" value="2025" id="curruntyear" onchange="loadStudentTable('new');">
-        <button type="button" onclick="loadStudentTable('Reload') ; ">reloadData</button>
+    <span  style="padding: 0;display:flex; gap: 20px;align-items: center; width: 270px; pointer-events: mo;"><h2 onclick="loadStudentTable('Reload','') ; ">Student List</h2> <input type="text" style="width: 100px;" placeholder="2025" value="2025" id="curruntyear" onchange="loadStudentTable('new');">
+        <button type="button" onclick="loadStudentTable('Reload','') ; ">reloadData</button>
         <p id="pload" style="display: none;"> loading....</p>
     </span>
 <div>
@@ -1666,7 +1668,8 @@ function loadStudentTable (studentId,time) {
     spinner.style.display = 'block';
 
     if (studentId === "Reload") {
-        localStorage.removeItem("students");
+        localStorage.removeItem("students","");
+        generateTable();
     }
 
     // Get the current year from the input
@@ -1722,11 +1725,16 @@ function updateStudentList(newStudent) {
     localStorage.setItem("students", JSON.stringify(dataToStore));
     console.log("Data saved to localStorage.");
 } catch (e) {
+    showErrorMessage(e);
+
+    if(localStorage.megabytes>=5){
+    clearLocalStorage();
+}
     console.error("Storage error:", e);
 }
 
-
   } catch (error) {
+
     console.error("Error updating student list:", error);
   }
 }
@@ -2564,26 +2572,41 @@ function downloadPoster() {
   link.click();
 }
 
-
 function generateReport(studentsData) {
     const reportContainer = document.getElementById('reportContainer');
+    const reportContainerkg = document.getElementById('reportContainerkg');
+
     reportContainer.innerHTML = ''; // Clear previous content
+    reportContainerkg.innerHTML = ''; // Clear previous content
 
     const table = document.createElement('table');
     table.classList.add('report-table');
 
+    const tablekg = document.createElement('table');
+    tablekg.classList.add('report-table');
+
     // Table Header
-    const headerRow = table.insertRow();
-    headerRow.innerHTML = `
-        <th>Class</th>
-        <th>Division</th>
-        <th>Male</th>
-        <th>Female</th>
-        <th>Total</th>
-    `;
+    const createTableHeader = (table) => {
+        const headerRow = table.insertRow();
+        headerRow.innerHTML = `
+            <th>Class</th>
+            <th>Division</th>
+            <th>Male</th>
+            <th>Female</th>
+            <th>Total</th>
+        `;
+    };
+
+    createTableHeader(table);
+    createTableHeader(tablekg);
 
     // Extract unique classes
     const uniqueClasses = [...new Set(studentsData.map(student => student.currentClass.split(" ")[0]))];
+
+    let totalMale = 0;
+    let totalFemale = 0;
+    let totalMalekg = 0;
+    let totalFemalekg = 0;
 
     uniqueClasses.forEach(className => {
         // Extract unique divisions for this class
@@ -2605,7 +2628,13 @@ function generateReport(studentsData) {
                 student.currentClass === `${className} ${division}` && student.gender === "Female"
             ).length;
 
-            const row = table.insertRow();
+            let row;
+            if (className === 'LKG' || className === 'UKG') {
+                row = tablekg.insertRow();
+            } else {
+                row = table.insertRow();
+            }
+
             row.innerHTML = `
                 <td>${className}</td>
                 <td>${division}</td>
@@ -2613,25 +2642,60 @@ function generateReport(studentsData) {
                 <td>${femaleCount}</td>
                 <td>${maleCount + femaleCount}</td>
             `;
-
+                if(className==='LKG'||className === 'UKG'){
+                    totalMalekg += maleCount;
+            totalFemalekg += femaleCount;
+                }else{
+                    totalMale += maleCount;
+                    totalFemale += femaleCount;
+                }
             classTotalMale += maleCount;
             classTotalFemale += femaleCount;
+            
         });
 
         // Add row for class total
-        const totalRow = table.insertRow();
-        totalRow.innerHTML = `
-            <td><b>${className} (Total)</b></td>
-            <td>-</td>
-            <td><b>${classTotalMale}</b></td>
-            <td><b>${classTotalFemale}</b></td>
-            <td><b>${classTotalMale + classTotalFemale}</b></td>
-        `;
-        totalRow.style.background = "#f0f0f0"; // Light gray background for total rows
+        if (className === 'LKG' || className === 'UKG' || className === "8") {
+            const totalRow = (className === 'LKG' || className === 'UKG') ? tablekg.insertRow() : table.insertRow();
+            totalRow.innerHTML = `
+                <td><b>${className} (Total)</b></td>
+                <td>-</td>
+                <td><b>${classTotalMale}</b></td>
+                <td><b>${classTotalFemale}</b></td>
+                <td><b>${classTotalMale + classTotalFemale}</b></td>
+            `;
+            totalRow.style.background = "#f0f0f0"; // Light gray background for total rows
+        }
     });
 
+    // Overall Total Row
+    const overallTotalRow = table.insertRow();
+    overallTotalRow.innerHTML = `
+        <td><b>OVERALL (Total)</b></td>
+        <td>-</td>
+        <td><b>${totalMale}</b></td>
+        <td><b>${totalFemale}</b></td>
+        <td><b>${totalMale + totalFemale}</b></td>
+    `;
+    overallTotalRow.style.background = "green"; // Slightly darker gray for total row
+
+// Overall Total Row
+const overallTotalRowkg = tablekg.insertRow();
+    overallTotalRowkg.innerHTML = `
+        <td><b>OVERALL (Total)</b></td>
+        <td>-</td>
+        <td><b>${totalMalekg}</b></td>
+        <td><b>${totalFemalekg}</b></td>
+        <td><b>${totalMalekg + totalFemalekg}</b></td>
+    `;
+    overallTotalRowkg.style.background = "green"; // Slightly darker gray for total row
+
+
+    // Append tables to containers
     reportContainer.appendChild(table);
+    reportContainerkg.appendChild(tablekg);
 }
+
 
 
 
@@ -2660,7 +2724,7 @@ function loadData(){
 }
 
 loadData();
-    function getLocalStorageSize() {
+function getLocalStorageSize() {
     let total = 0;
 
     for (let key in localStorage) {
@@ -2678,8 +2742,23 @@ loadData();
 
 // Example Usage
 let storageSize = getLocalStorageSize();
+showSuccessMessage(`LocalStorage Used: ${storageSize.megabytes} MB)`)
 console.log(`LocalStorage Used: ${storageSize.bytes} Bytes (${storageSize.kilobytes} KB, ${storageSize.megabytes} MB)`);
 
+
+function clearLocalStorage() {
+    if (showConfirmationMessage("Are you sure you want to clear all local storage data?")) {
+        localStorage.clear();
+        console.log("LocalStorage has been cleared.");
+    } else {
+        console.log("LocalStorage clear canceled.");
+    }
+}
+
+// Example Usage
+if(storageSize.megabytes>=5){
+    clearLocalStorage();
+}
 </script>
 </body>
 </html>
