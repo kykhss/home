@@ -12,7 +12,10 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
     <style>
-
+.report{
+    justify-content: center;
+    margin: auto;
+}
 .report-table {
   border:1px;
   border-radius: 20px;
@@ -284,7 +287,32 @@ canvas{
 
         /* Responsive for desktop - 3 columns layout */
         @media (max-width: 768px) {
-            
+            body{
+                width:90vb;
+            }
+            .appbars{
+            max-width: 760px;
+
+            }
+            .alert {
+  background-color: #67c37c; /* Green */
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  margin-bottom: 15px;
+  max-width: 300px;
+  height: inherit;
+  z-index: 1000;
+}
+
+            .report{
+                justify-content: center;
+                margin: auto;
+    flex-direction: column;
+}
+.scroll-table{
+    max-width: 90vb;
+    overflow: auto;
+}
             .batch {
         grid-template-columns: 1fr; /* On mobile, make it 1 column */
     }
@@ -465,7 +493,6 @@ button[type="submit"]:hover {
 </style>
 
 </head>
-<body>
     <!-- <div class="loader"></div> -->
 <style>
 .alert {
@@ -742,8 +769,13 @@ console.log(loggedStatus);
         }
        // document.getElementById("pageHead").textContent = ""; 
     </script>
-    <div id="studentAlert" class="alert"></div>
-    <div style="display: flex; gap: 20px; align-items: flex-start;">
+    <!-- Method 1: Use an <a> tag (Recommended) -->
+<a href="vehicle.html" style="max-width: fit-content; display: inline-block; padding: 10px; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">
+    Vehicle Wise Data
+</a>
+
+<div id="studentAlert" class="alert"></div>
+    <div class="report" style="display: flex; gap: 20px; align-items: flex-start;">
         <div id="reportContainerkg"></div>
         <div id="reportContainer"></div>
     </div>
@@ -763,7 +795,7 @@ console.log(loggedStatus);
     <div class="form-group" style="max-width: 200px;">
         <label for="studentId">Student ID (Auto-generated):</label>
         <input type="text" id="studentId" name="studentId" readonly>    
-            <div class="radio-group form-group flex-row" style="margin: 0; max-width: 200px;">
+            <div class="flex-row form-group radio-group" style="margin: 0; max-width: 200px;">
                 <label>Select Sector:</label>
                 <label><input type="radio" name="sector" id="School" value="School" onchange="populateClassOptions('School');generateStudentId();"> School</label>
                 <label><input type="radio" name="sector" id="KG" value="KG" onchange="populateClassOptions('KG');generateStudentId();"> KG</label>
@@ -779,7 +811,7 @@ console.log(loggedStatus);
         <label for="studentName">Student Name:</label>
         <input type="text" id="studentName" name="studentName" placeholder="Enter Student Name" required>
     
-    <div class="radio-group form-group flex-row" style="margin: 0; max-width: 200px;">
+    <div class="flex-row form-group radio-group" style="margin: 0; max-width: 200px;">
             <label>Gender:</label>
             <label><input type="radio" name="genderOptions" value="Male" id="genderMale"> Male</label>
             <label><input type="radio" name="genderOptions" value="Female" id="genderFemale"> Female</label>
@@ -825,7 +857,7 @@ console.log(loggedStatus);
     
 
 <div class="form-group">
-    <div class="radio-group form-group flex-row" style="margin: 0; max-width: fit-content;">
+    <div class="flex-row form-group radio-group" style="margin: 0; max-width: fit-content;">
     <label for="adharCheckbox">Adhaar Got?</label>
     <input type="checkbox" id="adharCheckbox" name="adharCheckbox" checked>
     </div>
@@ -898,7 +930,7 @@ adharCheckbox.addEventListener('change', () => {
     <!-- Radio Buttons to Select Guardian -->
     <div class="form-group">
     <label>Is Guardian the same as:</label>
-    <div class="radio-group form-group flex-row">
+    <div class="flex-row form-group radio-group">
         <label><input type="radio" name="guardianOption" id="guardianFather" value="father" onclick="setGuardian()"> Father</label>
         <label><input type="radio" name="guardianOption" id="guardianMother" value="mother" onclick="setGuardian()"> Mother</label>
         <label><input type="radio" name="guardianOption" id="guardianOther" value="other" onclick="setGuardian()"> Local Guardin</label>
@@ -1143,7 +1175,7 @@ function displayClassDivisionGenderCount(data) {
     <div class="section-title" style="display: flex; justify-content: space-between;">
         Vehicle Info
         <span>
-            <div class="radio-group form-group flex-row" style="margin: 0; max-width: 200px;">
+            <div class="flex-row form-group radio-group" style="margin: 0; max-width: 200px;">
                 <label style="width: fit-content;">Vehicle Need</label>
                 <label><input type="radio" id="vehicleNeed" name="vehicleNeed" value="YES" onchange="toggleVehicleInfo(this.value)"> YES</label>
                 <label><input type="radio" id="noVehicle" name="vehicleNeed" value="NO" onchange="toggleVehicleInfo(this.value)"> NO</label>
@@ -1191,7 +1223,7 @@ function displayClassDivisionGenderCount(data) {
     <div class="section-title" style="display: flex; justify-content: space-between;">
         Sibling Information
         <span>
-            <div class="radio-group form-group flex-row" style="margin: 0; max-width: 200px;">
+            <div class="flex-row form-group radio-group" style="margin: 0; max-width: 200px;">
                 <label style="width: fit-content;">Siblings</label>
                 <label><input type="radio" id="siblingYes" name="hasSibling" value="Yes" onchange="toggleSiblingInfo(this.value)"> Yes</label>
                 <label><input type="radio" id="siblingNo" name="hasSibling" value="No" onchange="toggleSiblingInfo(this.value)"> No</label>
@@ -1317,11 +1349,11 @@ function displayClassDivisionGenderCount(data) {
 <div>
     <input type="text" id="searchInput" placeholder="Search by AD Number, Name, or Class" onkeyup="filterTable()">
 </div>
-<div id="studentTableContainer">
+<div id="studentTableContainer" class="scroll-table">
 
 
 </div>
-   
+
 </body>
 <script>
     function closeCropModal() {
@@ -1896,75 +1928,7 @@ console.log(students);
     
 }
 
-// Function to render the student table
-function renderStudentTable(students,divid) {
-    photoFile=[];
-    //const students = JSON.parse(localStorage.getItem("studentsList") || "[]"); // Parse the JSON string
 
-    if (students.length === 0) {
-        document.getElementById(divid).innerHTML = '<p>No students found</p>';
-        return;
-    }
-console.log(students);
-    let table = `<table border=1>
-        <tr>
-            <th>SL</th>
-            <th>Photo</th>
-            <th>AD Number</th>
-            <th>Name</th>
-            <th>Gender</th>
-            <th>DOB</th>
-            <th>Class</th>
-            <th>Father Name</th>
-            <th>Father Mobile</th>
-            <th>House</th>
-            <th>WhatsApp No</th>
-            <th>vehicleStage</th>
-            <th>vehiclePoint</th>
-        </tr>`;
-    
-    students.forEach((student, index) => {
-        const imgId = `pic${index + 1}`; // Create a unique imgId for each student
-        //var divId= "photo" + studentData.adNumber
-        const imageGet = {
-    adNumber: student.stu_id,
-    divId: imgId
-  };
-  photoFile.push(imageGet);
-        table += `<tr>
-            <td>${index + 1}</td>
-            <td> 
-  <div class="image-container">
-  <img id="${imgId}" src="https://drive.google.com/thumbnail?id=${student.image}&sz=800" alt="${student.stu_id}"><button type="button" class="refreshButton" id="refreshButton${imgId}" 
-        onclick="loadStudentPhoto('${student.stu_id}', '${imgId}');">
-    &#x21bb;
-</button>
-
-</div>
-
-</td>
-            <td>${student.adNumber}</td>
-            <td style="color:red;">${student.name}</td>
-            <td>${student.gender}</td>
-            <td>${formatDate(student.dob)}</td>
-            <td>${student.currentClass}</td>
-            <td>${student.fatherName}</td>
-            <td>${student.fatherMobile}</td>
-            <td style="color:red;">${student.houseName}</td>
-            <td>${student.whatsappNo}</td>
-            <td>${student.vehicleStage}</td>
-            <td>${student.vehiclePoint}</td>
-        </tr>`;
-
-        // Call loadStudentPhoto after setting up the row
-        //loadStudentPhotos(student.stu_id, "pic_"+index + 1);
-    });
-
-    table += '</table>';
-    document.getElementById(divid).innerHTML = table;
-   //  generatestudentPhotos();
-    
-}
 function now() {
   console.log(new Date());
   return new Date(); // Returns the current date and time
@@ -2011,20 +1975,7 @@ function filterTable() {
     renderStudentTable(filteredStudents,'studentTableContainer'); // Re-render table with filtered results
 }
 
-function filtervehicleTable() {
-    const searchInput = document.getElementById('searchInputvhicle').value.toLowerCase();
-    let storedData = localStorage.getItem("students");
-    let students = storedData ? JSON.parse(storedData).students : [];
-    const filteredStudents = students.filter(student => {
-        return (
-            (student.vehicleStage && student.vehicleStage.toString().toLowerCase().includes(searchInput)) ||
-            (typeof student.vehiclePoint === 'string' && student.vehiclePoint.toLowerCase().includes(searchInput)) || // Check for name type
-            (student.currentClass && student.currentClass.toLowerCase().includes(searchInput)) // Check for current class
-        );
-    });
 
-    renderStudentTable(filteredStudents,'vehicleData'); // Re-render table with filtered results
-}
 
 
 // Call loadStudentTable when the script loads
@@ -2342,12 +2293,6 @@ targetElement.scrollIntoView({ behavior: "smooth", block: "start", inline: "near
     hideLoader();
         showErrorMessage('An error occurred while sending the message. Please try again later.');
   }
-}
-
-// Helper function to format date 
-function formatDate(dateString) {
-  const date = new Date(dateString);
-  return date.toLocaleDateString(); 
 }
 
 async function sendWhatsAppMessageToStudent3(Id) {
