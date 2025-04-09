@@ -2399,11 +2399,12 @@ async function getStudentbyMobile() {
             const siblingDetails = data.students.map(student => `${student.name} (${student.stuId} - ${student.adNumber})`).join(", ");
 
             // Update the input field
-            siblingDetailsElement.value = siblingDetails;
             siblingDetailsElement.disabled = false; // Enable the field
-
+                toggleSiblingInfo("Yes");
+            siblingDetailsElement.value = siblingDetails;
+            
             showSuccessMessage(`Siblings added: ${siblingDetails}`);
-            toggleSiblingInfo("Yes");
+            
             document.getElementById("siblingloading").style.display="none";
         } else {
             // No students found
