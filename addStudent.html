@@ -1992,11 +1992,13 @@ async function uploadCroppedImage() {
 
     if (!studentId) {
         showErrorMessage('Please generate the student ID first');
+        hideLoader();
         return;
     }
 
     if (!croppedImage) {
         showErrorMessage('Please crop the student photo');
+        hideLoader();
         return;
     }
 
@@ -2402,6 +2404,7 @@ async function getStudentbyMobile() {
             siblingDetailsElement.disabled = false; // Enable the field
                 toggleSiblingInfo("Yes");
             siblingDetailsElement.value = siblingDetails;
+           // siblingDetailsElement.texti = siblingDetails;
             
             showSuccessMessage(`Siblings added: ${siblingDetails}`);
             
