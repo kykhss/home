@@ -354,6 +354,7 @@ canvas{
             .form-group img {
                 max-width: 200px;
             }
+
             #cropModal {
     position: fixed;
     top: 50%;
@@ -363,10 +364,8 @@ canvas{
     padding: 20px;
     border: 1px solid #ccc;
     z-index: 1000;
-    display: none;
-    max-width: 500px;
-    width: 90%;
-    max-height: 90vh;
+    width: 85%;
+    height: 90vh;
     overflow: auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
@@ -377,9 +376,11 @@ canvas{
 
 /* Ensures the crop image is centered properly */
 #cropImage {
-    max-width: 100%;
+    align-items: center;
+    justify-content: center;
+    max-width: 85%;
+    max-height: 85vh;
     display: block;
-    margin: auto;
 }
 
 
@@ -440,19 +441,19 @@ button[type="submit"]:hover {
   transform: scale(1.1); 
   accent-color: #28a745;
 }
+
 #cropModal {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -60%);
     background: #fff;
     padding: 20px;
     border: 1px solid #ccc;
     z-index: 1000;
     display: none;
-    max-width: 600px;
-    width: 90%;
-    max-height: 90vh;
+    width: 85%;
+    height: 90%;
     overflow: auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
@@ -462,9 +463,10 @@ button[type="submit"]:hover {
 
 /* Ensures the crop image is centered properly */
 #cropImage {
-    max-width: 100%;
+    max-width: 85%;
+    max-height: 85vh;
     display: block;
-    margin: auto;
+    
 }
 
     #cropModal h2 {
@@ -614,7 +616,6 @@ function showSuccessMessage(message) {
     document.getElementById("successAlert").style.display = "none"; 
   }, 15000); // 15 seconds timeout
 }
-
 // Function to show the error message
 function showErrorMessage(message) {
   document.getElementById("errorAlert").innerHTML = 
@@ -1305,7 +1306,7 @@ function displayClassDivisionGenderCount(data) {
               <div id="cropModal">
                 <div>
                   <h2>Crop Photo</h2>
-                  <img id="cropImage" src="https://i.gifer.com/4V0b.gif" alt="cropimage" style="display: block;"/>
+                  <img id="cropImage" src="https://i.gifer.com/4V0b.gif" alt="cropimage" style="display: flex;"/>
                   <button type="button" onclick="cropImageto()">Crope Image</button>
                   <button type="button" onclick="deleteImage()">Delete</button>
                   <!-- Close Button to hide the modal -->
@@ -1479,7 +1480,7 @@ function showCropper(event, index) {
       const reader = new FileReader();
       reader.onload = function(e) {
         document.getElementById('cropImage').src = e.target.result;
-        document.getElementById('cropModal').style.display = 'block';
+        document.getElementById('cropModal').style.display = 'flex';
         if (cropper) {
                     cropper.destroy(); // Destroy any existing cropper instance
                 }
@@ -1509,7 +1510,7 @@ function showCropper(event, index) {
   const confirmed = await showConfirmationMessage("Are you sure you want to edit the image?");
   
   if (confirmed) {
-    document.getElementById('cropModal').style.display = 'block';
+    document.getElementById('cropModal').style.display = 'flex';
 
     const cropImage = document.getElementById('cropImage');
 
