@@ -172,7 +172,7 @@
            // const stu_id = localStorage.getItem("stu_idform");
             const stu_id = getQueryParam('stu_id');
             console.log(stu_id);
-            const stuImg =loadStudentPhotoform(stu_id);
+            const stuImg =""//loadStudentPhotoform(stu_id);
            // const stu_id = localStorage.getItem("stu_Id");
             fetch(`https://script.google.com/macros/s/AKfycbyFVRUjvnf3dj5uh0m6BCAiPCWHdmyxV9HvTjEfTB29LWAy7kC5vk96qPDFqwz1JlOK/exec?action=getStudentById&mobile=${stu_id}`)
                 .then(response => response.json())
@@ -384,10 +384,10 @@
 
             if (data.photo){
                 // Set the src attribute of the img tag to the Base64 encoded string
-               document.getElementById('student-photo').src = `data:image/jpeg;base64,${data.photo}`;
+              // document.getElementById('student-photo').src = `data:image/jpeg;base64,${data.photo}`;
                // document.getElementById('error-message').textContent = ''; // Clear any previous error messages
             } else if (data.error) {
-                document.getElementById('error-message').textContent = data.error; // Show error message
+               // document.getElementById('error-message').textContent = data.error; // Show error message
             }
         } catch (error) {
             console.error('Error fetching photo:', error);
