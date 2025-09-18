@@ -19652,8 +19652,7 @@ function renderHouseParticipantRegistration(fest, houseId) {
                         <table class="table table-sm" id="house-reg-table">
                             <thead>
                                 <tr>
-                                    <th>Student Name (Admission No.)</th>
-                                    <th>Class</th>
+                                    <th>Student Name</th>
                                     <th>Registered Events</th>
                                     <th class="text-end">Action</th>
                                 </tr>
@@ -19695,61 +19694,69 @@ function renderHouseParticipantRegistration(fest, houseId) {
         </div>
     `;
 
-    // --- MODIFIED HELPER FUNCTION: Renders table rows with new filters and layout ---
-    const renderTableRows = (searchTerm = '', category = 'all', classId = 'all') => {
-        const tableBody = container.querySelector('#house-reg-table tbody');
-        const registrationsInHouse = festRegistrations.filter(r => r.festId === fest.id && r.houseId === houseId);
+    // --- MODIFIED HELPER FUNCTION: Renders table rows with the updated "Manage" button ---
+const renderTableRows = (searchTerm = '', category = 'all', classId = 'all') => {
+    const tableBody = container.querySelector('#house-reg-table tbody');
+    const registrationsInHouse = festRegistrations.filter(r => r.festId === fest.id && r.houseId === houseId);
 
-        let filteredStudents = studentsInHouse;
+    let filteredStudents = studentsInHouse;
 
-        // Apply filters
-        if (searchTerm) {
-            const lowerCaseSearch = searchTerm.toLowerCase();
-            filteredStudents = filteredStudents.filter(s =>
-                s.name.toLowerCase().includes(lowerCaseSearch) ||
-                String(s.admissionNumber || "").toLowerCase().includes(lowerCaseSearch)
-            );
-        }
-        if (classId !== 'all') {
-            filteredStudents = filteredStudents.filter(s => s.classId === classId);
-        }
-        if (category !== 'all') {
-            filteredStudents = filteredStudents.filter(student => {
-                const registration = registrationsInHouse.find(r => r.studentId === student.id);
-                if (!registration || !registration.events.length) return false;
-                // Check if the student is in any event that matches the selected category
-                return registration.events.some(eventId => {
-                    const event = eventsForFest.find(e => e.id === eventId);
-                    return event && event.category === category;
-                });
-            });
-        }
-        
-        if (filteredStudents.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No students match the current filters.</td></tr>`;
-            return;
-        }
-
-        tableBody.innerHTML = filteredStudents.map(student => {
+    // Apply filters
+    if (searchTerm) {
+        const lowerCaseSearch = searchTerm.toLowerCase();
+        filteredStudents = filteredStudents.filter(s =>
+            s.name.toLowerCase().includes(lowerCaseSearch) ||
+            String(s.admissionNumber || "").toLowerCase().includes(lowerCaseSearch)
+        );
+    }
+    if (classId !== 'all') {
+        filteredStudents = filteredStudents.filter(s => s.classId === classId);
+    }
+    if (category !== 'all') {
+        filteredStudents = filteredStudents.filter(student => {
             const registration = registrationsInHouse.find(r => r.studentId === student.id);
-            const registeredEventIds = registration?.events || [];
-            
-            // Generate HTML for displaying event names as badges
-            const eventsHtml = registeredEventIds.length > 0
-                ? registeredEventIds.map(eventId => {
-                    const event = eventsForFest.find(e => e.id === eventId);
-                    return `<span class="badge bg-light text-dark me-1">${event ? event.name : 'Unknown Event'}</span>`;
-                }).join('')
-                : `<small class="text-muted">No events registered</small>`;
+            if (!registration || !registration.events.length) return false;
+            // Check if the student is in any event that matches the selected category
+            return registration.events.some(eventId => {
+                const event = eventsForFest.find(e => e.id === eventId);
+                return event && event.category === category;
+            });
+        });
+    }
+    
+    if (filteredStudents.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No students match the current filters.</td></tr>`;
+        return;
+    }
 
-            return `
+    tableBody.innerHTML = filteredStudents.map(student => {
+        const registration = registrationsInHouse.find(r => r.studentId === student.id);
+        const registeredEventIds = registration?.events || [];
+        
+        // --- NEW: Added event count for the badge ---
+        const eventCount = registeredEventIds.length;
+        
+        // Generate HTML for displaying event names as badges
+        const eventsHtml = registeredEventIds.length > 0
+            ? registeredEventIds.map(eventId => {
+                const event = eventsForFest.find(e => e.id === eventId);
+                return `<span class="badge bg-light text-dark me-1">${event ? event.name : 'Unknown Event'}</span>`;
+            }).join('')
+            : `<small class="text-muted">No events registered</small>`;
+
+        // --- MODIFIED: The returned <tr> now includes your requested button style ---
+        return `
                 <tr data-studentid="${student.id}" data-events="${registeredEventIds.join(',') || ''}">
-                    <td>${student.name} (${student.admissionNumber})</td>
-                    <td>${getStudentClassName(student.classId, student.division)}</td>
+                    <td>
+                        ${student.name}
+                        <br>
+                        <small class="text-muted">Adm: ${student.admissionNumber} | ${getStudentClassName(student.classId, student.division)}</small>
+                    </td>
                     <td>${eventsHtml}</td>
                     <td class="text-end">
                          <button class="btn btn-sm btn-outline-secondary manage-events-btn" ${!isRegistrationOpen ? 'disabled' : ''} title="Manage this student's events">
                             <i class="fas fa-edit me-1"></i> Manage
+                            <span class="badge bg-primary rounded-pill event-count-badge ms-2 event-count">${eventCount}</span>
                          </button>
                          <button class="d-none btn btn-sm btn-outline-success save-single-reg-btn ms-2" title="Save this student's registration" ${!isRegistrationOpen ? 'disabled' : ''}>
                             <i class="fas fa-save"></i>
@@ -19757,7 +19764,7 @@ function renderHouseParticipantRegistration(fest, houseId) {
                     </td>
                 </tr>`;
         }).join('');
-    };
+};
     
     // --- HELPER FUNCTION TO RENDER THE "VIEW" PANE CONTENT (Unchanged) ---
     const renderViewPaneContent = (filterType = 'all', filterEventId = 'all') => {
