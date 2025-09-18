@@ -20394,6 +20394,7 @@ window. openGroupBuilderModal=(groupId, festId, houseId)=> {
     const studentListContainer = document.getElementById('group-student-list-container');
     const saveButton = document.getElementById('group-builder-save-btn');
     const eventCategoryFilter = document.getElementById('group-event-category-filter');
+    const eventsSelect = document.getElementById('group-events-select');
     
     let selectedStudentIds = new Set(group?.members.map(m => m.studentId) || []);
 
