@@ -19599,7 +19599,12 @@ function renderHouseParticipantRegistration(fest, houseId) {
 
     const isRegistrationOpen = fest.registrationOpen === true;
 
-    // --- MODIFIED HTML: Added a new "Group Management" tab and pane ---
+    // --- NEW: Get unique categories and classes for the filters ---
+    const uniqueCategories = [...new Set(eventsForFest.map(e => e.category))].sort();
+    const uniqueClasses = [...new Map(studentsInHouse.map(s => [s.classId, { id: s.classId, name: getStudentClassName(s.classId) }])).values()]
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+    // --- MODIFIED HTML: Added new filters for category and class ---
     container.innerHTML = `
         <div class="ui-card">
             <ul class="nav nav-pills mb-3" id="house-entry-tabs" role="tablist">
@@ -19626,9 +19631,21 @@ function renderHouseParticipantRegistration(fest, houseId) {
                             <i class="fas fa-lock me-2"></i> Registration for this fest is currently closed.
                         </div>
                     ` : ''}
-                    <div class="row mb-3">
-                        <div class="col-md-6">
+                    <div class="row mb-3 g-2">
+                        <div class="col-md-5">
                             <input type="text" id="house-student-search" class="form-control" placeholder="Search students by name or admission no...">
+                        </div>
+                        <div class="col-md-4">
+                             <select id="house-reg-category-filter" class="form-select">
+                                <option value="all">All Categories</option>
+                                ${uniqueCategories.map(cat => `<option value="${cat}">${cat}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="house-reg-class-filter" class="form-select">
+                                <option value="all">All Classes</option>
+                                ${uniqueClasses.map(cls => `<option value="${cls.id}">${cls.name||""}</option>`).join('')}
+                            </select>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -19637,7 +19654,7 @@ function renderHouseParticipantRegistration(fest, houseId) {
                                 <tr>
                                     <th>Student Name (Admission No.)</th>
                                     <th>Class</th>
-                                    <th>Events</th>
+                                    <th>Registered Events</th>
                                     <th class="text-end">Action</th>
                                 </tr>
                             </thead>
@@ -19678,23 +19695,66 @@ function renderHouseParticipantRegistration(fest, houseId) {
         </div>
     `;
 
-    // --- HELPER FUNCTION TO RENDER THE REGISTRATION TABLE ROWS (Unchanged) ---
-    const renderTableRows = (searchTerm = '') => {
+    // --- MODIFIED HELPER FUNCTION: Renders table rows with new filters and layout ---
+    const renderTableRows = (searchTerm = '', category = 'all', classId = 'all') => {
         const tableBody = container.querySelector('#house-reg-table tbody');
         const registrationsInHouse = festRegistrations.filter(r => r.festId === fest.id && r.houseId === houseId);
-        const filteredStudents = studentsInHouse.filter(s => 
-            s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-            String(s.admissionNumber || "").toLowerCase().includes(searchTerm.toLowerCase())
-        );
+
+        let filteredStudents = studentsInHouse;
+
+        // Apply filters
+        if (searchTerm) {
+            const lowerCaseSearch = searchTerm.toLowerCase();
+            filteredStudents = filteredStudents.filter(s =>
+                s.name.toLowerCase().includes(lowerCaseSearch) ||
+                String(s.admissionNumber || "").toLowerCase().includes(lowerCaseSearch)
+            );
+        }
+        if (classId !== 'all') {
+            filteredStudents = filteredStudents.filter(s => s.classId === classId);
+        }
+        if (category !== 'all') {
+            filteredStudents = filteredStudents.filter(student => {
+                const registration = registrationsInHouse.find(r => r.studentId === student.id);
+                if (!registration || !registration.events.length) return false;
+                // Check if the student is in any event that matches the selected category
+                return registration.events.some(eventId => {
+                    const event = eventsForFest.find(e => e.id === eventId);
+                    return event && event.category === category;
+                });
+            });
+        }
+        
+        if (filteredStudents.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No students match the current filters.</td></tr>`;
+            return;
+        }
+
         tableBody.innerHTML = filteredStudents.map(student => {
             const registration = registrationsInHouse.find(r => r.studentId === student.id);
-            const eventCount = registration?.events.length || 0;
+            const registeredEventIds = registration?.events || [];
+            
+            // Generate HTML for displaying event names as badges
+            const eventsHtml = registeredEventIds.length > 0
+                ? registeredEventIds.map(eventId => {
+                    const event = eventsForFest.find(e => e.id === eventId);
+                    return `<span class="badge bg-light text-dark me-1">${event ? event.name : 'Unknown Event'}</span>`;
+                }).join('')
+                : `<small class="text-muted">No events registered</small>`;
+
             return `
-                <tr data-studentid="${student.id}" data-events="${registration?.events.join(',') || ''}">
+                <tr data-studentid="${student.id}" data-events="${registeredEventIds.join(',') || ''}">
                     <td>${student.name} (${student.admissionNumber})</td>
                     <td>${getStudentClassName(student.classId, student.division)}</td>
-                    <td><button class="btn btn-sm btn-outline-secondary manage-events-btn" ${!isRegistrationOpen ? 'disabled' : ''}>Manage Events (<span class="event-count">${eventCount}</span>)</button></td>
-                    <td class="text-end"><button class="d-none btn btn-sm btn-outline-success save-single-reg-btn" title="Save this student's registration" ${!isRegistrationOpen ? 'disabled' : ''}><i class="fas fa-save"></i></button></td>
+                    <td>${eventsHtml}</td>
+                    <td class="text-end">
+                         <button class="btn btn-sm btn-outline-secondary manage-events-btn" ${!isRegistrationOpen ? 'disabled' : ''} title="Manage this student's events">
+                            <i class="fas fa-edit me-1"></i> Manage
+                         </button>
+                         <button class="d-none btn btn-sm btn-outline-success save-single-reg-btn ms-2" title="Save this student's registration" ${!isRegistrationOpen ? 'disabled' : ''}>
+                            <i class="fas fa-save"></i>
+                         </button>
+                    </td>
                 </tr>`;
         }).join('');
     };
@@ -19749,7 +19809,20 @@ function renderHouseParticipantRegistration(fest, houseId) {
         else { listContainer.innerHTML = '<p class="text-muted">No participants registered for the selected event(s).</p>'; }
     };
 
-    // --- ATTACH EVENT LISTENERS (Unchanged) ---
+    // --- MODIFIED EVENT LISTENERS: Now handle the new filters ---
+    const searchInput = document.getElementById('house-student-search');
+    const categoryFilter = document.getElementById('house-reg-category-filter');
+    const classFilter = document.getElementById('house-reg-class-filter');
+    
+    const applyFilters = () => {
+        renderTableRows(searchInput.value, categoryFilter.value, classFilter.value);
+    };
+
+    searchInput.addEventListener('input', applyFilters);
+    categoryFilter.addEventListener('change', applyFilters);
+    classFilter.addEventListener('change', applyFilters);
+    
+    // --- Unchanged Event Listeners ---
     const regTableBody = container.querySelector('#house-reg-table tbody');
     regTableBody.addEventListener('click', (e) => {
         const manageBtn = e.target.closest('.manage-events-btn');
@@ -19758,7 +19831,6 @@ function renderHouseParticipantRegistration(fest, houseId) {
         if (saveBtn) saveSingleHouseRegistration(fest.id, houseId, saveBtn.closest('tr'));
     });
     document.getElementById('save-house-regs-btn').addEventListener('click', () => { saveHouseRegistrationsFromEntryPage(fest.id, houseId); });
-    document.getElementById('house-student-search').addEventListener('input', (e) => { renderTableRows(e.target.value); });
     const typeFilter = document.getElementById('house-event-type-filter');
     const eventFilter = document.getElementById('house-event-filter');
     typeFilter.addEventListener('change', () => {
@@ -19775,10 +19847,9 @@ function renderHouseParticipantRegistration(fest, houseId) {
     renderHouseGroupManagementTab(fest, houseId, isRegistrationOpen);
     
     // --- INITIAL RENDERS ---
-    renderTableRows();
+    renderTableRows(); // Initial render with default filter values
     typeFilter.dispatchEvent(new Event('change'));
 }
-
 
 /**
  * NEW: Renders the content for the "Group Management" tab with a Refresh button.
@@ -20410,10 +20481,11 @@ window. openGroupBuilderModal=(groupId, festId, houseId)=> {
         }
         builderList.innerHTML = Array.from(selectedStudentIds).map(studentId => {
             const student = students.find(s => s.id === studentId);
+            const className = getStudentClassName(student.classId, student.division); // Helper to get full class name
             const currentMember = group?.members.find(m => m.studentId === studentId);
             return `
                 <li class="list-group-item d-flex justify-content-between align-items-center py-1">
-                    <span>${student.name}</span>
+                    <span>${student.name}( ${className})</span>
                     <div>
                         <select class="form-select form-select-sm d-inline-block w-auto me-2 group-member-role" data-studentid="${student.id}">
                             <option value="Member" ${currentMember?.role === 'Member' ? 'selected' : ''}>Member</option>
@@ -20450,15 +20522,22 @@ window. openGroupBuilderModal=(groupId, festId, houseId)=> {
         }
 
         studentListContainer.innerHTML = filteredStudents
-            .filter(s => !selectedStudentIds.has(s.id)) // Exclude already selected students
-            .map(student => {
-                const isDisabled = studentsInOtherGroups.has(student.id);
-                return `<a href="#" class="list-group-item list-group-item-action py-2 ${isDisabled ? 'disabled' : ''}" data-student-id="${student.id}">
-                            ${student.name}
-                            ${isDisabled ? '<span class="badge bg-secondary ms-2 float-end">In another group</span>' : ''}
-                        </a>`;
-            }).join('');
-    };
+    .filter(s => !selectedStudentIds.has(s.id)) // Exclude already selected students
+    .map(student => {
+        const isDisabled = studentsInOtherGroups.has(student.id);
+        const className = getStudentClassName(student.classId, student.division); // Helper to get full class name
+
+        return `
+            <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 ${isDisabled ? 'disabled' : ''}" data-student-id="${student.id}">
+                <div>
+                    <strong>${student.name}</strong>
+                    <small class="text-muted d-block">${className} | Admn No: ${student.admissionNumber || 'N/A'}</small>
+                </div>
+                ${isDisabled ? '<span class="badge bg-secondary ms-2">In another group</span>' : ''}
+            </a>`;
+    }).join('');
+
+};
 
     // --- 5. Attach Listeners and Make Initial Calls ---
     
@@ -26101,8 +26180,15 @@ function getStudentAgeCategory(studentDob) {
 
 function getStudentClassName(classId, division) {
     if (!classId) return 'N/A';
+    if(classId&&division){
     const classInfo = classes.find(c => c.id === classId);
     return classInfo ? `${classInfo.name}-${division}` : 'N/A';
+    }
+    if(classId&&!division){
+        const classInfo = classes.find(c => c.id === classId);
+    return classInfo ? `${classInfo.name}` : 'N/A';
+
+    }
 }
 window.deleteFestItem = async(collectionName, id, rerenderFunctionName) =>{
     // Add specific checks for cascading deletes if needed
